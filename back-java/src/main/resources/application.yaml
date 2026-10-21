@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: employee-achievements
+  flyway:
+    enabled: false
+  datasource:
+    url: ${DB_URL} #jdbc:postgresql://localhost:5432/db
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      show-sql: true
+      hibernate:
+        # Форматирует SQL, чтобы он не был в одну строчку
+        format_sql: true
+        # Подсвечивает SQL-синтаксис в консоли (опционально)
+        highlight_sql: true
+
+logging:
+  level:
+    # Включает вывод самих SQL-запросов (подготавливаемых выражений)
+    org.hibernate.SQL: DEBUG
+    # Включает вывод значений параметров, которые подставляются вместо знаков "?"
+    org.hibernate.orm.jdbc.bind: TRACE
+
+springdoc:
+  default-support-trailing-slash: false # Отключает автоматическую генерацию альтернативных путей со слэшем на конце
+  writer-with-openapi-31: true
+#  paths-to-match: "^(?!.*/$).*"
+  cache:
+    disabled: true  # Отключает кэширование сгенерированного JSON-файла OpenAPI
+
+app:
+  variables:
+    front-url: ${FRONT_URL}
+    jwt:
+      at-secret-key: ${JWT_ACCESS_SECRET}
+      rt-secret-key: ${JWT_REFRESH_SECRET}
+      at-expiration: ${JWT_ACCESS_EXPIRATION}
+      rt-expiration: ${JWT_REFRESH_EXPIRATION}
+
