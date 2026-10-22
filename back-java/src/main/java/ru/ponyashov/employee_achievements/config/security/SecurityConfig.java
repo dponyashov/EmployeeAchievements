@@ -4,6 +4,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,9 +17,13 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import ru.ponyashov.employee_achievements.config.AppConfig;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +38,31 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(c -> {
+                    CorsConfigurationSource source = request -> {
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowCredentials(true);
+                        config.setAllowedOrigins(
+                                List.of(appConfig.frontUrl(),
+                                        "http://localhost:5173",
+                                        "https://localhost:5173"));
+                        config.setAllowedMethods(
+                                List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
+                        config.setAllowedHeaders(
+                                List.of("Accept",
+                                        "Accept-Language",
+                                        "Content-Language",
+                                        "Content-Type",
+                                        "Access-Control-Allow-Credentials",
+                                        "Access-Control-Allow-Headers",
+                                        "Access-Control-Allow-Origin",
+                                        "Authorization")
+                        );
+                        return config;
+                    };
+                    c.configurationSource(source);
+                })
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
@@ -60,6 +90,29 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+//    // 2. СОЗДАЕМ НАСТРОЙКИ CORS
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        // Укажите адрес вашего фронтенда (например, React, Angular, Vue)
+//        configuration.setAllowedOrigins(List.of(appConfig.frontUrl()));
+//
+//        // Разрешаем основные HTTP-методы
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+//
+//        // ВАЖНО ДЛЯ OAUTH2: Обязательно разрешаем заголовок Authorization и Content-Type
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
+//
+//        // Разрешаем отправку кук и credentials (если требуется)
+//        configuration.setAllowCredentials(true);
+//
+//        // Применяем эти правила ко всем эндпоинтам приложения
+//        UrlCorsConfigurationSource source = new UrlCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
     // Для обработки ролей в токене
     @Bean

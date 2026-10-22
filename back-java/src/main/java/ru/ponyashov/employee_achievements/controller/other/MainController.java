@@ -8,8 +8,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.ponyashov.employee_achievements.dto.response.DirectoryDataDto;
 import ru.ponyashov.employee_achievements.dto.response.ResponseMessageDto;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -26,5 +28,20 @@ public class MainController {
                 .statusText(HttpStatus.OK.name())
                 .statusCode(HttpStatus.OK.value())
                 .build());
+    }
+    @GetMapping("/directory")
+//    @PreAuthorize("isAuthenticated()") // Теперь пустит любого пользователя с валидным JWT
+    @PreAuthorize("permitAll()") // Разрешает доступ без проверки ролей на уровне метода
+    public ResponseEntity<Collection<DirectoryDataDto>> directoryList(){
+
+        var directoryList = List.of(
+                new DirectoryDataDto("Должности", "/directory/position"),
+                new DirectoryDataDto("Отделы", "/directory/department"),
+                new DirectoryDataDto("Услуги", "/directory/service"),
+                new DirectoryDataDto("Компоненты услуг", "/directory/component")
+//                new DirectoryDataDto("Сотрудники", "/profile")
+        );
+
+        return ResponseEntity.ok(directoryList);
     }
 }

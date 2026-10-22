@@ -1,0 +1,18 @@
+:root {
+  --1c-yellow: #ffcc00; /* Фирменный желтый 1С */
+  --1c-yellow-hover: #e6b800;
+  --1c-bg-gray: #f2f2f2; /* Серая подложка */
+  --1c-border: #d3d3d3; /* Границы элементов */
+  --1c-text-dark: #333333; /* Основной текст */
+  --1c-text-muted: #777777; /* Подписи, копирайт */
+  --1c-white: #ffffff;
+  --1c-active-blue: #0056b3; /* Ссылки и фокус */
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--1c-bg-gray);
+  color: var(--1c-text-dark);
+  font-size: 14px;
+}

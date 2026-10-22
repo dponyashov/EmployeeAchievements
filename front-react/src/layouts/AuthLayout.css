@@ -1,0 +1,104 @@
+.erp-auth-container {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--1c-bg-gray);
+}
+.erp-auth-window {
+  width: 380px;
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.erp-auth-header {
+  background-color: var(--1c-yellow);
+  padding: 10px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--1c-border);
+}
+.erp-auth-body {
+  padding: 20px;
+}
+.erp-form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+.erp-form-group label {
+  margin-bottom: 5px;
+  color: var(--1c-text-muted);
+}
+.erp-form-group input {
+  padding: 6px;
+  border: 1px solid var(--1c-border);
+  outline: none;
+}
+.erp-form-group input:focus {
+  border-color: var(--1c-yellow-hover);
+}
+.erp-btn-primary {
+  width: 100%;
+  padding: 8px;
+  background-color: var(--1c-yellow);
+  border: 1px solid #cc9900;
+  cursor: pointer;
+  font-weight: bold;
+}
+.erp-btn-primary:hover {
+  background-color: var(--1c-yellow-hover);
+}
+.erp-auth-footer-links {
+  text-align: center;
+  padding: 10px;
+  background: #fafafa;
+  border-top: 1px solid var(--1c-border);
+}
+.erp-auth-footer-links span {
+  color: var(--1c-active-blue);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Баннер ошибок в стиле 1С */
+.erp-error-banner {
+  display: flex;
+  align-items: flex-start;
+  background-color: #fff2f2; /* Светло-красный фон */
+  border: 1px solid #ffaaaa; /* Красная рамка */
+  padding: 10px;
+  margin-bottom: 15px;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.erp-error-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.erp-error-text {
+  color: #a30000; /* Темно-красный текст */
+}
+
+.erp-error-banner {
+  display: flex;
+  align-items: flex-start;
+  background-color: #fff2f2; /* Светло-красный фон 1С */
+  border: 1px solid #ffaaaa; /* Красная рамка */
+  padding: 10px;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.erp-error-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.erp-error-text {
+  color: #a30000; /* Бордовый текст ошибки */
+}
