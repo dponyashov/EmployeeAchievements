@@ -26,7 +26,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
 }) => (
   <div className="erp-directory-container">
     <div className="erp-directory-header">
-      <h2>Справочник "Номенклатура услуг"</h2>
+      <h2>Справочник "Услуг"</h2>
     </div>
 
     <ErpCommandBar
@@ -42,7 +42,6 @@ export const ServiceList: React.FC<ServiceListProps> = ({
           <tr>
             <th style={{ width: '100px' }}>Код услуги</th>
             <th>Наименование услуги</th>
-            <th style={{ width: '150px' }}>Тариф (руб.)</th>
           </tr>
         </thead>
         <tbody>
@@ -59,13 +58,6 @@ export const ServiceList: React.FC<ServiceListProps> = ({
                 >
                   <td className="text-center">{item.id}</td>
                   <td className="font-medium">{item.name}</td>
-                  {/* <td>
-                    {item.price !== undefined
-                      ? Number(item.price).toLocaleString('ru-RU', {
-                          minimumFractionDigits: 2,
-                        })
-                      : '0,00'}
-                  </td> */}
                 </tr>
               );
             })

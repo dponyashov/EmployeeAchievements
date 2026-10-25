@@ -10,20 +10,20 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      show-sql: true
-      hibernate:
-        # Форматирует SQL, чтобы он не был в одну строчку
-        format_sql: true
-        # Подсвечивает SQL-синтаксис в консоли (опционально)
-        highlight_sql: true
+#    properties:
+#      show-sql: true
+#      hibernate:
+#        # Форматирует SQL, чтобы он не был в одну строчку
+#        format_sql: true
+#        # Подсвечивает SQL-синтаксис в консоли (опционально)
+#        highlight_sql: true
 
-logging:
-  level:
-    # Включает вывод самих SQL-запросов (подготавливаемых выражений)
-    org.hibernate.SQL: DEBUG
-    # Включает вывод значений параметров, которые подставляются вместо знаков "?"
-    org.hibernate.orm.jdbc.bind: TRACE
+#logging:
+#  level:
+#    # Включает вывод самих SQL-запросов (подготавливаемых выражений)
+#    org.hibernate.SQL: DEBUG
+#    # Включает вывод значений параметров, которые подставляются вместо знаков "?"
+#    org.hibernate.orm.jdbc.bind: TRACE
 
 springdoc:
   default-support-trailing-slash: false # Отключает автоматическую генерацию альтернативных путей со слэшем на конце

@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ErpFormButtonsProps {
-  onSave: () => void;
+  onSave?: () => void;
   onCancel: () => void;
   saveText?: string;
   cancelText?: string;

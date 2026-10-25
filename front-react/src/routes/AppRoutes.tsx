@@ -5,13 +5,9 @@ import { MainLayout } from '../layouts/MainLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
 import { ErpDashboard } from '../features/dashboard/ErpDashboard';
+// Импортируем компонент администрирования
+import { AdminUserManagement } from '../features/admin/components/AdminUserManagement';
 
-// Компоненты подсистем (для проверки оберните их в читаемые блоки)
-const AdminPanel = () => (
-  <div style={{ background: '#fff', padding: '20px', border: '1px solid #ccc' }}>
-    🛠️ Панель администрирования ERP системы.
-  </div>
-);
 const Directories = () => (
   <div style={{ background: '#fff', padding: '20px', border: '1px solid #ccc' }}>
     📚 Справочники: Номенклатура, Контрагенты.
@@ -36,23 +32,18 @@ const Employees = () => (
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Публичные окна */}
       <Route path="/login" element={<AuthLayout isLoginInit={true} />} />
       <Route path="/register" element={<AuthLayout isLoginInit={false} />} />
 
-      {/* Защищенный контур ERP */}
       <Route element={<ProtectedRoute />}>
-        {/* Главный макет (Шапка, Тело, Подвал) */}
         <Route path="/" element={<MainLayout />}>
-          {/* index означает: отображать плитки, если путь ровно "/" */}
           <Route index element={<ErpDashboard />} />
 
-          {/* ВАЖНО: пути дочерних элементов пишутся БЕЗ слэша в начале! */}
           <Route
             path="admin"
             element={
               <RoleGuard allowedRoles={['ROLE_ADMIN']}>
-                <AdminPanel />
+                <AdminUserManagement />
               </RoleGuard>
             }
           />
@@ -87,7 +78,7 @@ export const AppRoutes: React.FC = () => {
           <Route
             path="employees"
             element={
-              <RoleGuard allowedRoles={['ROLE_HR', 'ROLE_ADMIN']}>
+              <RoleGuard allowedRoles={['ROLE_SUPERVISOR', 'ROLE_ADMIN']}>
                 <Employees />
               </RoleGuard>
             }
@@ -95,7 +86,6 @@ export const AppRoutes: React.FC = () => {
         </Route>
       </Route>
 
-      {/* Перенаправление для любых некорректных URL */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

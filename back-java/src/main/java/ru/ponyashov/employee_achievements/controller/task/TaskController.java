@@ -1,7 +1,9 @@
 package ru.ponyashov.employee_achievements.controller.task;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import ru.ponyashov.employee_achievements.service.TaskService;
 
 import java.util.Collection;
 
+@Slf4j
 @RestController
 @Tag(name = "Задачи", description = "Работа с задачами")
 @RequiredArgsConstructor
@@ -20,32 +23,46 @@ public class TaskController {
 
     @GetMapping
 //    @PreAuthorize("hasRole('ADMIN')")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
+    @PreAuthorize("hasAnyRole('SUPERVISOR')")
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Collection<TaskResponseDto>> getAll(){
         return ResponseEntity.ok(taskService.findAll());
     }
 
+    @GetMapping("/{profileId}/profile")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'USER')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Collection<TaskResponseDto>> getAllByProfileId(@PathVariable("profileId") Long profileId){
+        return ResponseEntity.ok(taskService.getAllByProfileId(profileId));
+    }
+
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'USER')")
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'USER')")
     public ResponseEntity<TaskResponseDto> getById(@PathVariable("id") Long id){
         return ResponseEntity.ok(taskService.findById(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<TaskResponseDto> create(@RequestBody TaskRequestDto newDto){
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'USER')")
+    public ResponseEntity<TaskResponseDto> create(@Valid @RequestBody TaskRequestDto newDto){
+
+        log.info(newDto.toString());
+
         return ResponseEntity.ok(taskService.save(newDto));
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<TaskResponseDto> update(@PathVariable("id") Long id, @RequestBody TaskRequestDto newDto){
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'USER')")
+    public ResponseEntity<TaskResponseDto> update(@PathVariable("id") Long id, @Valid @RequestBody TaskRequestDto newDto){
+
+        log.info(newDto.toString());
+
         return ResponseEntity.ok(taskService.save(id, newDto));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('SUPERVISOR')")
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'USER')")
     public ResponseEntity<?> delete(@PathVariable("id") Long id){
         return ResponseEntity.ok(taskService.delete(id));
     }

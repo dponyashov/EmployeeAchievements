@@ -37,7 +37,7 @@ export const ErpHeader: React.FC<ErpHeaderProps> = ({ isHomePage }) => {
 
   return (
     <header className="erp-header" style={{ position: 'relative' }}>
-      <div className="erp-header-left">
+      <div className="erp-header-left" style={{ display: 'flex', alignItems: 'center' }}>
         {/* Кнопка Главного меню функций в стиле 1С */}
         <button
           className="erp-header-menu-btn"
@@ -64,24 +64,28 @@ export const ErpHeader: React.FC<ErpHeaderProps> = ({ isHomePage }) => {
         )}
 
         <div className="erp-logo" style={{ marginLeft: '10px' }}>
-          1С
+          ДС
         </div>
-        <span className="erp-project-name">ERP Управление предприятием 2.6</span>
+        <span className="erp-project-name" style={{ marginRight: '15px' }}>
+          Достижения сотрудников
+        </span>
 
-        {/* {!isHomePage && (
-          <button className="erp-btn-back" onClick={() => navigate('/')}>
-            ◀ Рабочий стол
-          </button>
-        )} */}
+        {/* 🚀 Переиспользован стиль erp-btn-logout для консистентного отображения */}
         {!isHomePage && (
-          <button className="erp-btn-back" onClick={() => navigate('/dashboard')}>
+          <button
+            className="erp-btn-logout" // Используем тот же класс, что и у кнопки Выход
+            onClick={() => navigate('/dashboard')}
+            style={{ marginLeft: '5px' }} // Небольшой отступ от названия проекта
+          >
             ◀ Рабочий стол
           </button>
         )}
       </div>
 
       <div className="erp-header-right">
-        <span className="erp-username">👤 {user?.name}</span>
+        <span className="erp-username" style={{ fontSize: '13px', marginRight: '10px' }}>
+          👤 {user?.name}
+        </span>
         <button className="erp-btn-logout" onClick={() => dispatch(logOut())}>
           Выход
         </button>

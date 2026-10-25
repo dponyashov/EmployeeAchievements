@@ -15,4 +15,8 @@ public interface ProfileService {
     ProfileResponseDto save(Long id, ProfileRequestDto dto);
     ProfileResponseDto save(ProfileRequestDto dto);
     boolean delete(Long id);
+
+    ProfileResponseDto findByUserId(Long userId);
+
+    Collection<ProfileResponseDto> findAllByDept(Long deptId);
 }

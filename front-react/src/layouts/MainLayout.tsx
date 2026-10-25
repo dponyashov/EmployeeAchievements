@@ -48,7 +48,7 @@ export const MainLayout: React.FC = () => {
                 key={item.path}
                 className={`erp-menu-item ${isActive ? 'active' : ''}`}
                 onClick={() => {
-                  console.log(`[1С-Лог] Клик по разделу меню. Переход на: ${item.path}`);
+                  console.log(`Клик по разделу меню. Переход на: ${item.path}`);
                   navigate(item.path); // Совершаем переход
                 }}
               >

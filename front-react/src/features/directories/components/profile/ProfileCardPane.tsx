@@ -182,7 +182,7 @@ export const ProfileCardPane: React.FC<ProfileCardPaneProps> = ({
         <div style={{ textAlign: 'center', color: '#999', paddingTop: '100px' }}>
           <div style={{ fontSize: '40px' }}>👤</div>
           <div>
-            Выделите сотрудника в левой панели журнала для просмотра личной карточки НСИ
+            Выделите сотрудника в левой панели журнала для просмотра личной карточки
           </div>
         </div>
       )}

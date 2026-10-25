@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.ponyashov.employee_achievements.dto.request.PasswordChangeRequestDto;
 import ru.ponyashov.employee_achievements.dto.request.RegistryRequestDto;
 import ru.ponyashov.employee_achievements.dto.request.UserRequestDto;
 import ru.ponyashov.employee_achievements.dto.response.ResponseMessageDto;
@@ -57,6 +58,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto save(Long id, UserRequestDto dto) {
+        var oldItem = findEntityById(id);
+
+        if(dto.getUserName() != null){
+            if(dto.getUserName().trim().length() > 5) {
+                oldItem.setPassword(passwordEncoder.encode(dto.getPassword()));
+            } else {
+                throw new RuntimeException("Имя пользователя не соответствует требованиям");
+            }
+        }
+
+        if(dto.getPassword() != null){
+            if(passwordIsNotValid(dto.getPassword())) {
+                throw new RuntimeException("Пароль не соответствует требованиям");
+            } else {
+                oldItem.setPassword(passwordEncoder.encode(dto.getPassword()));
+            }
+        }
+        return saveItem(oldItem);
+    }
+
+    @Override
+    public UserResponseDto chengePaswword(Long id, PasswordChangeRequestDto dto) {
         var oldItem = findEntityById(id);
 
         if(dto.getPassword() != null){

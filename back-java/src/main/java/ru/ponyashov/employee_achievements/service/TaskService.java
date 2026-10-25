@@ -1,5 +1,6 @@
 package ru.ponyashov.employee_achievements.service;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,4 +17,6 @@ public interface TaskService {
     TaskResponseDto save(Long id, TaskRequestDto dto);
     TaskResponseDto save(TaskRequestDto dto);
     boolean delete(Long id);
+
+    Collection<TaskResponseDto> getAllByProfileId(Long profileId);
 }

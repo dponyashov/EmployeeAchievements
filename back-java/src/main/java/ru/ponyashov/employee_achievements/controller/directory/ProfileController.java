@@ -25,6 +25,12 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.findAll());
     }
 
+    @GetMapping("/{deptId}/department")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Collection<ProfileResponseDto>> getAllByDepId(@PathVariable("deptId") Long deptId){
+        return ResponseEntity.ok(profileService.findAllByDept(deptId));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProfileResponseDto> getById(@PathVariable("id") Long id){

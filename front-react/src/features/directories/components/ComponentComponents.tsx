@@ -26,7 +26,7 @@ export const ComponentList: React.FC<ComponentListProps> = ({
 }) => (
   <div className="erp-directory-container">
     <div className="erp-directory-header">
-      <h2>Справочник "Компоненты и спецификации услуг"</h2>
+      <h2>Справочник "Компоненты услуг"</h2>
     </div>
 
     <ErpCommandBar
@@ -42,7 +42,6 @@ export const ComponentList: React.FC<ComponentListProps> = ({
           <tr>
             <th style={{ width: '100px' }}>Код элемента</th>
             <th>Наименование компонента</th>
-            <th>Артикул / Спецификация</th>
           </tr>
         </thead>
         <tbody>
@@ -59,7 +58,6 @@ export const ComponentList: React.FC<ComponentListProps> = ({
                 >
                   <td className="text-center">{item.id}</td>
                   <td className="font-medium">{item.name}</td>
-                  <td>{item.sku || 'Н/Д'}</td>
                 </tr>
               );
             })
@@ -83,16 +81,13 @@ export const ComponentForm: React.FC<{
   onCancel: () => void;
 }> = ({ item, onSave, onCancel }) => {
   const [name, setName] = useState('');
-  // const [sku, setSku] = useState('');
 
   // Логика проверки перенесена внутрь эффекта — теперь порядок хуков никогда не нарушится
   useEffect(() => {
     if (item) {
       setName(item.name || '');
-      // setSku(item.sku || '');
     } else {
       setName('');
-      // setSku('');
     }
   }, [item]);
 

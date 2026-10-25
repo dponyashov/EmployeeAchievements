@@ -16,10 +16,6 @@ import ru.ponyashov.employee_achievements.mapper.TaskMapper;
 import ru.ponyashov.employee_achievements.repository.TaskRepository;
 import ru.ponyashov.employee_achievements.service.*;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -40,6 +36,13 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Collection<TaskResponseDto> findAll() {
         return taskRepository.findAll().stream()
+                .map(TaskMapper::entityToDto)
+                .toList();
+    }
+
+    @Override
+    public Collection<TaskResponseDto> getAllByProfileId(Long profileId) {
+        return taskRepository.findAllByProfileId(profileId).stream()
                 .map(TaskMapper::entityToDto)
                 .toList();
     }

@@ -9,7 +9,6 @@ import ru.ponyashov.employee_achievements.mapper.ProfileMapper;
 import ru.ponyashov.employee_achievements.repository.DepartmentRepository;
 import ru.ponyashov.employee_achievements.repository.PositionRepository;
 import ru.ponyashov.employee_achievements.repository.ProfileRepository;
-import ru.ponyashov.employee_achievements.repository.UserRepository;
 import ru.ponyashov.employee_achievements.service.ProfileService;
 
 import java.util.Collection;
@@ -21,11 +20,17 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final PositionRepository positionRepository;
     private final DepartmentRepository departmentRepository;
-    private final UserRepository userRepository;
 
     @Override
     public Collection<ProfileResponseDto> findAll() {
         return profileRepository.findAll().stream()
+                .map(ProfileMapper::entityToDto)
+                .toList();
+    }
+
+    @Override
+    public Collection<ProfileResponseDto> findAllByDept(Long deptId) {
+        return profileRepository.findByDepartmentId(deptId).stream()
                 .map(ProfileMapper::entityToDto)
                 .toList();
     }
@@ -95,6 +100,12 @@ public class ProfileServiceImpl implements ProfileService {
         findEntityById(id);
         profileRepository.deleteById(id);
         return true;
+    }
+
+    @Override
+    public ProfileResponseDto findByUserId(Long userId) {
+        return profileRepository.findByUserId(userId).map(ProfileMapper::entityToDto)
+                .orElseThrow(()-> new RuntimeException(String.format("Профиль для пользователя с id %s не найден", userId)));
     }
 
     @Override

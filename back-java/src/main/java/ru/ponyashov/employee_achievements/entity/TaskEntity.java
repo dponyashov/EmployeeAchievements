@@ -24,6 +24,7 @@ public class TaskEntity {
 
     private String title;
 
+    @Column(length = 1000)
     private String description;
 
     private Long year;
@@ -50,6 +51,6 @@ public class TaskEntity {
     @JoinColumn(name = "author_id")
     private ProfileEntity author;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "task", cascade = CascadeType.ALL)
     Collection<TaskQueryEntity> queries;
 }
