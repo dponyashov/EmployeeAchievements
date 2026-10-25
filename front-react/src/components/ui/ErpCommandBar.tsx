@@ -24,7 +24,7 @@ export const ErpCommandBar: React.FC<ErpCommandBarProps> = ({
       className="erp-command-bar-wrapper"
       style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
     >
-      {/* Верхний ряд: Кнопки манипуляции данными 1С */}
+      {/* Верхний ряд: Кнопки манипуляции данными  */}
       <div
         className="erp-command-bar"
         style={{

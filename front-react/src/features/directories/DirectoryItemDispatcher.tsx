@@ -69,7 +69,7 @@ export const DirectoryItemDispatcher: React.FC = () => {
       className="erp-directory-form-container"
       style={{ padding: '20px', background: '#FFF', height: '100%' }}
     >
-      {/* ⚠️ Красный баннер ошибок 1С при неудачной валидации на сервере */}
+      {/* ⚠️ Красный баннер ошибок при неудачной валидации на сервере */}
       {errorBanner && (
         <div className="erp-error-banner" style={{ marginBottom: '15px' }}>
           <span className="erp-error-icon">⚠️</span>

@@ -6,7 +6,7 @@ export const ProtectedRoute: React.FC = () => {
   const { isAuthenticated, isInitializing } = useAppSelector((state) => state.auth);
   const location = useLocation();
 
-  // 1. Пока идет тихий рефреш токенов (F5), показываем индикатор загрузки 1С
+  // 1. Пока идет тихий рефреш токенов (F5), показываем индикатор загрузки
   if (isInitializing) {
     return (
       <div
@@ -21,9 +21,7 @@ export const ProtectedRoute: React.FC = () => {
       >
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: '24px', marginRight: '10px' }}>🔄</span>
-          <span style={{ fontWeight: 'bold', color: '#333' }}>
-            1С:ERP Запуск системы...
-          </span>
+          <span style={{ fontWeight: 'bold', color: '#333' }}>ДС: Запуск системы...</span>
         </div>
       </div>
     );

@@ -60,7 +60,7 @@
   text-decoration: underline;
 }
 
-/* Баннер ошибок в стиле 1С */
+/* Баннер ошибок в стиле */
 .erp-error-banner {
   display: flex;
   align-items: flex-start;
@@ -85,7 +85,7 @@
 .erp-error-banner {
   display: flex;
   align-items: flex-start;
-  background-color: #fff2f2; /* Светло-красный фон 1С */
+  background-color: #fff2f2; /* Светло-красный фон */
   border: 1px solid #ffaaaa; /* Красная рамка */
   padding: 10px;
   gap: 8px;

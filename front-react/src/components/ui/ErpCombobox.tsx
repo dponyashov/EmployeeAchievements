@@ -125,7 +125,7 @@ export const ErpCombobox: React.FC<ErpComboboxProps> = ({
         </button>
       </div>
 
-      {/* Выпадающее окно в стиле Платформы 1С */}
+      {/* Выпадающее окно в стиле Платформы  */}
       {isOpen && !disabled && filteredItems.length > 0 && (
         <div
           style={{

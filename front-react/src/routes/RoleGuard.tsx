@@ -15,7 +15,7 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) 
   const requiredRoles = allowedRoles.map((r) => r.toUpperCase());
 
   // // Выводим диагностику в консоль F12 при каждом клике на плитку
-  // console.log('--- Проверка прав доступа 1С:ERP ---');
+  // console.log('--- Проверка прав доступа ERP ---');
   // console.log('Текущий пользователь:', user?.name);
   // console.log('Роли пользователя в Redux:', userRoles);
   // console.log('Требуемые роли для этой плитки:', requiredRoles);
@@ -41,7 +41,7 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) 
         }}
       >
         <h3 style={{ color: '#CC0000', margin: '0 0 10px 0' }}>
-          🛑 1С:Предприятие — Нарушение прав доступа
+          🛑 ДС:Достижения сотрудников — Нарушение прав доступа
         </h3>
         <p style={{ margin: 0 }}>
           У текущего пользователя ({user?.name || 'Гость'}) недостаточно прав для

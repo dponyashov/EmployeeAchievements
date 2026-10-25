@@ -45,7 +45,7 @@ const App: React.FC = () => {
         }}
       >
         <div style={{ fontFamily: 'Segoe UI', color: '#333' }}>
-          <strong>1С:ERP</strong> — Запуск подсистемы авторизации...
+          <strong>ДС</strong> — Запуск подсистемы авторизации...
         </div>
       </div>
     );

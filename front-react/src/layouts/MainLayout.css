@@ -133,7 +133,7 @@
   overflow: hidden;
 }
 
-/* Левая панель разделов в стиле 1С:Такси */
+/* Левая панель разделов в стиле */
 .erp-sidebar-menu {
   width: 220px;
   background-color: #ebebeb;
@@ -216,11 +216,11 @@
 }
 
 .erp-v8-table tr.erp-row-selected {
-  background-color: #c1d9ff !important; /* Классический сине-голубой цвет выделения 1С */
+  background-color: #c1d9ff !important; /* Классический сине-голубой цвет выделения */
   color: #000000;
 }
 
-/* Двухпанельный макет 1С */
+/* Двухпанельный макет */
 .erp-two-pane-container {
   display: flex;
   height: 100%;
@@ -244,7 +244,7 @@
   box-sizing: border-box;
 }
 
-/* Специфичные формы ввода 1С */
+/* Специфичные формы ввода  */
 .erp-v8-form-grid {
   display: flex;
   flex-direction: column;
@@ -277,7 +277,7 @@
   background-color: #fffffa;
 }
 
-/* Обновленная сетка рабочего стола 1С:ERP */
+/* Обновленная сетка рабочего стола */
 .erp-grid-dashboard {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 4 плитки в ряд */

@@ -28,9 +28,9 @@ export const MainLayout: React.FC = () => {
       {/* Шапка системы с верхним выпадающим меню */}
       <ErpHeader isHomePage={isHomePage} />
 
-      {/* Основной двухколоночный контур 1С:Предприятия */}
+      {/* Основной двухколоночный контур */}
       <div className="erp-main-body-container">
-        {/* Левая вертикальная Панель разделов ("Такси") */}
+        {/* Левая вертикальная Панель разделов */}
         <aside className="erp-sidebar-menu">
           {allowedSidebarItems.map((item) => {
             // 🌟 ИСПРАВЛЕННАЯ СТРОГАЯ ЛОГИКА ПОДСВЕТКИ КНОПОК

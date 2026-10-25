@@ -25,7 +25,7 @@ export const CounterpartiesList: React.FC = () => {
         <h2>Справочник "Контрагенты"</h2>
       </div>
 
-      {/* Командная панель 1С */}
+      {/* Командная панель */}
       <div className="erp-command-bar">
         <button className="erp-cmd-btn font-bold">➕ Создать</button>
         <button className="erp-cmd-btn">📋 Создать новым копированием</button>

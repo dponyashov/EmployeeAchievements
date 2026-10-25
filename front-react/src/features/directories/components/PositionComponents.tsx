@@ -28,7 +28,7 @@ export const PositionList: React.FC<PositionListProps> = ({
       <h2>Справочник "Должности"</h2>
     </div>
 
-    {/* Универсальная Командная панель 1С:ERP */}
+    {/* Универсальная Командная панель */}
     <ErpCommandBar
       onCreate={onCreate}
       onEdit={onEdit}
@@ -53,7 +53,7 @@ export const PositionList: React.FC<PositionListProps> = ({
                   key={item.id}
                   onClick={() => onSelectRow(item.id)}
                   onDoubleClick={() => onDoubleClickRow(item.id)}
-                  /* Если строка выделена, навешиваем класс 1С подсветки */
+                  /* Если строка выделена, навешиваем класс подсветки */
                   className={isSelected ? 'erp-row-selected' : ''}
                   style={{ backgroundColor: isSelected ? '#C1D9FF' : undefined }}
                 >

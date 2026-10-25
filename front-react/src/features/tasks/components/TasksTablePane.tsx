@@ -89,7 +89,7 @@ export const TasksTablePane: React.FC<TasksTablePaneProps> = ({
       onToggleForm(false); // Вернуть список сотрудников
       setSelectedTask(null);
     } catch (err) {
-      console.warn('Ошибка валидации 1С:ERP, форма удержана открытой:', err);
+      console.warn('Ошибка валидации ДС, форма удержана открытой:', err);
     }
   };
 

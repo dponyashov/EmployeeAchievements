@@ -38,7 +38,7 @@ export const ErpHeader: React.FC<ErpHeaderProps> = ({ isHomePage }) => {
   return (
     <header className="erp-header" style={{ position: 'relative' }}>
       <div className="erp-header-left" style={{ display: 'flex', alignItems: 'center' }}>
-        {/* Кнопка Главного меню функций в стиле 1С */}
+        {/* Кнопка Главного меню функций в стиле  */}
         <button
           className="erp-header-menu-btn"
           onClick={() => setDropdownOpen(!dropdownOpen)}

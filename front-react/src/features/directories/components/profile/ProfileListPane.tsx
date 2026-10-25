@@ -44,7 +44,7 @@ export const ProfileListPane: React.FC<ProfileListPaneProps> = ({
             <tr>
               <th style={{ width: '50px' }}>Код</th>
               <th>Сотрудник</th>
-              {/* ➕ Добавлена новая колонка в шапку таблицы 1С */}
+              {/* ➕ Добавлена новая колонка в шапку таблицы */}
               <th style={{ width: '220px' }}>Электронная почта</th>
             </tr>
           </thead>

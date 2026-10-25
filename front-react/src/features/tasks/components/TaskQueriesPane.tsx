@@ -161,7 +161,7 @@ export const TaskQueriesPane: React.FC<TaskQueriesPaneProps> = ({ task }) => {
           </table>
         </div>
 
-        {/* Правая часть: Быстрое добавление новой строки в стиле 1С */}
+        {/* Правая часть: Быстрое добавление новой строки в стиле */}
         <div
           style={{
             width: '320px',

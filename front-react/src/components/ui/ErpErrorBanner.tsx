@@ -10,7 +10,7 @@ export const ErpErrorBanner: React.FC<ErpErrorBannerProps> = ({
   error,
   title = 'Не удалось сохранить данные:',
 }) => {
-  // Если ошибки нет — компонент невидим на форме (стандартное поведение 1С)
+  // Если ошибки нет — компонент невидим на форме (стандартное поведение )
   if (!error) return null;
 
   let messages: string[] = [];

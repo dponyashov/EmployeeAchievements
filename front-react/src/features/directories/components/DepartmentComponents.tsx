@@ -30,7 +30,7 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
       <h2>Справочник "Структурные подразделения (Отделы)"</h2>
     </div>
 
-    {/* Командная панель в едином стиле 1С:ERP */}
+    {/* Командная панель в едином стиле */}
     <ErpCommandBar
       onCreate={onCreate}
       onEdit={onEdit}

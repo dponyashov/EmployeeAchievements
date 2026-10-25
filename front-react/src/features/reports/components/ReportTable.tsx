@@ -95,7 +95,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({
         </tbody>
       </table>
 
-      {/* Панель пагинации в стиле 1С */}
+      {/* Панель пагинации в стиле */}
       <div
         style={{
           display: 'flex',

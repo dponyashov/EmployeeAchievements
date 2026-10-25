@@ -77,13 +77,11 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ isLoginInit }) => {
     <div className="erp-auth-container">
       <div className="erp-auth-window">
         <div className="erp-auth-header">
-          {isLoginView
-            ? '1С:ERP — Авторизация'
-            : '1С:ERP — Регистрация нового пользователя'}
+          {isLoginView ? 'ДС — Авторизация' : 'ДС — Регистрация нового пользователя'}
         </div>
 
         <form onSubmit={handleSubmit} className="erp-auth-body">
-          {/* Аутентичный блок вывода предупреждений 1С:Предприятия */}
+          {/* Аутентичный блок вывода предупреждений */}
           {serverError && (
             <div className="erp-error-banner">
               <span className="erp-error-icon">⚠️</span>
