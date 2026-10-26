@@ -2,16 +2,24 @@ spring:
   application:
     name: employee-achievements
   flyway:
-    enabled: false
+    enabled: true
   datasource:
     url: ${DB_URL} #jdbc:postgresql://localhost:5432/db
     username: ${DB_USER}
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
-#    properties:
-#      show-sql: true
+      ddl-auto: none   # update
+    properties:
+      show-sql: true
+#      jakarta:
+#        persistence:
+#          schema-generation:
+#            scripts:
+#              # Заставляет Hibernate сгенерировать скрипт создания таблиц на основе Entity
+#              action: create
+#              # Указывает, куда сохранить готовый SQL-скрипт
+#              create-target: src/main/resources/db/migration/V01__auto_generated_schema.sql
 #      hibernate:
 #        # Форматирует SQL, чтобы он не был в одну строчку
 #        format_sql: true
