@@ -1,7 +1,7 @@
 #FROM openjdk:21
 FROM eclipse-temurin:21-jdk
 
-ARG APP_FILE=/back-java/target/employee-achievements-0.0.1-SNAPSHOT.jar
+ARG APP_FILE=/target/employee-achievements-0.0.1-SNAPSHOT.jar
 
 COPY ${APP_FILE} /app/app.jar
 

@@ -7,17 +7,18 @@ FROM node:25-alpine AS builder
 WORKDIR ${app_dir}
 
 # Копируем package.json и package-lock.json (или yarn.lock)
-COPY ./front-react/package*.json ./
+COPY ./package*.json ./
 
 # Устанавливаем зависимости проекта
 RUN npm install
 
 # Копируем остальные файлы проекта
-COPY ./front-react/public ./public
-COPY ./front-react/src ./src
-COPY ./front-react/*.js ./
-COPY ./front-react/*.html ./
-COPY ./front-react/*.json ./
+COPY ./public ./public
+COPY ./src ./src
+COPY ./*.ts ./
+COPY ./*.js ./
+COPY ./*.html ./
+COPY ./*.json ./
 
 # Объявляем ARG для сборки
 ARG VITE_BACK_URL
