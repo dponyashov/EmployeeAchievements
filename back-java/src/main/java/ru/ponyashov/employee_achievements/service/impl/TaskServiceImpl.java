@@ -41,8 +41,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Collection<TaskResponseDto> getAllByProfileId(Long profileId) {
-        return taskRepository.findAllByProfileId(profileId).stream()
+    public Collection<TaskResponseDto> getAllByUserId(Long userId) {
+
+        var profile = profileService.findByUserId(userId);
+
+        return taskRepository.findAllByProfileId(profile.getId()).stream()
                 .map(TaskMapper::entityToDto)
                 .toList();
     }

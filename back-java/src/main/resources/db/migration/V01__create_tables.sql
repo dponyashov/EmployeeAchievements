@@ -31,15 +31,15 @@ INSERT INTO public.t_roles(id, description, name) VALUES (5, 'Роль для ф
 SELECT setval(pg_get_serial_sequence('t_roles', 'id'), COALESCE((SELECT MAX(id) FROM t_roles), 0) + 1, false);
 
 
-INSERT INTO public.t_users(id, password, user_name) VALUES (1, '$2a$10$8WOm8l.ffzXywQGTSqGtjuG.8IqcZ9pYEvGfcswKlDYN1WZLgCnmq', 'admin@admin.ru');
+INSERT INTO public.t_users(id, password, user_name) VALUES (1, '$2a$10$8WOm8l.ffzXywQGTSqGtjuG.8IqcZ9pYEvGfcswKlDYN1WZLgCnmq', 'admin');
 
 SELECT setval(pg_get_serial_sequence('t_users', 'id'), COALESCE((SELECT MAX(id) FROM t_users), 0) + 1, false);
 
 
-INSERT INTO public.t_profiles(id, department_id, position_id, user_id, email, first_name, last_name)
-	VALUES (1, null, null, 1, 'admin@admin.ru', 'admin', '');
-
-SELECT setval(pg_get_serial_sequence('t_profiles', 'id'), COALESCE((SELECT MAX(id) FROM t_profiles), 0) + 1, false);
+--INSERT INTO public.t_profiles(id, department_id, position_id, user_id, email, first_name, last_name)
+--	VALUES (1, null, null, 1, 'admin@admin.ru', 'admin', '');
+--
+--SELECT setval(pg_get_serial_sequence('t_profiles', 'id'), COALESCE((SELECT MAX(id) FROM t_profiles), 0) + 1, false);
 
 
 INSERT INTO public.t_user_roles(user_id, role_id) VALUES (1, 1);

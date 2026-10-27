@@ -34,7 +34,7 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('SUPERVISOR', 'USER')")
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Collection<TaskResponseDto>> getAllByProfileId(@PathVariable("profileId") Long profileId){
-        return ResponseEntity.ok(taskService.getAllByProfileId(profileId));
+        return ResponseEntity.ok(taskService.getAllByUserId(profileId));
     }
 
     @GetMapping("/{id}")

@@ -39,10 +39,18 @@ public class AuthServiceImpl implements AuthService {
 
         var tokens = jwtService.generateTokens(newUser.getUserName());
 
+        var profile = profileService.findByEmail(newUser.getUserName());
+
         return AuthResultDto.builder()
                 .accessToken(tokens.getAccessToken())
                 .refreshToken(tokens.getRefreshToken())
-                .user(profileService.findByEmail(newUser.getUserName()))
+                .user(profile == null
+                        ? ProfileResponseDto.builder()
+                        .email(newUser.getUserName())
+                        .firstName("")
+                        .lastName("")
+                        .build()
+                        : profile)
                 .build();
 
     }
@@ -67,10 +75,21 @@ public class AuthServiceImpl implements AuthService {
 
         var tokens = jwtService.generateTokens(user.getUsername());
 
+        var profile = (user.getProfile() != null
+                ? ProfileMapper.entityToDto(user.getProfile())
+                : ProfileResponseDto.builder()
+                .email(user.getUsername())
+                .firstName("")
+                .lastName("")
+                .build()
+        );
+
+        profile.setId(user.getId()); //именно userId;
+
         return AuthResultDto.builder()
                 .accessToken(tokens.getAccessToken())
                 .refreshToken(tokens.getRefreshToken())
-                .user(ProfileMapper.entityToDto(user.getProfile()))
+                .user(profile)
                 .build();
     }
 
@@ -98,10 +117,21 @@ public class AuthServiceImpl implements AuthService {
 
         var tokens = jwtService.generateTokens(userName);
 
+        var profile = (user.getProfile() != null
+                ? ProfileMapper.entityToDto(user.getProfile())
+                : ProfileResponseDto.builder()
+                .email(user.getUsername())
+                .firstName("")
+                .lastName("")
+                .build()
+        );
+
+        profile.setId(user.getId()); //именно userId;
+
         return AuthResultDto.builder()
                 .accessToken(tokens.getAccessToken())
                 .refreshToken(tokens.getRefreshToken())
-                .user(ProfileMapper.entityToDto(user.getProfile()))
+                .user(profile)
                 .build();
     }
 }

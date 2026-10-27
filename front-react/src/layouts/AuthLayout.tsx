@@ -93,12 +93,22 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ isLoginInit }) => {
 
           <div className="erp-form-group">
             <label>Имя пользователя (Email):</label>
-            <input
-              type="email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+            {!isLoginView && (
+              <input
+                type="email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            )}
+            {isLoginView && (
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            )}
           </div>
           <div className="erp-form-group">
             <label>Пароль:</label>

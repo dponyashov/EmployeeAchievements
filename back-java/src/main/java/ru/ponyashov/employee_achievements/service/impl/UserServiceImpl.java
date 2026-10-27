@@ -177,11 +177,16 @@ public class UserServiceImpl implements UserService {
         var roleNotExists = user.getRoles().stream()
                 .filter(role -> Objects.equals(role.getId(), roleId))
                 .findFirst().orElse(null) == null;
-        if(roleNotExists){
+        if (roleNotExists){
             throw new RuntimeException("Такая роль НЕ существует в списке пользователя");
         }
 
         var role = findRoleEntityById(roleId);
+
+        if ("admin".equalsIgnoreCase(user.getUsername()) && "ROLE_ADMIN".equalsIgnoreCase(role.getName().trim())){
+            throw new RuntimeException("Эта роль не может быть удалена для этого пользователя!");
+        }
+
         user.getRoles().remove(role);
 
         userRepository.save(user);

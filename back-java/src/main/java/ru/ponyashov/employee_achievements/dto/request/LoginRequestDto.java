@@ -4,16 +4,18 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import ru.ponyashov.employee_achievements.validation.ValidLogin;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
 @Builder
+@ValidLogin
 public class LoginRequestDto {
 
-    @Email(message = "Некорректный формат email")
     @NotBlank(message = "Email обязателен")
+//    @Email(message = "Некорректный формат email")
     private String userName;
 
     @NotBlank(message = "Пароль не должен быть пустым")
