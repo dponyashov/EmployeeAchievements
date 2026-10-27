@@ -32,18 +32,24 @@
 
 ### 6.2.1. docker save -o ./docker/images/ea-back.tar ea-back:0.0.1
 
-### 6.2.2. docker save -o ./docker/images/ea-db.tar 650b442ec4f7
+### 6.2.2. docker save -o ./docker/images/ea-db.tar postgres:17-alpine
 
 ### 6.2.3. docker save -o ./docker/images/ea-front.tar ea-front:0.0.1
 
 ## 6.3. load
 
-### 6.3.1. docker load -i ea-back.tar
+### 6.3.1. docker load -i ./docker/images/ea-back.tar
 
-### 6.3.2. docker load -i ea-db.tar
+### 6.3.2. docker load -i ./docker/images/ea-db.tar
 
-### 6.3.3. docker load -i ea-front.tar
+### 6.3.3. docker load -i ./docker/images/ea-front.tar
 
 ## 6.4. up
 
 ### 6.4.1. docker-compose up -d
+
+## 6.5 dev/prod
+
+### 6.5.1. docker compose -f docker-compose.dev.yaml up --build
+
+### 6.5.2. docker compose -f docker-compose.prod.yaml up -d

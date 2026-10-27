@@ -27,15 +27,14 @@ RUN echo VITE_BACK_URL: ${VITE_BACK_URL}
 
 ENV VITE_BACK_URL=${VITE_BACK_URL}
 
-# ENV VITE_REST_URL=${REST_URL}
-# ENV VITE_REST_USER=${REST_USER}
-# ENV VITE_REST_PASS=${REST_PASSWORD}
-
 # Собираем приложение для продакшена
 RUN npm run build
 
 # Используем легковесный образ Nginx для продакшена
 FROM nginx:alpine
+
+# 1. КОПИРУЕМ ВАШ КОНФИГ НА МЕСТО ДЕФОЛТНОГО
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Копируем собранные файлы из стадии builder
 COPY --from=builder ${app_dir}/dist /usr/share/nginx/html
