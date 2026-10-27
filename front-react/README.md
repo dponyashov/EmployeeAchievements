@@ -8,7 +8,7 @@
 
 ## 1. npm create vite@latest
 
-## Настрока Prettier
+## 2. Настрока Prettier
 
 ### 2.1 npm install --save-dev prettier eslint-config-prettier
 
@@ -20,28 +20,30 @@
 
 ## 5. npm install jwt-decode
 
-# docker
+# 6. docker
 
-## docker-compose up --build
+## 6.1 build
 
-## docker-compose images
+### 6.1.1. docker-compose up --build
 
-## save
+### 6.1.2. docker-compose images
 
-### docker save -o ./docker/images/ea-back.tar ea-back:0.0.1
+## 6.2. save
 
-### docker save -o ./docker/images/ea-db.tar 650b442ec4f7
+### 6.2.1. docker save -o ./docker/images/ea-back.tar ea-back:0.0.1
 
-### docker save -o ./docker/images/ea-front.tar ea-front:0.0.1
+### 6.2.2. docker save -o ./docker/images/ea-db.tar 650b442ec4f7
 
-## load
+### 6.2.3. docker save -o ./docker/images/ea-front.tar ea-front:0.0.1
 
-### docker load -i ea-back.tar
+## 6.3. load
 
-### docker load -i ea-db.tar
+### 6.3.1. docker load -i ea-back.tar
 
-### docker load -i ea-front.tar
+### 6.3.2. docker load -i ea-db.tar
 
-## up
+### 6.3.3. docker load -i ea-front.tar
 
-### docker-compose up -d
+## 6.4. up
+
+### 6.4.1. docker-compose up -d
