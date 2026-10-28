@@ -34,7 +34,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # 1. КОПИРУЕМ ВАШ КОНФИГ НА МЕСТО ДЕФОЛТНОГО
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Копируем собранные файлы из стадии builder
 COPY --from=builder ${app_dir}/dist /usr/share/nginx/html

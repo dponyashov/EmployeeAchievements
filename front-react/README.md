@@ -26,7 +26,7 @@
 
 ### 6.1.1. docker-compose up --build
 
-### 6.1.2. docker-compose images
+### 6.1.2. docker-compose images или docker compose -f docker-compose.dev.yaml images
 
 ## 6.2. save
 
