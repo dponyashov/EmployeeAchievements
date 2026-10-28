@@ -15,6 +15,10 @@ export const TasksJournal: React.FC = () => {
 
   const isSupervisor = userRoles.includes('ROLE_SUPERVISOR');
 
+  const { data: currentUserProfile } = useGetCurrentUserProfileQuery(currentUserId!, {
+    skip: !currentUserId,
+  });
+
   const { data: supervisorProfile } = useGetCurrentUserProfileQuery(currentUserId!, {
     skip: !currentUserId || !isSupervisor,
   });
@@ -40,6 +44,14 @@ export const TasksJournal: React.FC = () => {
       setSelectedEmployee(departmentEmployees[0]);
     }
   }, [isSupervisor, departmentEmployees, selectedEmployee]);
+
+  useEffect(() => {
+    console.log(currentUserProfile);
+
+    if (!isSupervisor && currentUserProfile) {
+      setSelectedEmployee(currentUserProfile);
+    }
+  }, [currentUserProfile, isSupervisor]);
 
   // Сценарий 1: Руководитель подразделения
   if (isSupervisor) {
@@ -103,7 +115,7 @@ export const TasksJournal: React.FC = () => {
       }}
     >
       <TasksTablePane
-        profileId={currentUserId}
+        profileId={selectedEmployee?.id || 0}
         currentUserId={currentUserId}
         employeeName={authUser?.name || 'Я'}
         onToggleForm={() => {}} // Для обычного пользователя скрывать нечего

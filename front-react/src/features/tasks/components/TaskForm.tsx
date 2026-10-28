@@ -58,6 +58,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     e.preventDefault();
     if (!title.trim()) return;
 
+    console.log('TaskForm.targetProfileId', targetProfileId);
+
     const payload: TaskFormData = {
       title,
       description,

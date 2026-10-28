@@ -214,6 +214,11 @@ export const TasksTablePane: React.FC<TasksTablePaneProps> = ({
                   <th
                     style={{ padding: '6px', border: '1px solid #ddd', width: '150px' }}
                   >
+                    Исполнитель
+                  </th>
+                  <th
+                    style={{ padding: '6px', border: '1px solid #ddd', width: '150px' }}
+                  >
                     Автор
                   </th>
                 </tr>
@@ -283,6 +288,15 @@ export const TasksTablePane: React.FC<TasksTablePaneProps> = ({
                         }}
                       >
                         {task.component?.name || '—'}
+                      </td>
+                      <td
+                        style={{
+                          padding: '6px',
+                          border: '1px solid #ddd',
+                          fontSize: '12px',
+                        }}
+                      >
+                        {task.profile.lastName} {task.profile.firstName}.
                       </td>
                       <td
                         style={{

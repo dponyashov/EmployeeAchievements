@@ -18,4 +18,5 @@ public interface TaskService {
     boolean delete(Long id);
 
     Collection<TaskResponseDto> getAllByUserId(Long userId);
+    Collection<TaskResponseDto> getAllByProfileId(Long profileId);
 }

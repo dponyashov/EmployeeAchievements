@@ -4,6 +4,7 @@ import {
   useGetCurrentUserProfileQuery,
   useLazyGetDepartmentEmployeesQuery,
   useGetTasksByProfileQuery,
+  useGetTasksByUserQuery,
 } from '../../tasks/tasksApi';
 
 interface TileProps {
@@ -47,7 +48,7 @@ export const TasksTile: React.FC<TileProps> = ({ onClick }) => {
   }, [isSupervisor, supervisorProfile, triggerFetchEmployees]);
 
   // 3. Сбор данных для обычного сотрудника
-  const { data: ownTasks = [] } = useGetTasksByProfileQuery(currentUserId!, {
+  const { data: ownTasks = [] } = useGetTasksByUserQuery(currentUserId!, {
     skip: !currentUserId || isSupervisor,
   });
 

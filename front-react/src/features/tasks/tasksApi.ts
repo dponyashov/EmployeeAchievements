@@ -71,6 +71,16 @@ export const tasksApi = createApi({
             ]
           : [{ type: 'UserTask', id: 'LIST' }],
     }),
+    getTasksByUser: builder.query<Task[], number>({
+      query: (userId) => ({ url: `/task/${userId}/user`, method: 'GET' }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: 'UserTask' as const, id })),
+              { type: 'UserTask', id: 'LIST' },
+            ]
+          : [{ type: 'UserTask', id: 'LIST' }],
+    }),
     // ➕ МУТАЦИИ ДЛЯ УПРАВЛЕНИЯ ЗАДАЧАМИ (CRUD)
     createTask: builder.mutation<void, TaskFormData>({
       query: (data) => ({ url: '/task', method: 'POST', data }),
@@ -117,6 +127,7 @@ export const {
   useGetCurrentUserProfileQuery,
   useLazyGetDepartmentEmployeesQuery,
   useGetTasksByProfileQuery,
+  useGetTasksByUserQuery,
   useCreateTaskMutation,
   useUpdateTaskMutation,
   useDeleteTaskMutation,

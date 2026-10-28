@@ -51,6 +51,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Collection<TaskResponseDto> getAllByProfileId(Long profileId) {
+        return taskRepository.findAllByProfileId(profileId).stream()
+                .map(TaskMapper::entityToDto)
+                .toList();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<TaskResponseDto> findAll(Specification<TaskEntity> spec, Pageable pageable) {
         // 1. Делаем запрос в БД с учетом фильтров, сортировки и пагинации
