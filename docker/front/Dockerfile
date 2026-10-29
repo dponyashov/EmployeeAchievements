@@ -10,7 +10,8 @@ WORKDIR ${app_dir}
 COPY ./package*.json ./
 
 # Устанавливаем зависимости проекта
-RUN npm install
+# RUN npm install
+RUN npm ci && npm cache clean --force
 
 # Копируем остальные файлы проекта
 COPY ./public ./public

@@ -1,0 +1,18 @@
+# Этап 1: Сборка приложения (тяжелый образ с JDK и Maven)
+
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
+WORKDIR /build
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Этап 2: Финальный образ для запуска (минимальный JRE)
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Копируем собранный JAR из предыдущего этапа сборки
+
+COPY --from=builder /build/target/employee-achievements-0.0.1-SNAPSHOT.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

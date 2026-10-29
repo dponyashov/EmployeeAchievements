@@ -3,7 +3,7 @@ var/db/postgresql
 .git
 node_modules
 .env
-# Исключаем локальные данные баз данных (главная причина вашей ошибки)
+# Исключаем локальные данные баз данных
 var/db/postgresql
 var/
 
@@ -33,3 +33,5 @@ var/
 .env
 docker-compose*.yml
 Dockerfile
+
+.mvn
