@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.ponyashov.employee_achievements.config.AppConfig;
 
 import java.nio.charset.StandardCharsets;
@@ -37,34 +38,32 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        String[] frontUrls = appConfig.frontUrl().split(",");
-        log.info("SecurityConfig frontUrls = {}", Arrays.toString(frontUrls));
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(c -> {
-                    CorsConfigurationSource source = request -> {
-                        CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowCredentials(true);
-                        config.setAllowedOrigins(
-                                List.of( frontUrls));
-                        config.setAllowedMethods(
-                                List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
-                        config.setAllowedHeaders(
-                                List.of("Accept",
-                                        "Accept-Language",
-                                        "Content-Language",
-                                        "Content-Type",
-                                        "Access-Control-Allow-Credentials",
-                                        "Access-Control-Allow-Headers",
-                                        "Access-Control-Allow-Origin",
-                                        "Authorization")
-                        );
-                        return config;
-                    };
-                    c.configurationSource(source);
-                })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .cors(c -> {
+//                    CorsConfigurationSource source = request -> {
+//                        CorsConfiguration config = new CorsConfiguration();
+//                        config.setAllowCredentials(true);
+//                        config.setAllowedOrigins(
+//                                List.of( frontUrls));
+//                        config.setAllowedMethods(
+//                                List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
+//                        config.setAllowedHeaders(
+//                                List.of("Accept",
+//                                        "Accept-Language",
+//                                        "Content-Language",
+//                                        "Content-Type",
+//                                        "Authorization"
+////                                        "Access-Control-Allow-Credentials",
+////                                        "Access-Control-Allow-Headers",
+////                                        "Access-Control-Allow-Origin",
+//                                        )
+//                        );
+//                        return config;
+//                    };
+//                    c.configurationSource(source);
+//                })
 //                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**").permitAll()
@@ -92,6 +91,25 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        String[] frontUrls = appConfig.frontUrl().split(",");
+        log.info("SecurityConfig frontUrls = {}", Arrays.toString(frontUrls));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true);
+        // Убедитесь, что здесь строгий формат: "http://ваш-ip" (БЕЗ слэша на конце!)
+        config.setAllowedOrigins(List.of( frontUrls ));
+        config.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*")); // Разрешаем любые заголовки от клиента
+
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 //    // 2. СОЗДАЕМ НАСТРОЙКИ CORS

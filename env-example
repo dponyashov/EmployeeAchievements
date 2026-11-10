@@ -12,7 +12,7 @@ BACK_PORT=your_back_port
 FRONT_PORT=your_front_port
 
 #Урлы
-FRONT_URL=your_front_url
+FRONT_URL=your_front_url1,your_front_url2,your_front_url3
 BACK_URL=your_back_url
 
 #Токены
