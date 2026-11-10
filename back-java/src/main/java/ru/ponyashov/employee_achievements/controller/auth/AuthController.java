@@ -36,10 +36,10 @@ public class AuthController {
         // Устанавливаем refresh token в HttpOnly cookie
         ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, result.getRefreshToken())
                 .httpOnly(true)
-                .secure(true) // true для HTTPS в Production
+                .secure(false) // true для HTTPS в Production
                 .path("/api/auth/refresh") // Ограничиваем путь отправки куки
                 .maxAge(Duration.ofMillis(appConfig.jwt().rtExpiration()))
-                .sameSite("Strict") // или "Lax" в зависимости от фронтенда
+                .sameSite("Lax") // "Strict" или "Lax" в зависимости от фронтенда
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
@@ -82,10 +82,10 @@ public class AuthController {
 
         ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, newTokens.getRefreshToken())
                 .httpOnly(true)
-                .secure(true) // true для HTTPS в Production
+                .secure(false) // true для HTTPS в Production
                 .path("/api/auth/refresh") // Ограничиваем путь отправки куки
                 .maxAge(Duration.ofMillis(appConfig.jwt().rtExpiration()))
-                .sameSite("Strict") // или "Lax" в зависимости от фронтенда
+                .sameSite("Lax") //"Strict" или "Lax" в зависимости от фронтенда
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());

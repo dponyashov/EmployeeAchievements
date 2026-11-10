@@ -104,9 +104,18 @@ public class SecurityConfig {
 
         config.setAllowCredentials(true);
         // Убедитесь, что здесь строгий формат: "http://ваш-ip" (БЕЗ слэша на конце!)
-        config.setAllowedOrigins(List.of( frontUrls ));
+//        config.setAllowedOrigins(List.of( frontUrls ));
+        config.setAllowedOriginPatterns(List.of(frontUrls));
         config.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*")); // Разрешаем любые заголовки от клиента
+//        config.setAllowedHeaders(List.of("*")); // Разрешаем любые заголовки от клиента
+        config.setAllowedHeaders(
+                                List.of("Accept",
+                                        "Accept-Language",
+                                        "Content-Language",
+                                        "Content-Type",
+                                        "Authorization"
+                                        )
+                        );
 
         source.registerCorsConfiguration("/**", config);
         return source;
