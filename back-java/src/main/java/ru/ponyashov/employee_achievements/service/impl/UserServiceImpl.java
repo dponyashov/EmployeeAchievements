@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
 
         var savedUser = userRepository.save(newItem);
 
-        var profile = profileRepository.findByEmail(savedUser.getUsername()).orElse(null);
+        var profile = profileRepository.findByEmailIgnoreCase(savedUser.getUsername()).orElse(null);
 
         if(profile == null) {
             profile = ProfileEntity.builder()
@@ -200,13 +200,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUserName(username)
+        return userRepository.findByUserNameIgnoreCase(username)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-        return userRepository.findByUserName(username);
+        return userRepository.findByUserNameIgnoreCase(username);
     }
 
     private UserEntity findEntityById(Long id) {

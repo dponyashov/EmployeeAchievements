@@ -41,30 +41,6 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-//                .cors(c -> {
-//                    CorsConfigurationSource source = request -> {
-//                        CorsConfiguration config = new CorsConfiguration();
-//                        config.setAllowCredentials(true);
-//                        config.setAllowedOrigins(
-//                                List.of( frontUrls));
-//                        config.setAllowedMethods(
-//                                List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
-//                        config.setAllowedHeaders(
-//                                List.of("Accept",
-//                                        "Accept-Language",
-//                                        "Content-Language",
-//                                        "Content-Type",
-//                                        "Authorization"
-////                                        "Access-Control-Allow-Credentials",
-////                                        "Access-Control-Allow-Headers",
-////                                        "Access-Control-Allow-Origin",
-//                                        )
-//                        );
-//                        return config;
-//                    };
-//                    c.configurationSource(source);
-//                })
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
@@ -120,29 +96,6 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-//    // 2. СОЗДАЕМ НАСТРОЙКИ CORS
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//
-//        // Укажите адрес вашего фронтенда (например, React, Angular, Vue)
-//        configuration.setAllowedOrigins(List.of(appConfig.frontUrl()));
-//
-//        // Разрешаем основные HTTP-методы
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-//
-//        // ВАЖНО ДЛЯ OAUTH2: Обязательно разрешаем заголовок Authorization и Content-Type
-//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
-//
-//        // Разрешаем отправку кук и credentials (если требуется)
-//        configuration.setAllowCredentials(true);
-//
-//        // Применяем эти правила ко всем эндпоинтам приложения
-//        UrlCorsConfigurationSource source = new UrlCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 
     // Для обработки ролей в токене
     @Bean

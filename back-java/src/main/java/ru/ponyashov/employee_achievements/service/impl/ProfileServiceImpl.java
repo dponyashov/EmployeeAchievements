@@ -43,7 +43,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponseDto findByEmail(String email) {
-        var itemEntity = profileRepository.findByEmail(email).orElse(null);
+        var itemEntity = profileRepository.findByEmailIgnoreCase(email).orElse(null);
         if(itemEntity != null) {
             return ProfileMapper.entityToDto(itemEntity);
         }
