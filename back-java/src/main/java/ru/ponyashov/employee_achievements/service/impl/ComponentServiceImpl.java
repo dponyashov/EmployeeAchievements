@@ -77,6 +77,8 @@ public class ComponentServiceImpl implements ComponentService {
 
     private ComponentResponseDto saveItem(ComponentEntity item) {
 
+        item.setName(item.getName().trim());
+
         var savedItem = componentRepository.save(item);
         return ComponentMapper.entityToDto(savedItem);
     }

@@ -76,6 +76,8 @@ public class PositionServiceImpl implements PositionService {
 
     private PositionResponseDto saveItem(PositionEntity item) {
 
+        item.setName(item.getName().trim());
+
         var savedItem = positionRepository.save(item);
         return PositionMapper.entityToDto(savedItem);
     }

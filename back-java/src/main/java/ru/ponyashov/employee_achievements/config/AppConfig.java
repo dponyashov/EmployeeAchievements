@@ -23,8 +23,8 @@ public record AppConfig(
     public AppConfig {
         log.info("=== Инициализация конфигурации приложения ===");
         log.info("Node Env: {}", nodeEnv);
-        log.info("Front URL: {}", frontUrl);
-        log.info("===========================================");
+        log.info("Front URLs: {}", frontUrl);
+        log.info("=============================================");
     }
 
     public record Jwt(

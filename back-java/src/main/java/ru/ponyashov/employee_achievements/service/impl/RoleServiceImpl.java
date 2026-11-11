@@ -77,6 +77,9 @@ public class RoleServiceImpl implements RoleService {
 
     private RoleResponseDto saveItem(RoleEntity item) {
 
+        item.setName(item.getName().trim());
+        item.setDescription(item.getDescription().trim());
+
         var savedItem = roleRepository.save(item);
         return RoleMapper.entityToDto(savedItem);
     }

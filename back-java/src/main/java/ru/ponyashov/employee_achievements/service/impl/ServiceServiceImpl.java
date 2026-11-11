@@ -77,6 +77,8 @@ public class ServiceServiceImpl implements ServiceService {
 
     private ServiceResponseDto saveItem(ServiceEntity item) {
 
+        item.setName(item.getName().trim());
+
         var savedItem = serviceRepository.save(item);
         return ServiceMapper.entityToDto(savedItem);
     }

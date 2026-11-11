@@ -220,6 +220,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserResponseDto saveItem(UserEntity item) {
+
+        item.setUserName(item.getUsername().trim());
+
         UserEntity savedItem = userRepository.save(item);
         return UserResponseDto.builder()
                 .id(savedItem.getId())

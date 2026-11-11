@@ -116,6 +116,10 @@ public class ProfileServiceImpl implements ProfileService {
 
     private ProfileResponseDto saveItem(ProfileEntity item) {
 
+        item.setEmail(item.getEmail().trim().toLowerCase());
+        item.setFirstName(item.getFirstName().trim());
+        item.setLastName(item.getLastName().trim());
+
         var savedItem = profileRepository.save(item);
         return ProfileMapper.entityToDto(savedItem);
     }

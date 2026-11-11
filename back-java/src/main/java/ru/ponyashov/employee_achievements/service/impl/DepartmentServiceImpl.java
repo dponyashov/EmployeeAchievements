@@ -77,6 +77,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private DepartmentResponseDto saveItem(DepartmentEntity item) {
 
+        item.setName(item.getName().trim());
+
         var savedItem = departmentRepository.save(item);
         return DepartmentMapper.entityToDto(savedItem);
     }
