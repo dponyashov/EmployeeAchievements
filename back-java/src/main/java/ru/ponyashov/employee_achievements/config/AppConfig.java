@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app.variables")
 @Log4j2
 public record AppConfig(
+        String nodeEnv,
         String frontUrl,
 
         @Valid // Каскадная валидация обязательна в Spring Boot 3.4+ / 4.x для рекордов
@@ -18,10 +19,13 @@ public record AppConfig(
         @DefaultValue // Инструктирует Spring создать пустой объект с дефолтными примитивами, если ветки нет в YAML
         Jwt jwt
 ) {
-//    // Компактный конструктор рекорда срабатывает при связывании свойств
-//    public AppConfig {
-//        log.info("AppConfig frontUrl={}", frontUrl);
-//    }
+    // Компактный конструктор (без параметров)
+    public AppConfig {
+        log.info("=== Инициализация конфигурации приложения ===");
+        log.info("Node Env: {}", nodeEnv);
+        log.info("Front URL: {}", frontUrl);
+        log.info("===========================================");
+    }
 
     public record Jwt(
             String atSecretKey,

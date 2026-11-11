@@ -42,6 +42,7 @@ springdoc:
 
 app:
   variables:
+    node-env: ${NODE_ENV}
     front-url: ${FRONT_URL}
     jwt:
       at-secret-key: ${JWT_ACCESS_SECRET}
