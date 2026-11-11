@@ -23,10 +23,12 @@ COPY ./*.json ./
 
 # Объявляем ARG для сборки
 ARG VITE_BACK_URL
+ARG VITE_APP_TITLE
 
 RUN echo VITE_BACK_URL: ${VITE_BACK_URL}
 
 ENV VITE_BACK_URL=${VITE_BACK_URL}
+ENV VITE_APP_TITLE=${VITE_APP_TITLE}
 
 # Собираем приложение для продакшена
 RUN npm run build

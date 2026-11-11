@@ -25,8 +25,6 @@ import java.time.Duration;
 public class AuthController {
 
     private final String COOKIE_NAME = "ea_refresh_token";
-    private final String COOKIE_PATH = "/api/auth";
-    private final String NODE_ENV_PROD = "production";
 
     private final AuthService authService;
     private final AppConfig appConfig;
@@ -36,13 +34,7 @@ public class AuthController {
         AuthResultDto result = authService.authenticate(loginDto);
 
         // Устанавливаем refresh token в HttpOnly cookie
-        ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, result.getRefreshToken())
-                .httpOnly(true)
-                .secure(appConfig.nodeEnv().equals(NODE_ENV_PROD)) // true для HTTPS в Production
-                .path(COOKIE_PATH) // Ограничиваем путь отправки куки
-                .maxAge(Duration.ofMillis(appConfig.jwt().rtExpiration()))
-                .sameSite(appConfig.nodeEnv().equals(NODE_ENV_PROD) ? "Strict" : "Lax") // "Strict" или "Lax" в зависимости от фронтенда
-                .build();
+        ResponseCookie refreshCookie = getCookie(result.getRefreshToken());
 
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
@@ -59,13 +51,7 @@ public class AuthController {
         AuthResultDto result = authService.registry(newDto);
 
         // Устанавливаем refresh token в HttpOnly cookie
-        ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, result.getRefreshToken())
-                .httpOnly(true)
-                .secure(appConfig.nodeEnv().equals(NODE_ENV_PROD)) // true для HTTPS в Production
-                .path(COOKIE_PATH) // Ограничиваем путь отправки куки
-                .maxAge(Duration.ofMillis(appConfig.jwt().rtExpiration()))
-                .sameSite(appConfig.nodeEnv().equals(NODE_ENV_PROD) ? "Strict" : "Lax") // или "Lax" в зависимости от фронтенда
-                .build();
+        ResponseCookie refreshCookie = getCookie(result.getRefreshToken());
 
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
@@ -82,13 +68,7 @@ public class AuthController {
 
         AuthResultDto newTokens = authService.refreshAccessToken(refreshToken);
 
-        ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, newTokens.getRefreshToken())
-                .httpOnly(true)
-                .secure(appConfig.nodeEnv().equals(NODE_ENV_PROD)) // true для HTTPS в Production
-                .path(COOKIE_PATH) // Ограничиваем путь отправки куки
-                .maxAge(Duration.ofMillis(appConfig.jwt().rtExpiration()))
-                .sameSite(appConfig.nodeEnv().equals(NODE_ENV_PROD) ? "Strict" : "Lax") //"Strict" или "Lax" в зависимости от фронтенда
-                .build();
+        ResponseCookie refreshCookie = getCookie(newTokens.getRefreshToken());
 
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
@@ -101,13 +81,32 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<ResponseMessageDto> logout(HttpServletResponse response) {
         // Затираем куку на клиенте
-        ResponseCookie deleteCookie = ResponseCookie.from(COOKIE_NAME, "")
-                .httpOnly(true)
-                .path(COOKIE_PATH)
-                .maxAge(0)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+        ResponseCookie deleteCookie = getCookie("", Duration.ZERO);
 
-        return ResponseEntity.ok(authService.logout());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(authService.logout());
+//        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+//
+//        return ResponseEntity.ok(authService.logout());
+    }
+
+    private ResponseCookie getCookie (String cookieValue) {
+
+        return getCookie(cookieValue, Duration.ofMillis(appConfig.jwt().rtExpiration()));
+    }
+
+    private ResponseCookie getCookie (String cookieValue, Duration maxAge ) {
+
+        String COOKIE_PATH = "/api/auth";
+        String NODE_ENV_PROD = "production";
+
+        return ResponseCookie.from(COOKIE_NAME, cookieValue)
+                .httpOnly(true)
+                .secure(appConfig.nodeEnv().equals(NODE_ENV_PROD)) // true для HTTPS в Production
+                .path(COOKIE_PATH) // Ограничиваем путь отправки куки
+                .maxAge(maxAge)
+                .sameSite(appConfig.nodeEnv().equals(NODE_ENV_PROD) ? "Strict" : "Lax") // "Strict" или "Lax" в зависимости от фронтенда
+                .build();
     }
 }

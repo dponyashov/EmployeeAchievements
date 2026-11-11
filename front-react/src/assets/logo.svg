@@ -1,0 +1,12 @@
+<svg width="128" height="128" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Красный фон -->
+  <rect width="32" height="32" fill="#D32F2F"/>
+  <!-- Ножка трофея -->
+  <rect x="13.7" y="20.6" width="4.6" height="9.2" rx="2" fill="#FFFFFF"/>
+  <!-- Чаша трофея -->
+  <path d="M9.1 13.7 L22.9 13.7 C25.2 13.7 25.2 18.3 22.9 20.6 L9.1 20.6 C6.8 18.3 6.8 13.7 9.1 13.7 Z" fill="#FFFFFF"/>
+  <!-- Звезда -->
+  <polygon points="16,4.5 18.3,11.4 25.2,11.4 19.5,16 21.8,22.9 16,18.3 10.3,22.9 12.5,16 6.8,11.4 13.7,11.4" fill="#FFFFFF"/>
+  <!-- Буквы "ДС" -->
+  <text x="50%" y="54.6%" dominant-baseline="middle" text-anchor="middle" font-family="PT Astra Serif, serif" font-style="italic" font-size="7.5" font-weight="bold" fill="#B8860B">ДС</text>
+</svg>

@@ -20,3 +20,6 @@ JWT_ACCESS_SECRET=your_access_secret_key
 JWT_ACCESS_EXPIRATION=your_access_expiration
 JWT_REFRESH_SECRET=your_refresh_secret_key
 JWT_REFRESH_EXPIRATION=your_refresh_expiration
+
+# Тексты
+FRONT_TITLE=Заголовок приложения

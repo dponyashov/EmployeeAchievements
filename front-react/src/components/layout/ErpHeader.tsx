@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../app/store';
 import { logOut } from '../../features/auth/authSlice';
 import { erpMenuItems } from '../../routes/menuConfig';
+import logoUrl from '../../assets/logo.svg';
+import { useLogoutMutation } from '../../features/auth/authApi';
 
 interface ErpHeaderProps {
   isHomePage: boolean;
@@ -13,6 +15,10 @@ export const ErpHeader: React.FC<ErpHeaderProps> = ({ isHomePage }) => {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [logout] = useLogoutMutation();
+
+  const appTitle = import.meta.env.VITE_APP_TITLE;
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -34,6 +40,17 @@ export const ErpHeader: React.FC<ErpHeaderProps> = ({ isHomePage }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleLogout = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await logout({}).unwrap();
+      dispatch(logOut());
+    } catch (err: any) {
+      console.error('Полная структура ошибки:', err);
+    }
+  };
 
   return (
     <header className="erp-header" style={{ position: 'relative' }}>
@@ -63,11 +80,15 @@ export const ErpHeader: React.FC<ErpHeaderProps> = ({ isHomePage }) => {
           </div>
         )}
 
-        <div className="erp-logo" style={{ marginLeft: '10px' }}>
+        {/* <div className="erp-logo" style={{ marginLeft: '10px' }}>
           ДС
+        </div> */}
+        <div className="erp-logo" style={{ marginLeft: '10px' }}>
+          <img src={logoUrl} />
         </div>
+
         <span className="erp-project-name" style={{ marginRight: '15px' }}>
-          Достижения сотрудников
+          {appTitle}
         </span>
 
         {/* 🚀 Переиспользован стиль erp-btn-logout для консистентного отображения */}
@@ -86,7 +107,8 @@ export const ErpHeader: React.FC<ErpHeaderProps> = ({ isHomePage }) => {
         <span className="erp-username" style={{ fontSize: '13px', marginRight: '10px' }}>
           👤 {user?.name}
         </span>
-        <button className="erp-btn-logout" onClick={() => dispatch(logOut())}>
+        {/* <button className="erp-btn-logout" onClick={() => dispatch(logOut())}> */}
+        <button className="erp-btn-logout" onClick={handleLogout}>
           Выход
         </button>
       </div>

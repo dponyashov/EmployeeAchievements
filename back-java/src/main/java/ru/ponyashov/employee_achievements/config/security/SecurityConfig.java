@@ -73,7 +73,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         String[] frontUrls = appConfig.frontUrl().split(",");
-        log.info("SecurityConfig frontUrls = {}", Arrays.toString(frontUrls));
+//        log.info("SecurityConfig frontUrls = {}", Arrays.toString(frontUrls));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();

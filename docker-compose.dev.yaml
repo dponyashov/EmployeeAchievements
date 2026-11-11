@@ -46,6 +46,7 @@ services:
       dockerfile: ../docker/front/Dockerfile
       args:
         - VITE_BACK_URL=${BACK_URL} # Передаем переменную из .env хоста в Dockerfile
+        - VITE_APP_TITLE=${FRONT_TITLE}
       context: ./front-react
     container_name: ea-front
     #    restart: always
