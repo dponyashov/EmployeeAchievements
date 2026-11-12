@@ -1,0 +1,1 @@
+INSERT INTO public.t_roles(description, name) VALUES ('Роль для всех отделов', 'ROLE_DEPARTMENT_ALL');

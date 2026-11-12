@@ -10,6 +10,7 @@ import ru.ponyashov.employee_achievements.repository.DepartmentRepository;
 import ru.ponyashov.employee_achievements.repository.PositionRepository;
 import ru.ponyashov.employee_achievements.repository.ProfileRepository;
 import ru.ponyashov.employee_achievements.service.ProfileService;
+import ru.ponyashov.employee_achievements.service.UserService;
 
 import java.util.Collection;
 
@@ -20,6 +21,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final PositionRepository positionRepository;
     private final DepartmentRepository departmentRepository;
+    private final UserService userService;
 
     @Override
     public Collection<ProfileResponseDto> findAll() {
@@ -54,6 +56,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileResponseDto save(Long id, ProfileRequestDto dto) {
         var oldItem = findEntityById(id);
+
+        userService.isCurrentUserOrAdmin(oldItem.getUser().getId());
 
         oldItem.setEmail(dto.getEmail() != null ? dto.getEmail() : oldItem.getEmail() );
         oldItem.setFirstName(dto.getFirstName() != null ? dto.getFirstName() : oldItem.getFirstName() );

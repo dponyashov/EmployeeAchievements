@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '../../../app/store';
 import {
   useGetCurrentUserProfileQuery,
+  useLazyGetAllEmployeesQuery,
   useLazyGetDepartmentEmployeesQuery,
   type EmployeeProfile,
 } from '../tasksApi';
@@ -14,6 +15,8 @@ export const TasksJournal: React.FC = () => {
   const currentUserId = authUser?.id;
 
   const isSupervisor = userRoles.includes('ROLE_SUPERVISOR');
+
+  const isMegavisor = userRoles.includes('ROLE_DEPARTMENT_ALL');
 
   const { data: currentUserProfile } = useGetCurrentUserProfileQuery(currentUserId!, {
     skip: !currentUserId,
@@ -28,6 +31,11 @@ export const TasksJournal: React.FC = () => {
     { data: departmentEmployees = [], isLoading: isEmployeesLoading },
   ] = useLazyGetDepartmentEmployeesQuery();
 
+  const [
+    triggerFetchAllEmployees,
+    { data: allEmployees = [], isLoading: isAllEmployeesLoading },
+  ] = useLazyGetAllEmployeesQuery();
+
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeProfile | null>(null);
 
   // 🚀 Новое состояние: сигнализирует корневому окну, что открыта форма редактирования/создания
@@ -40,21 +48,33 @@ export const TasksJournal: React.FC = () => {
   }, [isSupervisor, supervisorProfile, triggerFetchEmployees]);
 
   useEffect(() => {
+    if (isMegavisor) {
+      triggerFetchAllEmployees();
+    }
+  }, [isMegavisor, triggerFetchAllEmployees]);
+
+  useEffect(() => {
     if (isSupervisor && departmentEmployees.length > 0 && !selectedEmployee) {
       setSelectedEmployee(departmentEmployees[0]);
     }
   }, [isSupervisor, departmentEmployees, selectedEmployee]);
 
   useEffect(() => {
+    if (isMegavisor && !selectedEmployee) {
+      setSelectedEmployee(allEmployees[0]);
+    }
+  }, [isMegavisor, selectedEmployee]);
+
+  useEffect(() => {
     console.log(currentUserProfile);
 
-    if (!isSupervisor && currentUserProfile) {
+    if (!isSupervisor && !isMegavisor && currentUserProfile) {
       setSelectedEmployee(currentUserProfile);
     }
-  }, [currentUserProfile, isSupervisor]);
+  }, [currentUserProfile, isSupervisor, isMegavisor]);
 
   // Сценарий 1: Руководитель подразделения
-  if (isSupervisor) {
+  if (isSupervisor || isMegavisor) {
     return (
       <div
         style={{
@@ -65,11 +85,11 @@ export const TasksJournal: React.FC = () => {
           fontSize: '13px',
         }}
       >
-        {/* 🚀 Условие скрытия: рендерим список сотрудников только если форма создания/изменения НЕ открыта */}
         {!isFormOpen && (
           <TasksEmployeeList
-            employees={departmentEmployees}
-            isLoading={isEmployeesLoading}
+            listTitle={isMegavisor ? 'Все сотрудники' : 'Сотрудники отдела'}
+            employees={isMegavisor ? allEmployees : departmentEmployees}
+            isLoading={isMegavisor ? isAllEmployeesLoading : isEmployeesLoading}
             selectedEmployeeId={selectedEmployee?.id}
             onEmployeeSelect={(emp) => setSelectedEmployee(emp)}
           />

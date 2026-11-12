@@ -5,13 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.ponyashov.employee_achievements.dto.request.TaskRequestDto;
 import ru.ponyashov.employee_achievements.dto.response.TaskResponseDto;
 import ru.ponyashov.employee_achievements.entity.TaskEntity;
-import ru.ponyashov.employee_achievements.entity.UserEntity;
 import ru.ponyashov.employee_achievements.mapper.TaskMapper;
 import ru.ponyashov.employee_achievements.repository.TaskRepository;
 import ru.ponyashov.employee_achievements.service.*;
@@ -118,7 +115,7 @@ public class TaskServiceImpl implements TaskService {
             var component = componentService.findEntityById(dto.getComponentId());
             newItem.setComponent(component);
         }
-        var currentUser = getCurrentUser();
+        var currentUser = userService.getCurrentUser();
         newItem.setAuthor( currentUser != null ? currentUser.getProfile() : null);
 
         return saveItem(newItem);
@@ -140,20 +137,5 @@ public class TaskServiceImpl implements TaskService {
 
         var savedItem = taskRepository.save(item);
         return TaskMapper.entityToDto(savedItem);
-    }
-
-    // Получить весь объект UserDetails (или вашу кастомную сущность, если вы её туда положили)
-    private UserEntity getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            String userName = authentication.getName();
-            return userService.findByUsername(userName).orElse(null);
-
-//            Object principal = authentication.getPrincipal();
-//            if (principal instanceof UserEntity) {
-//                return (UserEntity) principal;
-//            }
-        }
-        return null;
     }
 }

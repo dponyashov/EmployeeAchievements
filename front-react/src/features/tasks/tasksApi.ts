@@ -61,6 +61,13 @@ export const tasksApi = createApi({
       }),
       providesTags: ['DepartmentEmployee'],
     }),
+    getAllEmployees: builder.query<EmployeeProfile[], void>({
+      query: () => ({
+        url: `directory/profile`,
+        method: 'GET',
+      }),
+      providesTags: ['DepartmentEmployee'],
+    }),
     getTasksByProfile: builder.query<Task[], number>({
       query: (profileId) => ({ url: `/task/${profileId}/profile`, method: 'GET' }),
       providesTags: (result) =>
@@ -126,6 +133,7 @@ export const tasksApi = createApi({
 export const {
   useGetCurrentUserProfileQuery,
   useLazyGetDepartmentEmployeesQuery,
+  useLazyGetAllEmployeesQuery,
   useGetTasksByProfileQuery,
   useGetTasksByUserQuery,
   useCreateTaskMutation,

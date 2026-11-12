@@ -2,6 +2,8 @@ package ru.ponyashov.employee_achievements.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,8 +81,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto chengePaswword(Long id, PasswordChangeRequestDto dto) {
+    public UserResponseDto changePassword(Long id, PasswordChangeRequestDto dto) {
         var oldItem = findEntityById(id);
+
+        isCurrentUserOrAdmin(oldItem.getId());
 
         if(dto.getPassword() != null){
             if(passwordIsNotValid(dto.getPassword())) {
@@ -183,7 +187,7 @@ public class UserServiceImpl implements UserService {
 
         var role = findRoleEntityById(roleId);
 
-        if ("admin".equalsIgnoreCase(user.getUsername()) && "ROLE_ADMIN".equalsIgnoreCase(role.getName().trim())){
+        if ("admin".equalsIgnoreCase(user.getUsername().trim()) && "ROLE_ADMIN".equalsIgnoreCase(role.getName().trim())){
             throw new RuntimeException("Эта роль не может быть удалена для этого пользователя!");
         }
 
@@ -207,6 +211,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserEntity> findByUsername(String username) {
         return userRepository.findByUserNameIgnoreCase(username);
+    }
+
+    @Override
+    public UserEntity getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String userName = authentication.getName();
+            return findByUsername(userName).orElse(null);
+
+//            Object principal = authentication.getPrincipal();
+//            if (principal instanceof UserEntity) {
+//                return (UserEntity) principal;
+//            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isCurrentUserOrAdmin(Long checkedUserId) {
+        UserEntity currentUser = getCurrentUser();
+
+        boolean isAdmin = currentUser.getRoles().stream()
+                .anyMatch(role-> role.getName().equalsIgnoreCase("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            if(!currentUser.getId().equals(checkedUserId)){
+                throw new RuntimeException("Нет роли администратора, изменить можно только собственные данные");
+            }
+        }
+        return true;
     }
 
     private UserEntity findEntityById(Long id) {

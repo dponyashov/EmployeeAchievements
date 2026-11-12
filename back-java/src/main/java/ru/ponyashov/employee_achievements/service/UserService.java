@@ -1,6 +1,5 @@
 package ru.ponyashov.employee_achievements.service;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.ponyashov.employee_achievements.dto.request.PasswordChangeRequestDto;
 import ru.ponyashov.employee_achievements.dto.request.RegistryRequestDto;
@@ -18,9 +17,11 @@ public interface UserService extends UserDetailsService {
     UserResponseDto findById(Long id);
     Optional<UserEntity> findByUsername(String username);
     UserResponseDto save(Long id, UserRequestDto dto);
-    UserResponseDto chengePaswword(Long id, PasswordChangeRequestDto dto);
+    UserResponseDto changePassword(Long id, PasswordChangeRequestDto dto);
     UserResponseDto save(RegistryRequestDto dto);
     boolean delete(Long id);
+    UserEntity getCurrentUser();
+    boolean isCurrentUserOrAdmin(Long checkedUserId);
 
     Collection<RoleResponseDto> findAllRolesByUserId(Long userId);
     ResponseMessageDto addRoleByUser(Long userId, Long roleId);

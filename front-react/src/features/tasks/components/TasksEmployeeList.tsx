@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { type EmployeeProfile } from '../tasksApi';
 
 interface TasksEmployeeListProps {
+  listTitle: string;
   employees: EmployeeProfile[];
   isLoading: boolean;
   selectedEmployeeId: number | undefined;
@@ -9,6 +10,7 @@ interface TasksEmployeeListProps {
 }
 
 export const TasksEmployeeList: React.FC<TasksEmployeeListProps> = ({
+  listTitle,
   employees,
   isLoading,
   selectedEmployeeId,
@@ -40,7 +42,7 @@ export const TasksEmployeeList: React.FC<TasksEmployeeListProps> = ({
           fontWeight: 'bold',
         }}
       >
-        Сотрудники отдела
+        {listTitle}
       </div>
       <div style={{ padding: '6px', borderBottom: '1px solid #ddd' }}>
         <input
