@@ -60,14 +60,13 @@ export const TasksJournal: React.FC = () => {
   }, [isSupervisor, departmentEmployees, selectedEmployee]);
 
   useEffect(() => {
-    if (isMegavisor && !selectedEmployee) {
+    if (isMegavisor && allEmployees.length > 0 && !selectedEmployee) {
       setSelectedEmployee(allEmployees[0]);
     }
-  }, [isMegavisor, selectedEmployee]);
+  }, [isMegavisor, allEmployees, selectedEmployee]);
 
   useEffect(() => {
-    console.log(currentUserProfile);
-
+    // console.log(currentUserProfile);
     if (!isSupervisor && !isMegavisor && currentUserProfile) {
       setSelectedEmployee(currentUserProfile);
     }

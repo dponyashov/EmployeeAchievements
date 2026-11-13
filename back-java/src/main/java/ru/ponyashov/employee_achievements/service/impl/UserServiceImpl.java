@@ -237,7 +237,8 @@ public class UserServiceImpl implements UserService {
 
         if (!isAdmin) {
             if(!currentUser.getId().equals(checkedUserId)){
-                throw new RuntimeException("Нет роли администратора, изменить можно только собственные данные");
+                throw new RuntimeException(
+                        String.format("Нет роли администратора, изменить можно только собственные данные(id: %s)", checkedUserId));
             }
         }
         return true;

@@ -1,11 +1,16 @@
+// src/features/admin/components/AdminPasswordReset.tsx
 import React, { useState, useEffect } from 'react';
 import { useChangeUserPasswordMutation } from '../adminAuthApi';
 
 interface AdminPasswordResetProps {
   userId: number;
+  onSuccess?: () => void; // <-- Опциональный колбэк при успешной смене пароля
 }
 
-export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({ userId }) => {
+export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({
+  userId,
+  onSuccess,
+}) => {
   const [changePassword, { error: passwordError, isLoading: isPasswordSaving }] =
     useChangeUserPasswordMutation();
   const [newPassword, setNewPassword] = useState('');
@@ -26,6 +31,7 @@ export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({ userId }
       await changePassword({ userId, data: { password: newPassword } }).unwrap();
       setNewPassword('');
       setPasswordSuccess(true);
+      onSuccess?.(); // <-- Вызываем закрытие модального окна, если колбэк передан
     } catch (err) {
       // Ошибка обрабатывается RTK Query
     }

@@ -44,7 +44,8 @@ public class ProfileController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('SERVICE')")
+//    @PreAuthorize("hasRole('SERVICE')")
+    @PreAuthorize("hasAnyRole('SERVICE', 'ADMIN', 'USER')")
     public ResponseEntity<ProfileResponseDto> update(@PathVariable("id") Long id, @RequestBody ProfileRequestDto newDto){
         return ResponseEntity.ok(profileService.save(id, newDto));
     }

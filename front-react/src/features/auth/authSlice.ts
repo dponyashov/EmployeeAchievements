@@ -1,13 +1,14 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode'; // Импортируем декодер
 
+// 1. В интерфейсе UserInfo добавьте employeeId:
 interface UserInfo {
   id: number;
   email: string;
-  name: string; // Сюда объединим firstName и lastName
-  position: string; // Должность: "Начальник"
-  department: string; // Подразделение: "ВСиР ФС"
-  roles: string[]; // Роли, извлеченные из токена
+  name: string;
+  position: string;
+  department: string;
+  roles: string[];
 }
 
 interface AuthState {
@@ -61,10 +62,11 @@ const authSlice = createSlice({
       }
 
       // 3. Записываем обработанные данные в состояние
+      // 2. В редьюсере setCredentials запишите employeeId:
       state.user = {
         id: serverUser.id,
         email: serverUser.email,
-        name: displayName, // Применили отформатированное имя или email
+        name: displayName,
         position: serverUser.position?.name || '',
         department: serverUser.department?.name || '',
         roles: decodedRoles,
@@ -83,8 +85,30 @@ const authSlice = createSlice({
     finishInitialization: (state) => {
       state.isInitializing = false; // Принудительное завершение
     },
+    updateUserProfile: (
+      state,
+      action: PayloadAction<{
+        firstName: string;
+        lastName: string;
+        email: string;
+        position?: string;
+        department?: string;
+      }>,
+    ) => {
+      if (!state.user) return;
+      const { firstName, lastName, email, position, department } = action.payload;
+
+      const displayName =
+        lastName || firstName ? `${lastName || ''} ${firstName || ''}`.trim() : email;
+
+      state.user.name = displayName;
+      state.user.email = email;
+      if (position !== undefined) state.user.position = position;
+      if (department !== undefined) state.user.department = department;
+    },
   },
 });
 
-export const { setCredentials, logOut, finishInitialization } = authSlice.actions;
+export const { setCredentials, logOut, finishInitialization, updateUserProfile } =
+  authSlice.actions;
 export default authSlice.reducer;
