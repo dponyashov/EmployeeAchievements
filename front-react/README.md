@@ -53,3 +53,11 @@
 ### 6.5.1. docker compose -f docker-compose.dev.yaml up --build
 
 ### 6.5.2. docker compose -f docker-compose.prod.yaml up -d
+
+# 7. excel
+
+## 7.1 npm install xlsx
+
+# 8. PDF
+
+## 8.1 npm install jspdf jspdf-autotable

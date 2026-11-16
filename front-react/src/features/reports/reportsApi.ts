@@ -79,4 +79,8 @@ export const reportsApi = createApi({
   }),
 });
 
-export const { useGetReportDataQuery, useGetProfilesDirectoryQuery } = reportsApi;
+export const {
+  useGetReportDataQuery,
+  useGetProfilesDirectoryQuery,
+  useLazyGetReportDataQuery,
+} = reportsApi;

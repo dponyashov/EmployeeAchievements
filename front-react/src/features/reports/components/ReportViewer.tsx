@@ -46,6 +46,7 @@ export const ReportViewer: React.FC = () => {
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
         <ReportTable
           result={reportResult}
+          activeFilters={activeFilters}
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />

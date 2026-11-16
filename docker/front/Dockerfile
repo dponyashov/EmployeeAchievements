@@ -8,6 +8,7 @@ WORKDIR ${app_dir}
 
 # Копируем package.json и package-lock.json (или yarn.lock)
 COPY ./package*.json ./
+COPY .npmrc ./
 
 # Устанавливаем зависимости проекта
 # RUN npm install
