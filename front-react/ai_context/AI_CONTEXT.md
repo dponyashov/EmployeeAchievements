@@ -50,6 +50,7 @@
 
 - `ErpDashboard.tsx` и плитки `AdminTile`, `DirectoriesTile`, `EmployeesTile`, `TasksTile`, `ReportsTile`.
 - Сетка плиток 4x3 высотой `180px` (`grid-auto-rows: 180px`, `display: contents` на обертках, синхронизация с `menuConfig.ts`).
+- `TasksTile.tsx` учитывает три уровня ролей при подсчёте задач: `ROLE_DEPARTMENT_ALL` (все сотрудники через `useLazyGetAllEmployeesQuery`), `ROLE_SUPERVISOR` (сотрудники отдела) и обычный пользователь (только личные задачи).
 
 ### 4.2. Личный кабинет пользователя в шапке (`ErpHeader.tsx`)
 
