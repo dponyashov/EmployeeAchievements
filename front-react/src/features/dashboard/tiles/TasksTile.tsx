@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAppSelector } from '../../../app/store';
 import {
   useGetCurrentUserProfileQuery,
   useLazyGetDepartmentEmployeesQuery,
+  useLazyGetAllEmployeesQuery,
   useGetTasksByProfileQuery,
   useGetTasksByUserQuery,
 } from '../../tasks/tasksApi';
-
-import '../dashboard.css';
 
 interface TileProps {
   onClick: () => void;
@@ -28,60 +27,80 @@ const EmployeeTaskCounter: React.FC<{
 };
 
 export const TasksTile: React.FC<TileProps> = ({ onClick }) => {
-  // 1. Получаем ID и роли текущего пользователя из Redux
   const authUser = useAppSelector((state) => state.auth.user);
   const userRoles = authUser?.roles || [];
   const currentUserId = authUser?.id;
 
-  const isSupervisor = userRoles.includes('ROLE_SUPERVISOR');
+  const isMegavisor = userRoles.includes('ROLE_DEPARTMENT_ALL');
+  const isSupervisor = !isMegavisor && userRoles.includes('ROLE_SUPERVISOR');
 
-  // 2. Запрос профиля для руководителя
+  // 1. Запрос профиля для руководителя отдела (только если нет ROLE_DEPARTMENT_ALL)
   const { data: supervisorProfile } = useGetCurrentUserProfileQuery(currentUserId!, {
     skip: !currentUserId || !isSupervisor,
   });
 
-  const [triggerFetchEmployees, { data: departmentEmployees = [] }] =
+  const [triggerFetchDepartmentEmployees, { data: departmentEmployees = [] }] =
     useLazyGetDepartmentEmployeesQuery();
 
-  useEffect(() => {
-    if (isSupervisor && supervisorProfile?.department?.id) {
-      triggerFetchEmployees(supervisorProfile.department.id);
-    }
-  }, [isSupervisor, supervisorProfile, triggerFetchEmployees]);
+  const [triggerFetchAllEmployees, { data: allEmployees = [] }] =
+    useLazyGetAllEmployeesQuery();
 
-  // 3. Сбор данных для обычного сотрудника
+  useEffect(() => {
+    if (isMegavisor) {
+      triggerFetchAllEmployees();
+    } else if (isSupervisor && supervisorProfile?.department?.id) {
+      triggerFetchDepartmentEmployees(supervisorProfile.department.id);
+    }
+  }, [
+    isMegavisor,
+    isSupervisor,
+    supervisorProfile,
+    triggerFetchAllEmployees,
+    triggerFetchDepartmentEmployees,
+  ]);
+
+  // 2. Сбор данных для обычного сотрудника
   const { data: ownTasks = [] } = useGetTasksByUserQuery(currentUserId!, {
-    skip: !currentUserId || isSupervisor,
+    skip: !currentUserId || isMegavisor || isSupervisor,
   });
 
-  // Локальный стейт для динамического суммирования задач всего отдела у руководителя
-  const [departmentTasksMap, setDepartmentTasksMap] = React.useState<
-    Record<number, number>
-  >({});
+  // 3. Динамическое суммирование задач по списку сотрудников (отдела или всей компании)
+  const [employeesTasksMap, setEmployeesTasksMap] = useState<Record<number, number>>({});
 
-  const handleCountReady = React.useCallback((empId: number, count: number) => {
-    setDepartmentTasksMap((prev) => {
+  const handleCountReady = useCallback((empId: number, count: number) => {
+    setEmployeesTasksMap((prev) => {
       if (prev[empId] === count) return prev;
       return { ...prev, [empId]: count };
     });
   }, []);
 
-  // Итоговое число для вывода на плитку
+  // Определяем список сотрудников для подсчета и подпись плитки
+  const targetEmployees = isMegavisor
+    ? allEmployees
+    : isSupervisor
+      ? departmentEmployees
+      : [];
+
   let totalTasksCount = 0;
-  if (isSupervisor) {
-    totalTasksCount = Object.values(departmentTasksMap).reduce(
-      (sum, current) => sum + current,
+  if (isMegavisor || isSupervisor) {
+    totalTasksCount = targetEmployees.reduce(
+      (sum, emp) => sum + (employeesTasksMap[emp.id] ?? 0),
       0,
     );
   } else {
     totalTasksCount = ownTasks.length;
   }
 
+  const tileDescription = isMegavisor
+    ? 'Задачи всех сотрудников'
+    : isSupervisor
+      ? `Задачи сотрудников отдела: ${supervisorProfile?.department?.name || ''}`
+      : 'Редактирование списка задач';
+
   return (
     <div className="erp-tile" onClick={onClick}>
-      {/* Фоновые триггеры для подсчета задач каждого сотрудника в отделе руководителя */}
-      {isSupervisor &&
-        departmentEmployees.map((emp) => (
+      {(isMegavisor || isSupervisor) &&
+        targetEmployees.map((emp) => (
           <EmployeeTaskCounter
             key={emp.id}
             profileId={emp.id}
@@ -91,11 +110,7 @@ export const TasksTile: React.FC<TileProps> = ({ onClick }) => {
 
       <div className="erp-tile-icon">✅</div>
       <div className="erp-tile-title">Задачи сотрудников</div>
-      <div className="erp-tile-info">
-        {isSupervisor
-          ? `Задачи сотрудников отдела: ${supervisorProfile?.department?.name || ''}`
-          : 'Редактирование списка задач'}
-      </div>
+      <div className="erp-tile-info">{tileDescription}</div>
       <div className="erp-tile-counter">Всего: {totalTasksCount}</div>
     </div>
   );
