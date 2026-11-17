@@ -1,6 +1,6 @@
-// src/features/directories/components/profile/ProfileListPane.tsx
 import React from 'react';
 import { ErpCommandBar } from '../../../../components/ui/ErpCommandBar';
+import '../../directories.css';
 
 interface ProfileListPaneProps {
   filteredData: any[];
@@ -26,8 +26,7 @@ export const ProfileListPane: React.FC<ProfileListPaneProps> = ({
   onRefresh,
 }) => {
   return (
-    /* Увеличим ширину левой панели до 55%, так как добавилась новая колонка */
-    <div className="erp-pane-left" style={{ width: '55%' }}>
+    <div className="erp-pane-left profile-pane-left">
       <ErpCommandBar
         onCreate={onCreateNew}
         onEdit={onStartEdit}
@@ -38,13 +37,13 @@ export const ProfileListPane: React.FC<ProfileListPaneProps> = ({
         onSearchChange={onSearchChange}
       />
 
-      <div className="erp-table-wrapper" style={{ border: '1px solid #D3D3D3' }}>
+      <div className="erp-table-wrapper profile-table-wrapper">
         <table className="erp-v8-table">
           <thead>
             <tr>
-              <th style={{ width: '50px' }}>Код</th>
+              <th className="profile-col-code">Код</th>
               <th>Сотрудник</th>
-              <th style={{ width: '220px' }}>Электронная почта</th>
+              <th className="profile-col-email">Электронная почта</th>
             </tr>
           </thead>
           <tbody>
@@ -55,12 +54,10 @@ export const ProfileListPane: React.FC<ProfileListPaneProps> = ({
                   key={emp.id}
                   onClick={() => onSelectRow(emp.id)}
                   className={isSelected ? 'erp-row-selected' : ''}
-                  style={{ backgroundColor: isSelected ? '#C1D9FF' : undefined }}
                 >
                   <td className="text-center">{emp.id}</td>
                   <td className="font-medium">{`${emp.lastName || ''} ${emp.firstName || ''}`}</td>
-                  {/* ➕ Выводим живые данные email в строке таблицы */}
-                  <td style={{ color: '#555' }}>{emp.email || '—'}</td>
+                  <td className="profile-cell-email">{emp.email || '—'}</td>
                 </tr>
               );
             })}

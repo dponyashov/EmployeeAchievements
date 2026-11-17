@@ -10,41 +10,31 @@ import { DepartmentList } from './components/DepartmentComponents';
 import { ServiceList } from './components/ServiceComponents';
 import { ComponentList } from './components/ComponentComponents';
 import { ProfileComponents } from './components/profile/ProfileComponents';
+import './directories.css';
 
 export const DirectoryDispatcher: React.FC = () => {
   const { directoryUrl } = useParams<{ directoryUrl: string }>();
   const navigate = useNavigate();
 
-  // 1. ОБЪЯВЛЯЕМ ВСЕ ХУКИ СТРОГО НА САМОМ ВЕРХНЕМ УРОВНЕ КОМПОНЕНТА ✅
   const { data: meta } = useGetDirectoriesMetaQuery();
-
-  // Используем skip, чтобы запрос не уходил на сервер, если мы просто на главной НСИ
-  const { data, isLoading, refetch } = useGetDirectoryDataQuery(
-    directoryUrl || '',
-    { skip: !directoryUrl }, // Блокирует запрос, если ключ пустой
-  );
+  const { data, isLoading, refetch } = useGetDirectoryDataQuery(directoryUrl || '', {
+    skip: !directoryUrl,
+  });
 
   const [deleteItem] = useDeleteDirectoryItemMutation();
-
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // 2. ВСЕ УСЛОВИЯ И РАННИЕ ВОЗВРАТЫ ПИШУТСЯ ТОЛЬКО НИЖЕ ХУКОВ ✅
   if (!directoryUrl) {
     return (
-      <div className="sub-view" style={{ padding: '20px' }}>
+      <div className="sub-view dir-sub-view">
         <h2>Справочники (НСИ)</h2>
-        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+        <ul className="dir-nav-list">
           {meta?.map((d) => {
             const cleanUrl = d.url.replace('/directory/', '').replace('/', '');
             return (
               <li
                 key={d.url}
-                style={{
-                  cursor: 'pointer',
-                  color: 'var(--1c-active-blue)',
-                  marginBottom: '8px',
-                  textDecoration: 'underline',
-                }}
+                className="dir-nav-item"
                 onClick={() => navigate(`/directories/${cleanUrl}`)}
               >
                 • {d.name}
@@ -101,7 +91,7 @@ export const DirectoryDispatcher: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="erp-loading-text" style={{ padding: '20px' }}>
+      <div className="erp-loading-text dir-loading-text">
         Загрузка данных динамического списка...
       </div>
     );
@@ -116,7 +106,7 @@ export const DirectoryDispatcher: React.FC = () => {
       return <ServiceList {...listProps} />;
     case 'component':
       return <ComponentList {...listProps} />;
-    case 'profile': // <-- Добавлено для Справочника Сотрудников ✅
+    case 'profile':
       return (
         <ProfileComponents
           data={currentData}
@@ -133,7 +123,7 @@ export const DirectoryDispatcher: React.FC = () => {
       );
     default:
       return (
-        <div className="sub-view" style={{ padding: '20px' }}>
+        <div className="sub-view dir-sub-view">
           ⚠️ Справочник "/{directoryUrl}" зарегистрирован, но для него отсутствует
           компонент отображения списка.
         </div>

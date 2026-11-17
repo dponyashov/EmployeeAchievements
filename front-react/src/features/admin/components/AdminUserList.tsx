@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { type User } from '../adminAuthApi';
+import '../admin.css';
 
 interface AdminUserListProps {
   users: User[];
@@ -21,44 +22,22 @@ export const AdminUserList: React.FC<AdminUserListProps> = ({
   );
 
   return (
-    <div
-      style={{
-        width: '300px',
-        borderRight: '1px solid #ccc',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#fcfcfc',
-      }}
-    >
-      <div
-        style={{
-          padding: '8px',
-          background: '#e6e6e6',
-          borderBottom: '1px solid #ccc',
-          fontWeight: 'bold',
-        }}
-      >
-        Пользователи
-      </div>
-      <div style={{ padding: '6px', borderBottom: '1px solid #ddd' }}>
+    <div className="admin-users-pane">
+      <div className="admin-users-header">Пользователи</div>
+      <div className="admin-users-search-box">
         <input
           type="text"
+          className="admin-users-search-input"
           placeholder="Поиск по имени..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '4px 6px',
-            border: '1px solid #bbb',
-            boxSizing: 'border-box',
-          }}
         />
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="admin-users-list-scroll">
         {isLoading ? (
-          <div style={{ padding: '10px', color: '#666' }}>Загрузка...</div>
+          <div className="admin-users-loading">Загрузка...</div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table className="admin-users-table">
             <tbody>
               {filteredUsers.map((user) => {
                 const isSelected = activeUserId === user.id;
@@ -66,23 +45,12 @@ export const AdminUserList: React.FC<AdminUserListProps> = ({
                   <tr
                     key={user.id}
                     onClick={() => onUserSelect(user)}
-                    style={{
-                      cursor: 'pointer',
-                      background: isSelected ? '#ffecb3' : 'transparent',
-                      borderBottom: '1px solid #eee',
-                    }}
+                    className={`admin-user-row ${isSelected ? 'admin-user-row--selected' : ''}`}
                   >
-                    <td
-                      style={{
-                        padding: '8px',
-                        fontWeight: isSelected ? 'bold' : 'normal',
-                      }}
-                    >
+                    <td className="admin-user-cell">
                       👤 {user.userName}{' '}
                       {user.roles === null && (
-                        <span style={{ color: '#aaa', fontSize: '11px' }}>
-                          (нет прав)
-                        </span>
+                        <span className="admin-user-no-roles">(нет прав)</span>
                       )}
                     </td>
                   </tr>

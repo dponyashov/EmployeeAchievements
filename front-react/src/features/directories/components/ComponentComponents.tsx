@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ErpCommandBar } from '../../../components/ui/ErpCommandBar';
 import { ErpFormButtons } from '../../../components/ui/ErpFormButtons';
+import '../directories.css';
 
 interface ComponentListProps {
   data: any[];
@@ -13,7 +14,6 @@ interface ComponentListProps {
   onRefresh: () => void;
 }
 
-// 1. КОМПОНЕНТ СПИСКА КОМПОНЕНТОВ С КОМАНДНОЙ ПАНЕЛЬЮ
 export const ComponentList: React.FC<ComponentListProps> = ({
   data,
   selectedId,
@@ -40,7 +40,7 @@ export const ComponentList: React.FC<ComponentListProps> = ({
       <table className="erp-v8-table">
         <thead>
           <tr>
-            <th style={{ width: '100px' }}>Код элемента</th>
+            <th className="dir-col-code-md">Код элемента</th>
             <th>Наименование компонента</th>
           </tr>
         </thead>
@@ -54,7 +54,6 @@ export const ComponentList: React.FC<ComponentListProps> = ({
                   onClick={() => onSelectRow(item.id)}
                   onDoubleClick={() => onDoubleClickRow(item.id)}
                   className={isSelected ? 'erp-row-selected' : ''}
-                  style={{ backgroundColor: isSelected ? '#C1D9FF' : undefined }}
                 >
                   <td className="text-center">{item.id}</td>
                   <td className="font-medium">{item.name}</td>
@@ -74,7 +73,6 @@ export const ComponentList: React.FC<ComponentListProps> = ({
   </div>
 );
 
-// 2. ИСПРАВЛЕННЫЙ КОМПОНЕНТ ФОРМЫ КОМПОНЕНТА (Хуки строго на верхнем уровне)
 export const ComponentForm: React.FC<{
   item?: any;
   onSave: (data: any) => void;
@@ -82,7 +80,6 @@ export const ComponentForm: React.FC<{
 }> = ({ item, onSave, onCancel }) => {
   const [name, setName] = useState('');
 
-  // Логика проверки перенесена внутрь эффекта — теперь порядок хуков никогда не нарушится
   useEffect(() => {
     if (item) {
       setName(item.name || '');
@@ -92,29 +89,12 @@ export const ComponentForm: React.FC<{
   }, [item]);
 
   return (
-    <div className="sub-view" style={{ padding: '20px', background: '#FFF' }}>
-      <h3
-        style={{
-          margin: '0 0 15px 0',
-          fontWeight: 'normal',
-          borderBottom: '1px solid #D3D3D3',
-          paddingBottom: '5px',
-        }}
-      >
-        Элемент спецификации (Редактирование)
-      </h3>
+    <div className="sub-view dir-item-form">
+      <h3 className="dir-item-form-title">Элемент спецификации (Редактирование)</h3>
       <div className="erp-form-group">
-        <label style={{ color: '#777', marginBottom: '4px' }}>
-          Наименование компонента:
-        </label>
+        <label className="dir-item-form-label">Наименование компонента:</label>
         <input
-          style={{
-            padding: '5px',
-            width: '350px',
-            border: '1px solid #C4C4C4',
-            outline: 'none',
-            marginBottom: '15px',
-          }}
+          className="dir-item-form-input"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required

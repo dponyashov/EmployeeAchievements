@@ -1,4 +1,5 @@
 import React from 'react';
+import './ui.css';
 
 interface ErpFormButtonsProps {
   onSave?: () => void;
@@ -16,13 +17,12 @@ export const ErpFormButtons: React.FC<ErpFormButtonsProps> = ({
   disabled = false,
 }) => {
   return (
-    <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+    <div className="erp-form-buttons">
       <button
         type="submit"
-        className="erp-btn-primary"
+        className="erp-btn-primary erp-form-btn-save"
         onClick={onSave}
         disabled={disabled}
-        style={{ width: '110px' }}
       >
         {saveText}
       </button>

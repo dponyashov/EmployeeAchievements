@@ -5,28 +5,18 @@ import { MainLayout } from '../layouts/MainLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
 import { ErpDashboard } from '../features/dashboard/ErpDashboard';
-// Импортируем компонент администрирования
 import { AdminUserManagement } from '../features/admin/components/AdminUserManagement';
+import './routes.css';
 
 const Directories = () => (
-  <div style={{ background: '#fff', padding: '20px', border: '1px solid #ccc' }}>
-    📚 Справочники: Номенклатура, Контрагенты.
-  </div>
+  <div className="route-stub-card">📚 Справочники: Номенклатура, Контрагенты.</div>
 );
 const Reports = () => (
-  <div style={{ background: '#fff', padding: '20px', border: '1px solid #ccc' }}>
-    📊 Отчеты: Оборотно-сальдовая ведомость.
-  </div>
+  <div className="route-stub-card">📊 Отчеты: Оборотно-сальдовая ведомость.</div>
 );
-const Tasks = () => (
-  <div style={{ background: '#fff', padding: '20px', border: '1px solid #ccc' }}>
-    ✅ Задачи и бизнес-процессы.
-  </div>
-);
+const Tasks = () => <div className="route-stub-card">✅ Задачи и бизнес-процессы.</div>;
 const Employees = () => (
-  <div style={{ background: '#fff', padding: '20px', border: '1px solid #ccc' }}>
-    👥 Кадровый учет и расчет зарплаты.
-  </div>
+  <div className="route-stub-card">👥 Кадровый учет и расчет зарплаты.</div>
 );
 
 export const AppRoutes: React.FC = () => {

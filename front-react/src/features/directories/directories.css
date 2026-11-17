@@ -1,0 +1,178 @@
+/* =========================================================
+   ПОДСИСТЕМА НСИ / СПРАВОЧНИКИ (1С:Такси)
+   ========================================================= */
+
+/* --- Общие контейнеры и навигация (DirectoryDispatcher) --- */
+.dir-sub-view {
+  padding: 20px;
+}
+
+.dir-loading-text {
+  padding: 20px;
+}
+
+.dir-nav-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.dir-nav-item {
+  cursor: pointer;
+  color: var(--1c-active-blue);
+  margin-bottom: 8px;
+  text-decoration: underline;
+}
+
+/* --- Таблицы справочников --- */
+.dir-col-code-sm {
+  width: 80px;
+}
+
+.dir-col-code-md {
+  width: 100px;
+}
+
+.erp-v8-table tr.erp-row-selected {
+  background-color: #c1d9ff;
+}
+
+/* --- Диспетчер формы элемента (DirectoryItemDispatcher) --- */
+.erp-directory-form-container {
+  padding: 20px;
+  background: #fff;
+  height: 100%;
+}
+
+.dir-form-error-banner {
+  margin-bottom: 15px;
+}
+
+.dir-form-wrapper--saving {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* --- Формы простых справочников (Должности, Отделы, Услуги, Компоненты) --- */
+.dir-item-form {
+  padding: 20px;
+  background: #fff;
+}
+
+.dir-item-form-title {
+  margin: 0 0 15px 0;
+  font-weight: normal;
+  border-bottom: 1px solid #d3d3d3;
+  padding-bottom: 5px;
+}
+
+.dir-item-form-label {
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.dir-item-form-input {
+  padding: 5px;
+  width: 350px;
+  border: 1px solid #c4c4c4;
+  outline: none;
+  margin-bottom: 15px;
+}
+
+.dir-item-form-input--compact {
+  padding: 4px;
+  width: 300px;
+}
+
+.dir-item-form-actions {
+  margin-top: 15px;
+}
+
+.dir-item-form-actions--lg {
+  margin-top: 20px;
+}
+
+/* --- Двухпанельный журнал сотрудников (ProfileComponents, ProfileListPane, ProfileCardPane) --- */
+.profile-two-pane {
+  height: 100%;
+  width: 100%;
+}
+
+.profile-error-banner {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  z-index: 10;
+}
+
+.profile-pane-left {
+  width: 55%;
+}
+
+.profile-table-wrapper {
+  border: 1px solid #d3d3d3;
+}
+
+.profile-col-code {
+  width: 50px;
+}
+
+.profile-col-email {
+  width: 220px;
+}
+
+.profile-cell-email {
+  color: #555;
+}
+
+/* Правая панель сотрудника (форма редактирования / анкета просмотра) */
+.profile-form--saving {
+  opacity: 0.6;
+}
+
+.profile-form-title {
+  margin-top: 0;
+  font-weight: normal;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.profile-view-card {
+  background: #fff;
+  border: 1px solid #d3d3d3;
+  padding: 20px;
+  max-width: 500px;
+}
+
+.profile-view-title {
+  margin-top: 0;
+  color: var(--1c-active-blue);
+}
+
+.profile-view-table {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+}
+
+.profile-view-row {
+  border-bottom: 1px solid #eee;
+}
+
+.profile-view-label {
+  padding: 8px 0;
+  color: #777;
+}
+
+.profile-view-edit-btn {
+  margin-top: 15px;
+}
+
+.profile-empty-pane {
+  text-align: center;
+  color: #999;
+  padding-top: 100px;
+}
+
+.profile-empty-icon {
+  font-size: 40px;
+}

@@ -7,6 +7,7 @@ import {
 import { AdminUserList } from './AdminUserList';
 import { AdminPasswordReset } from './AdminPasswordReset';
 import { AdminRoleMatrix } from './AdminRoleMatrix';
+import '../admin.css';
 
 export const AdminUserManagement: React.FC = () => {
   const { data: users = [], isLoading: usersLoading } = useGetAdminUsersQuery();
@@ -14,7 +15,6 @@ export const AdminUserManagement: React.FC = () => {
     useLazyGetUserRolesQuery();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // Всегда берем актуального пользователя из кэша по ссылке/id
   const activeUser = users.find((u) => u.id === selectedUser?.id) || selectedUser;
 
   const handleUserSelect = async (user: User) => {
@@ -29,16 +29,7 @@ export const AdminUserManagement: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100%',
-        border: '1px solid #ccc',
-        background: '#fff',
-        fontSize: '13px',
-      }}
-    >
-      {/* ЛЕВАЯ ЧАСТЬ: Список */}
+    <div className="admin-container">
       <AdminUserList
         users={users}
         isLoading={usersLoading}
@@ -46,26 +37,16 @@ export const AdminUserManagement: React.FC = () => {
         onUserSelect={handleUserSelect}
       />
 
-      {/* ПРАВАЯ ЧАСТЬ: Управление */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="admin-right-pane">
         {activeUser ? (
           <>
-            <div
-              style={{
-                padding: '8px',
-                background: '#f5f5f5',
-                borderBottom: '1px solid #ccc',
-                fontWeight: 'bold',
-              }}
-            >
+            <div className="admin-user-header">
               Текущий пользователь:{' '}
-              <span style={{ color: '#2b579a' }}>{activeUser.userName}</span>
+              <span className="admin-user-header-name">{activeUser.userName}</span>
             </div>
 
-            {/* ВЕРХ: Смена пароля */}
             <AdminPasswordReset userId={activeUser.id} />
 
-            {/* НИЗ: Матрица ролей */}
             <AdminRoleMatrix
               userId={activeUser.id}
               userRoles={activeUser.roles}
@@ -73,16 +54,7 @@ export const AdminUserManagement: React.FC = () => {
             />
           </>
         ) : (
-          <div
-            style={{
-              display: 'flex',
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#888',
-              background: '#fafafa',
-            }}
-          >
+          <div className="admin-empty-pane">
             Выберите пользователя для редактирования прав доступа
           </div>
         )}

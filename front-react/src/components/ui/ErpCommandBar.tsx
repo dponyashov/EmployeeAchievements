@@ -1,4 +1,5 @@
 import React from 'react';
+import './ui.css';
 
 interface ErpCommandBarProps {
   onCreate: () => void;
@@ -20,28 +21,15 @@ export const ErpCommandBar: React.FC<ErpCommandBarProps> = ({
   onSearchChange,
 }) => {
   return (
-    <div
-      className="erp-command-bar-wrapper"
-      style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
-    >
-      {/* Верхний ряд: Кнопки манипуляции данными  */}
-      <div
-        className="erp-command-bar"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          borderBottom: 'none',
-          padding: 0,
-        }}
-      >
+    <div className="erp-command-bar-wrapper">
+      <div className="erp-command-bar erp-command-bar-row">
         <button className="erp-cmd-btn font-bold" onClick={onCreate}>
           ➕ Создать
         </button>
         <button className="erp-cmd-btn" onClick={onEdit}>
           ✏️ Изменить
         </button>
-        <button className="erp-cmd-btn" onClick={onDelete} style={{ color: '#A30000' }}>
+        <button className="erp-cmd-btn erp-cmd-btn--danger" onClick={onDelete}>
           ❌ Удалить
         </button>
         <button className="erp-cmd-btn" onClick={onRefresh}>
@@ -49,21 +37,11 @@ export const ErpCommandBar: React.FC<ErpCommandBarProps> = ({
         </button>
       </div>
 
-      {/* Нижний ряд: Строка поиска, вынесенная под кнопки с верхним отступом */}
       {onSearchChange && (
-        <div className="erp-search-row" style={{ marginTop: '4px', paddingLeft: '2px' }}>
+        <div className="erp-search-row">
           <input
             type="text"
-            className="erp-search-input"
-            style={{
-              width: '100%',
-              maxWidth: '350px',
-              float: 'none',
-              margin: 0,
-              padding: '4px 6px',
-              border: '1px solid #C4C4C4',
-              fontSize: '13px',
-            }}
+            className="erp-search-input erp-search-input-field"
             placeholder={searchPlaceholder || 'Поиск...'}
             value={searchValue || ''}
             onChange={(e) => onSearchChange(e.target.value)}

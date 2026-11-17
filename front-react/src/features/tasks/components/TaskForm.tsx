@@ -7,11 +7,12 @@ import {
 } from '../tasksApi';
 import { ErpFormButtons } from '../../../components/ui/ErpFormButtons';
 import { ErpCombobox } from '../../../components/ui/ErpCombobox';
-import { ErpErrorBanner } from '../../../components/ui/ErpErrorBanner'; // 🚀 Импортируем новый UI-компонент
+import { ErpErrorBanner } from '../../../components/ui/ErpErrorBanner';
+import '../tasks.css';
 
 interface TaskFormProps {
   task: Task | null;
-  targetProfileId: number; // 🌟 Заменили прошлый currentUserId на целевой ID профиля сотрудника
+  targetProfileId: number;
   onSave: (data: TaskFormData) => Promise<void>;
   onCancel: () => void;
   isSaving: boolean;
@@ -20,7 +21,7 @@ interface TaskFormProps {
 
 export const TaskForm: React.FC<TaskFormProps> = ({
   task,
-  targetProfileId, // Принимаем целевой ID профиля
+  targetProfileId,
   onSave,
   onCancel,
   isSaving,
@@ -58,14 +59,12 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     e.preventDefault();
     if (!title.trim()) return;
 
-    console.log('TaskForm.targetProfileId', targetProfileId);
-
     const payload: TaskFormData = {
       title,
       description,
       year: Number(year),
       month: Number(month),
-      profileId: targetProfileId, // 🌟 Теперь подставляется правильный ID сотрудника
+      profileId: targetProfileId,
       serviceId,
       componentId,
     };
@@ -74,102 +73,55 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   };
 
   return (
-    <div
-      style={{
-        flex: 1,
-        padding: '15px',
-        background: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div
-        style={{
-          background: '#ffcc00',
-          padding: '6px 12px',
-          fontWeight: 'bold',
-          border: '1px solid #ccc',
-          borderBottom: 'none',
-          fontSize: '13px',
-        }}
-      >
+    <div className="task-form-container">
+      <div className="task-form-header">
         {task ? `Редактирование задачи №${task.id}` : 'Создание новой задачи'}
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          border: '1px solid #ccc',
-          padding: '15px',
-          background: '#fafafa',
-          flex: 1,
-          overflowY: 'auto',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            maxWidth: '600px',
-            fontSize: '13px',
-          }}
-        >
-          {/* 🚀 Декларативный вывод ошибок через универсальный UI-компонент над первым полем ввода */}
+      <form onSubmit={handleSubmit} className="task-form-body">
+        <div className="task-form-fields">
           <ErpErrorBanner
             error={saveError}
             title="Не удалось записать задачу (ошибка валидации):"
           />
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontWeight: 'bold', color: '#333' }}>
-              Краткое наименование задачи *
-            </label>
+          <div className="task-form-group">
+            <label className="task-form-label">Краткое наименование задачи *</label>
             <input
               type="text"
               required
               disabled={isSaving}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              style={{ padding: '5px', border: '1px solid #bbb', outline: 'none' }}
+              className="task-form-input"
             />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontWeight: 'bold', color: '#333' }}>
-              Подробное описание бизнес-процесса
-            </label>
+          <div className="task-form-group">
+            <label className="task-form-label">Подробное описание бизнес-процесса</label>
             <textarea
               rows={4}
               disabled={isSaving}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              style={{
-                padding: '5px',
-                border: '1px solid #bbb',
-                outline: 'none',
-                resize: 'vertical',
-              }}
+              className="task-form-textarea"
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <div
-              style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}
-            >
-              <label style={{ fontWeight: 'bold', color: '#333' }}>Год</label>
+          <div className="task-form-row">
+            <div className="task-form-group task-form-group--half">
+              <label className="task-form-label">Год</label>
               <input
                 type="number"
                 disabled={isSaving}
                 value={year}
                 onChange={(e) => setYear(Number(e.target.value))}
-                style={{ padding: '5px', border: '1px solid #bbb' }}
+                className="task-form-input"
               />
             </div>
-            <div
-              style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}
-            >
-              <label style={{ fontWeight: 'bold', color: '#333' }}>Месяц (номер)</label>
+
+            <div className="task-form-group task-form-group--half">
+              <label className="task-form-label">Месяц (номер)</label>
               <input
                 type="number"
                 min={1}
@@ -177,7 +129,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
                 disabled={isSaving}
                 value={month}
                 onChange={(e) => setMonth(Number(e.target.value))}
-                style={{ padding: '5px', border: '1px solid #bbb' }}
+                className="task-form-input"
               />
             </div>
           </div>
@@ -201,9 +153,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           />
         </div>
 
-        <div
-          style={{ marginTop: '20px', borderTop: '1px solid #ccc', paddingTop: '10px' }}
-        >
+        <div className="task-form-footer">
           <ErpFormButtons onCancel={onCancel} />
         </div>
       </form>

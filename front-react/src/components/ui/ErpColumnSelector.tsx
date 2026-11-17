@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import './ui.css';
 
 export interface ErpColumnOption<T extends string = string> {
   key: T;
@@ -10,7 +11,7 @@ interface ErpColumnSelectorProps<T extends string> {
   visibleColumns: Record<T, boolean>;
   onToggleColumn: (key: T) => void;
   onShowAll: () => void;
-  extraActions?: React.ReactNode; // <-- Дополнительные кнопки рядом с настройкой колонок
+  extraActions?: React.ReactNode;
 }
 
 export function ErpColumnSelector<T extends string>({
@@ -38,16 +39,8 @@ export function ErpColumnSelector<T extends string>({
   const hiddenCount = columns.length - visibleCount;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '6px',
-        fontSize: '12px',
-      }}
-    >
-      <div style={{ color: '#666' }}>
+    <div className="erp-col-selector-bar">
+      <div className="erp-col-selector-hint">
         {hiddenCount > 0 && (
           <span>
             Скрыто столбцов: <strong>{hiddenCount}</strong> из {columns.length}
@@ -55,69 +48,28 @@ export function ErpColumnSelector<T extends string>({
         )}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="erp-col-selector-actions">
         {extraActions}
-        <div ref={menuRef} style={{ position: 'relative' }}>
+        <div ref={menuRef} className="erp-col-selector-menu-wrap">
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
-            style={{
-              padding: '4px 10px',
-              background: menuOpen ? '#e6e6e6' : '#f5f5f5',
-              border: '1px solid #aaa',
-              cursor: 'pointer',
-              fontSize: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              color: '#333',
-            }}
+            className={`erp-col-selector-btn ${
+              menuOpen ? 'erp-col-selector-btn--open' : ''
+            }`}
           >
             <span>⚙️ Настройка колонок</span>
             {hiddenCount > 0 && (
-              <span
-                style={{
-                  background: '#ffcc00',
-                  border: '1px solid #997a00',
-                  padding: '0 5px',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
-                }}
-              >
+              <span className="erp-col-selector-badge">
                 {visibleCount}/{columns.length}
               </span>
             )}
-            <span style={{ fontSize: '10px' }}>▾</span>
+            <span className="erp-col-selector-arrow">▾</span>
           </button>
 
           {menuOpen && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 2px)',
-                right: 0,
-                width: '210px',
-                background: '#fff',
-                border: '1px solid #999',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.18)',
-                padding: '8px',
-                zIndex: 100,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: '11px',
-                  color: '#555',
-                  borderBottom: '1px solid #eee',
-                  paddingBottom: '4px',
-                }}
-              >
-                Отображаемые столбцы
-              </div>
+            <div className="erp-col-selector-dropdown">
+              <div className="erp-col-selector-dropdown-title">Отображаемые столбцы</div>
 
               {columns.map((col) => {
                 const isChecked = visibleColumns[col.key];
@@ -126,15 +78,9 @@ export function ErpColumnSelector<T extends string>({
                 return (
                   <label
                     key={col.key}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      cursor: isLastVisible ? 'not-allowed' : 'pointer',
-                      fontSize: '12px',
-                      color: isLastVisible ? '#999' : '#333',
-                      userSelect: 'none',
-                    }}
+                    className={`erp-col-selector-option ${
+                      isLastVisible ? 'erp-col-selector-option--disabled' : ''
+                    }`}
                     title={
                       isLastVisible
                         ? 'Нельзя скрыть последний видимый столбец'
@@ -156,16 +102,7 @@ export function ErpColumnSelector<T extends string>({
                 <button
                   type="button"
                   onClick={onShowAll}
-                  style={{
-                    marginTop: '4px',
-                    padding: '4px 8px',
-                    background: '#ffcc00',
-                    border: '1px solid #997a00',
-                    cursor: 'pointer',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    color: '#333',
-                  }}
+                  className="erp-col-selector-reset-btn"
                 >
                   Показать все столбцы
                 </button>

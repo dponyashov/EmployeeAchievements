@@ -1,4 +1,3 @@
-// src/features/directories/components/profile/ProfileComponents.tsx
 import React, { useState, useEffect } from 'react';
 import {
   useGetPositionsForSelectQuery,
@@ -6,10 +5,9 @@ import {
   useSaveProfileItemMutation,
 } from '../../directoriesApi';
 import { parseErpError } from '../../../../utils/parseErpError';
-
-// Импортируем вынесенные дочерние панели
 import { ProfileListPane } from './ProfileListPane';
 import { ProfileCardPane } from './ProfileCardPane';
+import '../../directories.css';
 
 interface ProfileListProps {
   data: any[];
@@ -88,12 +86,9 @@ export const ProfileComponents: React.FC<ProfileListProps> = ({
       <div className="erp-directory-header">
         <h2>Список сотрудников</h2>
       </div>
-      <div className="erp-two-pane-container" style={{ height: '100%', width: '100%' }}>
+      <div className="erp-two-pane-container profile-two-pane">
         {errorBanner && (
-          <div
-            className="erp-error-banner"
-            style={{ position: 'absolute', top: '50px', right: '20px', zIndex: 10 }}
-          >
+          <div className="erp-error-banner profile-error-banner">
             <span className="erp-error-icon">⚠️</span>
             <div className="erp-error-text">
               <strong>Ошибка:</strong> {errorBanner}
@@ -101,7 +96,6 @@ export const ProfileComponents: React.FC<ProfileListProps> = ({
           </div>
         )}
 
-        {/* Левая панель: Список */}
         <ProfileListPane
           filteredData={filteredData}
           selectedId={selectedId}
@@ -126,7 +120,6 @@ export const ProfileComponents: React.FC<ProfileListProps> = ({
           onRefresh={onRefresh}
         />
 
-        {/* Правая панель: Карточка */}
         <ProfileCardPane
           editingId={editingId}
           selectedEmployee={selectedEmployee}

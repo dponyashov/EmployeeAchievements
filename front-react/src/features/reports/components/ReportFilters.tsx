@@ -6,6 +6,7 @@ import {
 } from '../../tasks/tasksApi';
 import { ErpCombobox } from '../../../components/ui/ErpCombobox';
 import { useGetDirectoryDataQuery } from '../../directories/directoriesApi';
+import '../reports.css';
 
 interface ReportFiltersProps {
   isFetching: boolean;
@@ -35,22 +36,16 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
   const [pageSize, setPageSize] = useState(10);
   const [sortConfig] = useState<string[]>(['year,asc', 'month,asc']);
 
-  // Стягиваем справочники услуг и компонентов
   const { data: services = [] } = useGetServicesDirectoryQuery();
   const { data: components = [] } = useGetComponentsDirectoryQuery();
-
-  // 🚀 Загружаем полноценный НСИ-справочник сотрудников (профилей) по адресу /directory/profile
-  // Если у вас используется другой хук (например, useGetProfilesQuery), подставьте его имя
   const { data: employees = [], isLoading: isEmployeesLoading } =
     useGetDirectoryDataQuery('profile');
 
-  // 🚀 Формируем кадровый список ФИО + Должность для ErpCombobox
   const employeesItems = useMemo(() => {
     return employees.map((emp: any) => {
       const lastName = emp.lastName || '';
       const firstName = emp.firstName || '';
       const positionName = emp.position?.name ? ` [${emp.position.name}]` : '';
-
       const fullName = `${lastName} ${firstName}${positionName}`.trim();
 
       return {
@@ -81,33 +76,23 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
     );
   };
 
+  const hasActiveTokens =
+    selectedYears.length > 0 ||
+    profileIds.length > 0 ||
+    serviceIds.length > 0 ||
+    componentIds.length > 0;
+
   return (
-    <form
-      onSubmit={handleFormSubmit}
-      style={{ background: '#f5f5f5', borderBottom: '1px solid #ccc', padding: '12px' }}
-    >
-      {/* СЕТКА ПОЛЕЙ ВЫБОРА */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: '10px',
-          marginBottom: '12px',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <label style={{ fontWeight: 'bold' }}>Поиск по заголовку:</label>
+    <form onSubmit={handleFormSubmit} className="report-filters-form">
+      <div className="report-filters-grid">
+        <div className="report-filter-group">
+          <label className="report-filter-label">Поиск по заголовку:</label>
           <input
             type="text"
             placeholder="Текст..."
             value={titleSearch}
             onChange={(e) => setTitleSearch(e.target.value)}
-            style={{
-              padding: '4px',
-              border: '1px solid #bbb',
-              outline: 'none',
-              fontSize: '13px',
-            }}
+            className="report-filter-input"
           />
         </div>
 
@@ -122,7 +107,6 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
           }
         />
 
-        {/* Выпадающий список кадровых сотрудников 🚀 */}
         <ErpCombobox
           label={isEmployeesLoading ? 'Загрузка сотрудников...' : 'Отбор по сотруднику:'}
           items={employeesItems}
@@ -152,79 +136,30 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
         />
       </div>
 
-      {/* ЛЕНТА АКТИВНЫХ ТОКЕНОВ ОТБОРА */}
-      {(selectedYears.length > 0 ||
-        profileIds.length > 0 ||
-        serviceIds.length > 0 ||
-        componentIds.length > 0) && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '8px',
-            flexWrap: 'wrap',
-            marginBottom: '12px',
-            background: '#fff',
-            padding: '6px',
-            border: '1px solid #ddd',
-          }}
-        >
+      {hasActiveTokens && (
+        <div className="report-tokens-bar">
           {selectedYears.map((year) => (
-            <span
-              key={`y-${year}`}
-              style={{
-                background: '#f5f5f5',
-                border: '1px solid #bbb',
-                padding: '2px 6px',
-                fontSize: '11px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-              }}
-            >
+            <span key={`y-${year}`} className="report-token report-token--year">
               📅 {year} г.
               <button
                 type="button"
+                className="report-token-remove"
                 onClick={() => setSelectedYears(selectedYears.filter((x) => x !== year))}
-                style={{
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
-                  color: 'red',
-                  fontWeight: 'bold',
-                }}
               >
                 ×
               </button>
             </span>
           ))}
 
-          {/* Кадровые токены сотрудников с ФИО 🚀 */}
           {profileIds.map((id) => {
             const matchedItem = employeesItems.find((e) => e.id === id);
             return (
-              <span
-                key={`p-${id}`}
-                style={{
-                  background: '#e1f5fe',
-                  border: '1px solid #03a9f4',
-                  padding: '2px 6px',
-                  fontSize: '11px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-              >
+              <span key={`p-${id}`} className="report-token report-token--profile">
                 {matchedItem?.name || `👤 Сотрудник №${id}`}
                 <button
                   type="button"
+                  className="report-token-remove"
                   onClick={() => setProfileIds(profileIds.filter((x) => x !== id))}
-                  style={{
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    color: 'red',
-                    fontWeight: 'bold',
-                  }}
                 >
                   ×
                 </button>
@@ -233,58 +168,25 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
           })}
 
           {serviceIds.map((id) => (
-            <span
-              key={`s-${id}`}
-              style={{
-                background: '#fff9e6',
-                border: '1px solid #ffcc00',
-                padding: '2px 6px',
-                fontSize: '11px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-              }}
-            >
+            <span key={`s-${id}`} className="report-token report-token--service">
               🛠️ {services.find((s) => s.id === id)?.name}
               <button
                 type="button"
+                className="report-token-remove"
                 onClick={() => setServiceIds(serviceIds.filter((x) => x !== id))}
-                style={{
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
-                  color: 'red',
-                  fontWeight: 'bold',
-                }}
               >
                 ×
               </button>
             </span>
           ))}
+
           {componentIds.map((id) => (
-            <span
-              key={`c-${id}`}
-              style={{
-                background: '#e2ece9',
-                border: '1px solid #a3c1ad',
-                padding: '2px 6px',
-                fontSize: '11px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-              }}
-            >
+            <span key={`c-${id}`} className="report-token report-token--component">
               📦 {components.find((c) => c.id === id)?.name}
               <button
                 type="button"
+                className="report-token-remove"
                 onClick={() => setComponentIds(componentIds.filter((x) => x !== id))}
-                style={{
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
-                  color: 'red',
-                  fontWeight: 'bold',
-                }}
               >
                 ×
               </button>
@@ -293,19 +195,9 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
         </div>
       )}
 
-      {/* НИЖНЯЯ ПАНЕЛЬ МЕСЯЦЕВ */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          borderTop: '1px dashed #ccc',
-          paddingTop: '10px',
-          flexWrap: 'wrap',
-          gap: '15px',
-        }}
-      >
+      <div className="report-filters-bottom">
         <div>
-          <span style={{ fontWeight: 'bold', marginRight: '6px' }}>Месяцы:</span>
+          <span className="report-months-label">Месяцы:</span>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => {
             const isSelected = selectedMonths.includes(m);
             return (
@@ -313,15 +205,9 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
                 key={m}
                 type="button"
                 onClick={() => toggleMonth(m)}
-                style={{
-                  padding: '2px 6px',
-                  marginRight: '3px',
-                  background: isSelected ? '#ffcc00' : '#fff',
-                  border: '1px solid #bbb',
-                  cursor: 'pointer',
-                  fontSize: '11px',
-                  fontWeight: isSelected ? 'bold' : 'normal',
-                }}
+                className={`report-month-btn ${
+                  isSelected ? 'report-month-btn--selected' : ''
+                }`}
               >
                 {String(m).padStart(2, '0')}
               </button>
@@ -329,27 +215,12 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
           })}
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '13px',
-            marginLeft: '20px',
-          }}
-        >
-          <span style={{ fontWeight: 'bold', color: '#333' }}>Строк на странице:</span>
+        <div className="report-page-size-box">
+          <span className="report-page-size-label">Строк на странице:</span>
           <select
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
-            style={{
-              padding: '2px 6px',
-              border: '1px solid #bbb',
-              background: '#fff',
-              outline: 'none',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
+            className="report-page-size-select"
           >
             <option value={3}>3</option>
             <option value={5}>5</option>
@@ -360,18 +231,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
           </select>
         </div>
 
-        <button
-          type="submit"
-          disabled={isFetching}
-          style={{
-            background: '#ffcc00',
-            border: '1px solid #997a00',
-            padding: '4px 25px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            marginLeft: 'auto',
-          }}
-        >
+        <button type="submit" disabled={isFetching} className="report-generate-btn">
           {isFetching ? 'Формирование...' : 'Сформировать отчет'}
         </button>
       </div>

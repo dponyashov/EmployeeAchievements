@@ -1,5 +1,6 @@
 import React from 'react';
 import { useGetDirectoryDataQuery } from '../../directories/directoriesApi';
+import '../dashboard.css';
 
 interface TileProps {
   onClick: () => void;
@@ -13,7 +14,7 @@ export const EmployeesTile: React.FC<TileProps> = ({ onClick }) => {
       <div className="erp-tile-icon">👥</div>
       <div className="erp-tile-title">Сотрудники</div>
       <div className="erp-tile-info">Список сотрудников.</div>
-      <div className="erp-tile-counter" style={{ backgroundColor: '#449D44' }}>
+      <div className="erp-tile-counter emp-tile-counter">
         {isLoading ? '...' : `В штате: ${profiles?.length || 0}`}
       </div>
     </div>

@@ -57,7 +57,7 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileResponseDto save(Long id, ProfileRequestDto dto) {
         var oldItem = findEntityById(id);
 
-        userService.isCurrentUserOrAdmin(oldItem.getUser().getId());
+        userService.isCurrentUserOrAdmin(oldItem.getUser() != null ? oldItem.getUser().getId() : 0L);
 
         oldItem.setEmail(dto.getEmail() != null ? dto.getEmail() : oldItem.getEmail() );
         oldItem.setFirstName(dto.getFirstName() != null ? dto.getFirstName() : oldItem.getFirstName() );

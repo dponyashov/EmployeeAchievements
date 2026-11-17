@@ -235,11 +235,10 @@ public class UserServiceImpl implements UserService {
         boolean isAdmin = currentUser.getRoles().stream()
                 .anyMatch(role-> role.getName().equalsIgnoreCase("ROLE_ADMIN"));
 
-        if (!isAdmin) {
-            if(!currentUser.getId().equals(checkedUserId)){
-                throw new RuntimeException(
-                        String.format("Нет роли администратора, изменить можно только собственные данные(id: %s)", checkedUserId));
-            }
+        if (isAdmin) return true;
+        if (checkedUserId <= 0L || !currentUser.getId().equals(checkedUserId)){
+            throw new RuntimeException(
+                    String.format("Нет роли администратора, изменить можно только собственные данные(id: %s)", checkedUserId));
         }
         return true;
     }

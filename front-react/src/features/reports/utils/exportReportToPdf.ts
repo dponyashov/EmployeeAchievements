@@ -1,7 +1,11 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { type ReportResponse } from '../reportsApi';
-import { type ReportColumnKey } from './exportReportToExcel';
+import {
+  formatQueriesText,
+  trimTrailingDots,
+  type ReportColumnKey,
+} from './exportReportToExcel';
 
 const formatFileTimestamp = (date: Date): string => {
   const pad = (num: number) => String(num).padStart(2, '0');
@@ -24,7 +28,6 @@ const loadLocalCyrillicFont = async (doc: jsPDF): Promise<void> => {
     const buffer = await response.arrayBuffer();
     const bytes = new Uint8Array(buffer);
 
-    // Проверяем, что файл действительно TTF, а не index.html
     const b0 = bytes.at(0);
     const b1 = bytes.at(1);
     if (b0 !== 0x00 || b1 !== 0x01) {
@@ -46,6 +49,16 @@ const loadLocalCyrillicFont = async (doc: jsPDF): Promise<void> => {
   doc.setFont('DejaVuSans');
 };
 
+// Жёстко фиксированный порядок колонок для PDF (Запросы — строго в самом конце)
+const ORDERED_PDF_COLUMNS: ReportColumnKey[] = [
+  'period',
+  'task',
+  'service',
+  'component',
+  'profile',
+  'queries',
+];
+
 export const exportReportToPdf = async (
   rows: ReportResponse['content'],
   visibleColumns: Record<ReportColumnKey, boolean>,
@@ -60,7 +73,6 @@ export const exportReportToPdf = async (
 
   await loadLocalCyrillicFont(doc);
 
-  // Шапка документа
   doc.setFont('DejaVuSans', 'normal');
   doc.setFontSize(14);
   doc.setTextColor('#1E1E1E');
@@ -74,34 +86,47 @@ export const exportReportToPdf = async (
     21,
   );
 
-  // Формируем заголовки и строки только по видимым колонкам
+  // Формируем заголовки строго по порядку ORDERED_PDF_COLUMNS
   const headers: string[] = [];
-  if (visibleColumns.period) headers.push('Период');
-  if (visibleColumns.task) {
-    headers.push('Задача');
-    headers.push('Описание задачи');
+  for (const key of ORDERED_PDF_COLUMNS) {
+    if (!visibleColumns[key]) continue;
+    if (key === 'period') headers.push('Период');
+    if (key === 'task') {
+      headers.push('Задача');
+      headers.push('Описание задачи');
+    }
+    if (key === 'service') headers.push('Услуга');
+    if (key === 'component') headers.push('Компонент');
+    if (key === 'profile') headers.push('Исполнитель');
+    if (key === 'queries') headers.push('Запросы к задаче');
   }
-  if (visibleColumns.service) headers.push('Услуга');
-  if (visibleColumns.component) headers.push('Компонент');
-  if (visibleColumns.profile) headers.push('Исполнитель');
 
+  // Формируем строки таблицы в том же порядке
   const body = rows.map((row) => {
     const rowData: string[] = [];
-    if (visibleColumns.period) {
-      rowData.push(`${row.year}.${String(row.month).padStart(2, '0')}`);
-    }
-    if (visibleColumns.task) {
-      rowData.push(row.title || '');
-      rowData.push(row.description || '');
-    }
-    if (visibleColumns.service) {
-      rowData.push(row.service?.name || '—');
-    }
-    if (visibleColumns.component) {
-      rowData.push(row.component?.name || '—');
-    }
-    if (visibleColumns.profile) {
-      rowData.push(`${row.profile.lastName} ${row.profile.firstName}`.trim());
+    for (const key of ORDERED_PDF_COLUMNS) {
+      if (!visibleColumns[key]) continue;
+      if (key === 'period') {
+        rowData.push(`${row.year}.${String(row.month).padStart(2, '0')}`);
+      }
+      if (key === 'task') {
+        rowData.push(row.title || '');
+        rowData.push(row.description || '');
+      }
+      if (key === 'service') {
+        rowData.push(trimTrailingDots(row.service?.name) || '—');
+      }
+      if (key === 'component') {
+        rowData.push(trimTrailingDots(row.component?.name) || '—');
+      }
+      if (key === 'profile') {
+        rowData.push(
+          trimTrailingDots(`${row.profile.lastName} ${row.profile.firstName}`),
+        );
+      }
+      if (key === 'queries') {
+        rowData.push(formatQueriesText(row.queries));
+      }
     }
     return rowData;
   });

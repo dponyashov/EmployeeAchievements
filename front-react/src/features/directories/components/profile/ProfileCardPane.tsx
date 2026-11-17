@@ -1,6 +1,6 @@
-// src/features/directories/components/profile/ProfileCardPane.tsx
 import React from 'react';
 import { ErpFormButtons } from '../../../../components/ui/ErpFormButtons';
+import '../../directories.css';
 
 interface ProfileCardPaneProps {
   editingId: number | 'new' | null;
@@ -46,20 +46,11 @@ export const ProfileCardPane: React.FC<ProfileCardPaneProps> = ({
   return (
     <div className="erp-pane-right">
       {editingId !== null ? (
-        /* РЕЖИМ РЕДАКТИРОВАНИЯ / СОЗДАНИЯ */
         <form
           onSubmit={onSave}
-          className="erp-v8-form-grid"
-          style={{ opacity: isSaving ? 0.6 : 1 }}
+          className={`erp-v8-form-grid ${isSaving ? 'profile-form--saving' : ''}`}
         >
-          <h3
-            style={{
-              marginTop: 0,
-              fontWeight: 'normal',
-              borderBottom: '1px solid #DDD',
-              paddingBottom: '5px',
-            }}
-          >
+          <h3 className="profile-form-title">
             {editingId === 'new'
               ? 'Новый сотрудник (Создание)'
               : `Сотрудник Код: ${editingId} (Редактирование)`}
@@ -127,60 +118,46 @@ export const ProfileCardPane: React.FC<ProfileCardPaneProps> = ({
             </select>
           </div>
 
-          {/* <ErpFormButtons onSave={() => {}} onCancel={onCancel} disabled={isSaving} /> */}
           <ErpFormButtons onCancel={onCancel} disabled={isSaving} />
         </form>
       ) : selectedEmployee ? (
-        /* РЕЖИМ ПРОСМОТРА АНКЕТЫ */
-        <div
-          style={{
-            background: '#FFF',
-            border: '1px solid #D3D3D3',
-            padding: '20px',
-            maxWidth: '500px',
-          }}
-        >
-          <h3 style={{ marginTop: 0, color: 'var(--1c-active-blue)' }}>
+        <div className="profile-view-card">
+          <h3 className="profile-view-title">
             {selectedEmployee.lastName} {selectedEmployee.firstName}
           </h3>
-          <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+          <table className="profile-view-table">
             <tbody>
-              <tr style={{ borderBottom: '1px solid #EEE' }}>
-                <td style={{ padding: '8px 0', color: '#777' }}>ID учетной записи:</td>
+              <tr className="profile-view-row">
+                <td className="profile-view-label">ID учетной записи:</td>
                 <td>
                   <strong>{selectedEmployee.id}</strong>
                 </td>
               </tr>
-              <tr style={{ borderBottom: '1px solid #EEE' }}>
-                <td style={{ padding: '8px 0', color: '#777' }}>Email:</td>
+              <tr className="profile-view-row">
+                <td className="profile-view-label">Email:</td>
                 <td>{selectedEmployee.email}</td>
               </tr>
-              <tr style={{ borderBottom: '1px solid #EEE' }}>
-                <td style={{ padding: '8px 0', color: '#777' }}>Должность:</td>
+              <tr className="profile-view-row">
+                <td className="profile-view-label">Должность:</td>
                 <td>
                   <span className="erp-tile-badge">
                     {selectedEmployee.position?.name || 'Не указана'}
                   </span>
                 </td>
               </tr>
-              <tr style={{ borderBottom: '1px solid #EEE' }}>
-                <td style={{ padding: '8px 0', color: '#777' }}>Подразделение:</td>
+              <tr className="profile-view-row">
+                <td className="profile-view-label">Подразделение:</td>
                 <td>{selectedEmployee.department?.name || 'Вне штата'}</td>
               </tr>
             </tbody>
           </table>
-          <button
-            className="erp-cmd-btn"
-            onClick={onStartEdit}
-            style={{ marginTop: '15px' }}
-          >
+          <button className="erp-cmd-btn profile-view-edit-btn" onClick={onStartEdit}>
             ✏️ Редактировать данные
           </button>
         </div>
       ) : (
-        /* ДЕФОЛТНОЕ ОКНО */
-        <div style={{ textAlign: 'center', color: '#999', paddingTop: '100px' }}>
-          <div style={{ fontSize: '40px' }}>👤</div>
+        <div className="profile-empty-pane">
+          <div className="profile-empty-icon">👤</div>
           <div>
             Выделите сотрудника в левой панели журнала для просмотра личной карточки
           </div>

@@ -1,7 +1,7 @@
-// src/features/directories/components/DepartmentComponents.tsx
 import React, { useState, useEffect } from 'react';
 import { ErpFormButtons } from '../../../components/ui/ErpFormButtons';
 import { ErpCommandBar } from '../../../components/ui/ErpCommandBar';
+import '../directories.css';
 
 interface DepartmentListProps {
   data: any[];
@@ -14,7 +14,6 @@ interface DepartmentListProps {
   onRefresh: () => void;
 }
 
-// 1. КОМПОНЕНТ СПИСКА ОТДЕЛОВ С УПРАВЛЕНИЕМ И КОМАНДНОЙ ПАНЕЛЬЮ
 export const DepartmentList: React.FC<DepartmentListProps> = ({
   data,
   selectedId,
@@ -30,7 +29,6 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
       <h2>Справочник "Структурные подразделения (Отделы)"</h2>
     </div>
 
-    {/* Командная панель в едином стиле */}
     <ErpCommandBar
       onCreate={onCreate}
       onEdit={onEdit}
@@ -38,12 +36,11 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
       onRefresh={onRefresh}
     />
 
-    {/* Табличная часть динамического списка */}
     <div className="erp-table-wrapper">
       <table className="erp-v8-table">
         <thead>
           <tr>
-            <th style={{ width: '100px' }}>Код отдела</th>
+            <th className="dir-col-code-md">Код отдела</th>
             <th>Наименование подразделения</th>
           </tr>
         </thead>
@@ -57,7 +54,6 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
                   onClick={() => onSelectRow(item.id)}
                   onDoubleClick={() => onDoubleClickRow(item.id)}
                   className={isSelected ? 'erp-row-selected' : ''}
-                  style={{ backgroundColor: isSelected ? '#C1D9FF' : undefined }}
                 >
                   <td className="text-center">{item.id}</td>
                   <td className="font-medium">{item.name}</td>
@@ -77,7 +73,6 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
   </div>
 );
 
-// 2. КОМПОНЕНТ ФОРМЫ ЭЛЕМЕНТА ОТДЕЛА С ПОДДЕРЖКОЙ ЖИВОГО ЗАПОЛНЕНИЯ ИЗ REST (PATCH)
 export const DepartmentForm: React.FC<{
   item?: any;
   onSave: (data: any) => void;
@@ -85,7 +80,6 @@ export const DepartmentForm: React.FC<{
 }> = ({ item, onSave, onCancel }) => {
   const [name, setName] = useState('');
 
-  // Наполняем input, когда асинхронный JSON от REST-сервиса долетает до клиента
   useEffect(() => {
     if (item && item.name) {
       setName(item.name);
@@ -94,25 +88,11 @@ export const DepartmentForm: React.FC<{
 
   return (
     <div className="sub-view">
-      <h3
-        style={{
-          margin: '0 0 15px 0',
-          fontWeight: 'normal',
-          borderBottom: '1px solid #D3D3D3',
-          paddingBottom: '5px',
-        }}
-      >
-        Карточка подразделения (Редактирование)
-      </h3>
+      <h3 className="dir-item-form-title">Карточка подразделения (Редактирование)</h3>
       <div className="erp-form-group">
-        <label style={{ color: '#777', marginBottom: '4px' }}>Название отдела:</label>
+        <label className="dir-item-form-label">Название отдела:</label>
         <input
-          style={{
-            padding: '5px',
-            width: '350px',
-            border: '1px solid #C4C4C4',
-            outline: 'none',
-          }}
+          className="dir-item-form-input"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required

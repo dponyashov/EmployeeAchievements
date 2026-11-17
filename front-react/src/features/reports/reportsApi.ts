@@ -13,6 +13,7 @@ export interface ReportTaskRow {
   service: { id: number; name: string } | null;
   component: { id: number; name: string } | null;
   author: { id: number; firstName: string; lastName: string };
+  queries?: { id: number; name: string }[];
 }
 
 export interface ReportResponse {

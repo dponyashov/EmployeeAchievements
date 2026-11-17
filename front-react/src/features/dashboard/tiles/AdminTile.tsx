@@ -1,5 +1,7 @@
 import React from 'react';
 
+import '../dashboard.css';
+
 interface TileProps {
   onClick: () => void;
 }

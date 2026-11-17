@@ -7,6 +7,8 @@ import {
   useGetTasksByUserQuery,
 } from '../../tasks/tasksApi';
 
+import '../dashboard.css';
+
 interface TileProps {
   onClick: () => void;
 }

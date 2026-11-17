@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ErpCommandBar } from '../../../components/ui/ErpCommandBar';
 import { ErpFormButtons } from '../../../components/ui/ErpFormButtons';
+import '../directories.css';
 
 interface PositionListProps {
   data: any[];
@@ -28,7 +29,6 @@ export const PositionList: React.FC<PositionListProps> = ({
       <h2>Справочник "Должности"</h2>
     </div>
 
-    {/* Универсальная Командная панель */}
     <ErpCommandBar
       onCreate={onCreate}
       onEdit={onEdit}
@@ -40,7 +40,7 @@ export const PositionList: React.FC<PositionListProps> = ({
       <table className="erp-v8-table">
         <thead>
           <tr>
-            <th style={{ width: '80px' }}>Код</th>
+            <th className="dir-col-code-sm">Код</th>
             <th>Наименование должности</th>
           </tr>
         </thead>
@@ -53,9 +53,7 @@ export const PositionList: React.FC<PositionListProps> = ({
                   key={item.id}
                   onClick={() => onSelectRow(item.id)}
                   onDoubleClick={() => onDoubleClickRow(item.id)}
-                  /* Если строка выделена, навешиваем класс подсветки */
                   className={isSelected ? 'erp-row-selected' : ''}
-                  style={{ backgroundColor: isSelected ? '#C1D9FF' : undefined }}
                 >
                   <td className="text-center">{item.id}</td>
                   <td>{item.name}</td>
@@ -75,13 +73,13 @@ export const PositionList: React.FC<PositionListProps> = ({
   </div>
 );
 
-// Компонент формы (PositionForm с useEffect остается без изменений из прошлого шага)
 export const PositionForm: React.FC<{
   item?: any;
   onSave: (data: any) => void;
   onCancel: () => void;
 }> = ({ item, onSave, onCancel }) => {
   const [name, setName] = useState('');
+
   useEffect(() => {
     if (item?.name) setName(item.name);
   }, [item]);
@@ -92,12 +90,12 @@ export const PositionForm: React.FC<{
       <div className="erp-form-group">
         <label>Наименование:</label>
         <input
+          className="dir-item-form-input dir-item-form-input--compact"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          style={{ padding: '4px', width: '300px' }}
         />
       </div>
-      <div style={{ marginTop: '15px' }}>
+      <div className="dir-item-form-actions">
         <ErpFormButtons onSave={() => onSave({ name })} onCancel={onCancel} />
       </div>
     </div>

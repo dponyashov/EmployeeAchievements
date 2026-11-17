@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { type EmployeeProfile } from '../tasksApi';
+import '../tasks.css';
 
 interface TasksEmployeeListProps {
   listTitle: string;
@@ -18,51 +19,28 @@ export const TasksEmployeeList: React.FC<TasksEmployeeListProps> = ({
 }) => {
   const [search, setSearch] = useState('');
 
-  // Сквозной поиск по имени или фамилии в одном поле ввода
   const filteredEmployees = employees.filter((emp) => {
     const fullName = `${emp.lastName} ${emp.firstName}`.toLowerCase();
     return fullName.includes(search.toLowerCase());
   });
 
   return (
-    <div
-      style={{
-        width: '300px',
-        borderRight: '1px solid #ccc',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#fcfcfc',
-      }}
-    >
-      <div
-        style={{
-          padding: '8px',
-          background: '#e6e6e6',
-          borderBottom: '1px solid #ccc',
-          fontWeight: 'bold',
-        }}
-      >
-        {listTitle}
-      </div>
-      <div style={{ padding: '6px', borderBottom: '1px solid #ddd' }}>
+    <div className="tasks-emp-pane">
+      <div className="tasks-emp-header">{listTitle}</div>
+      <div className="tasks-emp-search-box">
         <input
           type="text"
+          className="tasks-emp-search-input"
           placeholder="Поиск по имени/фамилии..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '4px 6px',
-            border: '1px solid #bbb',
-            boxSizing: 'border-box',
-          }}
         />
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="tasks-emp-list-scroll">
         {isLoading ? (
-          <div style={{ padding: '10px', color: '#666' }}>Загрузка сотрудников...</div>
+          <div className="tasks-emp-loading">Загрузка сотрудников...</div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table className="tasks-emp-table">
             <tbody>
               {filteredEmployees.map((emp) => {
                 const isSelected = selectedEmployeeId === emp.id;
@@ -70,17 +48,13 @@ export const TasksEmployeeList: React.FC<TasksEmployeeListProps> = ({
                   <tr
                     key={emp.id}
                     onClick={() => onEmployeeSelect(emp)}
-                    style={{
-                      cursor: 'pointer',
-                      background: isSelected ? '#ffecb3' : 'transparent',
-                      borderBottom: '1px solid #eee',
-                    }}
+                    className={`tasks-emp-row ${isSelected ? 'tasks-emp-row--selected' : ''}`}
                   >
-                    <td style={{ padding: '8px' }}>
-                      <div style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+                    <td className="tasks-emp-cell">
+                      <div className="tasks-emp-name">
                         👤 {emp.lastName} {emp.firstName}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
+                      <div className="tasks-emp-position">
                         {emp.position?.name || 'Должность не указана'}
                       </div>
                     </td>

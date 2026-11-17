@@ -1,4 +1,5 @@
 import React from 'react';
+import './ui.css';
 
 interface ErpPaginationProps {
   totalElements: number;
@@ -18,48 +19,27 @@ export const ErpPagination: React.FC<ErpPaginationProps> = ({
   const isLastPage = currentPage >= safeTotalPages - 1;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        marginTop: '15px',
-        background: '#f5f5f5',
-        padding: '6px',
-        border: '1px solid #ccc',
-        fontSize: '12px',
-      }}
-    >
+    <div className="erp-pagination">
       <span>
         Всего записей: <strong>{totalElements}</strong>
       </span>
-      <div style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
+      <div className="erp-pagination-controls">
         <button
           type="button"
+          className="erp-pagination-btn"
           disabled={isFirstPage}
           onClick={() => onPageChange(currentPage - 1)}
-          style={{
-            padding: '2px 8px',
-            border: '1px solid #bbb',
-            background: '#fff',
-            cursor: isFirstPage ? 'default' : 'pointer',
-          }}
         >
           ◀ Назад
         </button>
-        <span style={{ padding: '2px 6px' }}>
+        <span className="erp-pagination-info">
           Страница <strong>{currentPage + 1}</strong> из {safeTotalPages}
         </span>
         <button
           type="button"
+          className="erp-pagination-btn"
           disabled={isLastPage}
           onClick={() => onPageChange(currentPage + 1)}
-          style={{
-            padding: '2px 8px',
-            border: '1px solid #bbb',
-            background: '#fff',
-            cursor: isLastPage ? 'default' : 'pointer',
-          }}
         >
           Вперед ▶
         </button>

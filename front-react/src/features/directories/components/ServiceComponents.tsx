@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ErpFormButtons } from '../../../components/ui/ErpFormButtons';
 import { ErpCommandBar } from '../../../components/ui/ErpCommandBar';
+import '../directories.css';
 
 interface ServiceListProps {
   data: any[];
@@ -13,7 +14,6 @@ interface ServiceListProps {
   onRefresh: () => void;
 }
 
-// 1. КОМПОНЕНТ СПИСКА УСЛУГ С КОМАНДНОЙ ПАНЕЛЬЮ
 export const ServiceList: React.FC<ServiceListProps> = ({
   data,
   selectedId,
@@ -40,7 +40,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
       <table className="erp-v8-table">
         <thead>
           <tr>
-            <th style={{ width: '100px' }}>Код услуги</th>
+            <th className="dir-col-code-md">Код услуги</th>
             <th>Наименование услуги</th>
           </tr>
         </thead>
@@ -54,7 +54,6 @@ export const ServiceList: React.FC<ServiceListProps> = ({
                   onClick={() => onSelectRow(item.id)}
                   onDoubleClick={() => onDoubleClickRow(item.id)}
                   className={isSelected ? 'erp-row-selected' : ''}
-                  style={{ backgroundColor: isSelected ? '#C1D9FF' : undefined }}
                 >
                   <td className="text-center">{item.id}</td>
                   <td className="font-medium">{item.name}</td>
@@ -74,54 +73,34 @@ export const ServiceList: React.FC<ServiceListProps> = ({
   </div>
 );
 
-// 2. ИСПРАВЛЕННЫЙ КОМПОНЕНТ ФОРМЫ УСЛУГИ (Хуки строго на верхнем уровне)
 export const ServiceForm: React.FC<{
   item?: any;
   onSave: (data: any) => void;
   onCancel: () => void;
 }> = ({ item, onSave, onCancel }) => {
   const [name, setName] = useState('');
-  // const [price, setPrice] = useState('0');
 
-  // Условие НАХОДИТСЯ ВНУТРИ хука. На верхнем уровне никаких if!
   useEffect(() => {
     if (item) {
       setName(item.name || '');
-      // setPrice(item.price?.toString() || '0');
     } else {
       setName('');
-      // setPrice('0');
     }
   }, [item]);
 
   return (
-    <div className="sub-view" style={{ padding: '20px', background: '#FFF' }}>
-      <h3
-        style={{
-          margin: '0 0 15px 0',
-          fontWeight: 'normal',
-          borderBottom: '1px solid #D3D3D3',
-          paddingBottom: '5px',
-        }}
-      >
-        Карточка услуги (Редактирование)
-      </h3>
+    <div className="sub-view dir-item-form">
+      <h3 className="dir-item-form-title">Карточка услуги (Редактирование)</h3>
       <div className="erp-form-group">
-        <label style={{ color: '#777', marginBottom: '4px' }}>Наименование услуги:</label>
+        <label className="dir-item-form-label">Наименование услуги:</label>
         <input
-          style={{
-            padding: '5px',
-            width: '350px',
-            border: '1px solid #C4C4C4',
-            outline: 'none',
-            marginBottom: '15px',
-          }}
+          className="dir-item-form-input"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
       </div>
-      <div style={{ marginTop: '20px' }}>
+      <div className="dir-item-form-actions--lg">
         <ErpFormButtons onSave={() => onSave({ name })} onCancel={onCancel} />
       </div>
     </div>

@@ -1,10 +1,10 @@
-// src/features/admin/components/AdminPasswordReset.tsx
 import React, { useState, useEffect } from 'react';
 import { useChangeUserPasswordMutation } from '../adminAuthApi';
+import '../admin.css';
 
 interface AdminPasswordResetProps {
   userId: number;
-  onSuccess?: () => void; // <-- Опциональный колбэк при успешной смене пароля
+  onSuccess?: () => void;
 }
 
 export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({
@@ -16,7 +16,6 @@ export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({
   const [newPassword, setNewPassword] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState(false);
 
-  // Сбрасываем статус при переключении пользователя
   useEffect(() => {
     setNewPassword('');
     setPasswordSuccess(false);
@@ -31,7 +30,7 @@ export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({
       await changePassword({ userId, data: { password: newPassword } }).unwrap();
       setNewPassword('');
       setPasswordSuccess(true);
-      onSuccess?.(); // <-- Вызываем закрытие модального окна, если колбэк передан
+      onSuccess?.();
     } catch (err) {
       // Ошибка обрабатывается RTK Query
     }
@@ -64,16 +63,7 @@ export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({
     }
 
     return (
-      <div
-        style={{
-          background: '#fff0f0',
-          border: '1px solid #cc0000',
-          padding: '6px',
-          marginTop: '5px',
-          fontSize: '12px',
-          color: '#cc0000',
-        }}
-      >
+      <div className="admin-pwd-error">
         {messages.map((m, i) => (
           <div key={i}>• {m}</div>
         ))}
@@ -82,39 +72,26 @@ export const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({
   };
 
   return (
-    <div style={{ padding: '15px', borderBottom: '1px solid #ccc', background: '#fff' }}>
-      <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#555' }}>
-        Сброс пароля
-      </div>
-      <form
-        onSubmit={handlePasswordChange}
-        style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}
-      >
-        <div style={{ width: '250px' }}>
+    <div className="admin-pwd-section">
+      <div className="admin-pwd-title">Сброс пароля</div>
+      <form onSubmit={handlePasswordChange} className="admin-pwd-form" autoComplete="off">
+        <div className="admin-pwd-input-wrap">
           <input
             type="password"
+            name="reset-user-password"
+            autoComplete="new-password"
+            className="admin-pwd-input"
             placeholder="Новый пароль"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            style={{ width: '100%', padding: '4px', border: '1px solid #bbb' }}
           />
           {renderPasswordError()}
-          {passwordSuccess && (
-            <div style={{ color: 'green', fontSize: '11px', marginTop: '4px' }}>
-              ✓ Пароль изменен
-            </div>
-          )}
+          {passwordSuccess && <div className="admin-pwd-success">✓ Пароль изменен</div>}
         </div>
         <button
           type="submit"
           disabled={isPasswordSaving || !newPassword.trim()}
-          style={{
-            padding: '4px 15px',
-            background: '#ffcc00',
-            border: '1px solid #997a00',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-          }}
+          className="admin-pwd-submit"
         >
           Изменить пароль
         </button>

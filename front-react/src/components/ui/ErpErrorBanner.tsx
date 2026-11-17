@@ -1,5 +1,6 @@
 import React from 'react';
 import { parseErpError } from '../../utils/parseErpError';
+import './ui.css';
 
 interface ErpErrorBannerProps {
   error: any;
@@ -10,7 +11,6 @@ export const ErpErrorBanner: React.FC<ErpErrorBannerProps> = ({
   error,
   title = 'Не удалось сохранить данные:',
 }) => {
-  // Если ошибки нет — компонент невидим на форме (стандартное поведение )
   if (!error) return null;
 
   let messages: string[] = [];
@@ -63,18 +63,8 @@ export const ErpErrorBanner: React.FC<ErpErrorBannerProps> = ({
   );
 
   return (
-    <div
-      style={{
-        background: '#fff0f0',
-        border: '1px solid #cc0000',
-        padding: '10px',
-        marginBottom: '15px',
-        fontSize: '12px',
-        color: '#cc0000',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{title}</div>
+    <div className="erp-ui-error-banner">
+      <div className="erp-ui-error-title">{title}</div>
       {formattedMessages.map((msg, idx) => (
         <div key={idx}>• {msg}</div>
       ))}

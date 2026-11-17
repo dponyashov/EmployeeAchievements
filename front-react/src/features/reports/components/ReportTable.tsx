@@ -10,8 +10,13 @@ import {
   type ErpColumnOption,
 } from '../../../components/ui/ErpColumnSelector';
 import { ReportExportModal } from './ReportExportModal';
-import { exportReportToExcel, type ReportColumnKey } from '../utils/exportReportToExcel';
+import {
+  exportReportToExcel,
+  trimTrailingDots,
+  type ReportColumnKey,
+} from '../utils/exportReportToExcel';
 import { exportReportToPdf } from '../utils/exportReportToPdf';
+import '../reports.css';
 
 interface ReportTableProps {
   result: ReportResponse | undefined;
@@ -26,6 +31,7 @@ const REPORT_COLUMNS: ErpColumnOption<ReportColumnKey>[] = [
   { key: 'service', label: 'Услуга' },
   { key: 'component', label: 'Компонент' },
   { key: 'profile', label: 'Исполнитель' },
+  { key: 'queries', label: 'Запросы' },
 ];
 
 const STORAGE_KEY = 'erp_report_visible_columns';
@@ -36,6 +42,7 @@ const DEFAULT_VISIBILITY: Record<ReportColumnKey, boolean> = {
   service: true,
   component: true,
   profile: true,
+  queries: true,
 };
 
 export const ReportTable: React.FC<ReportTableProps> = ({
@@ -84,7 +91,6 @@ export const ReportTable: React.FC<ReportTableProps> = ({
     setVisibleColumns(DEFAULT_VISIBILITY);
   };
 
-  // Загружаем все страницы отчета (если totalPages > 1) или берем текущий массив
   const fetchAllReportRows = async (): Promise<ReportResponse['content']> => {
     if (!result) return [];
     if (result.totalPages <= 1 || result.content.length >= result.totalElements) {
@@ -130,17 +136,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({
 
   if (!result) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#888',
-          fontSize: '14px',
-          marginTop: '60px',
-        }}
-      >
+      <div className="report-table-empty">
         📊 Настройте параметры компоновки данных и нажмите «Сформировать отчет»
       </div>
     );
@@ -157,101 +153,64 @@ export const ReportTable: React.FC<ReportTableProps> = ({
           <button
             type="button"
             onClick={() => setIsExportModalOpen(true)}
-            style={{
-              padding: '4px 10px',
-              background: '#f5f5f5',
-              border: '1px solid #aaa',
-              cursor: 'pointer',
-              fontSize: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              color: '#333',
-            }}
+            className="report-export-trigger-btn"
           >
             <span>📥 Выгрузить</span>
           </button>
         }
       />
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <table className="report-grid">
         <thead>
-          <tr
-            style={{
-              background: '#eaeaea',
-              borderBottom: '2px solid #333',
-              textAlign: 'left',
-            }}
-          >
-            {visibleColumns.period && (
-              <th
-                style={{
-                  padding: '6px',
-                  border: '1px solid #aaa',
-                  width: '80px',
-                  textAlign: 'center',
-                }}
-              >
-                Период
-              </th>
-            )}
-            {visibleColumns.task && (
-              <th style={{ padding: '6px', border: '1px solid #aaa' }}>Задача</th>
-            )}
-            {visibleColumns.service && (
-              <th style={{ padding: '6px', border: '1px solid #aaa', width: '200px' }}>
-                Услуга
-              </th>
-            )}
-            {visibleColumns.component && (
-              <th style={{ padding: '6px', border: '1px solid #aaa', width: '200px' }}>
-                Компонент
-              </th>
-            )}
-            {visibleColumns.profile && (
-              <th style={{ padding: '6px', border: '1px solid #aaa', width: '180px' }}>
-                Исполнитель
-              </th>
-            )}
+          <tr>
+            {visibleColumns.period && <th className="col-period">Период</th>}
+            {visibleColumns.task && <th>Задача</th>}
+            {visibleColumns.service && <th className="col-service">Услуга</th>}
+            {visibleColumns.component && <th className="col-component">Компонент</th>}
+            {visibleColumns.profile && <th className="col-profile">Исполнитель</th>}
+            {visibleColumns.queries && <th className="col-queries">Запросы</th>}
           </tr>
         </thead>
         <tbody>
           {result.content.map((row) => (
-            <tr key={row.id} style={{ borderBottom: '1px solid #ccc' }}>
+            <tr key={row.id}>
               {visibleColumns.period && (
-                <td
-                  style={{
-                    padding: '6px',
-                    border: '1px solid #ddd',
-                    textAlign: 'center',
-                    fontFamily: 'monospace',
-                    fontWeight: 'bold',
-                  }}
-                >
+                <td className="cell-period">
                   {row.year}.{String(row.month).padStart(2, '0')}
                 </td>
               )}
               {visibleColumns.task && (
-                <td style={{ padding: '6px', border: '1px solid #ddd' }}>
-                  <div style={{ fontWeight: 'bold' }}>{row.title}</div>
-                  <div style={{ fontSize: '11px', color: '#666' }}>{row.description}</div>
+                <td>
+                  <div className="report-grid-task-title">{row.title}</div>
+                  <div className="report-grid-task-desc">{row.description}</div>
                 </td>
               )}
               {visibleColumns.service && (
-                <td style={{ padding: '6px', border: '1px solid #ddd', color: '#444' }}>
-                  {row.service?.name || '—'}
+                <td className="cell-directory">
+                  {trimTrailingDots(row.service?.name) || '—'}
                 </td>
               )}
               {visibleColumns.component && (
-                <td style={{ padding: '6px', border: '1px solid #ddd', color: '#444' }}>
-                  {row.component?.name || '—'}
+                <td className="cell-directory">
+                  {trimTrailingDots(row.component?.name) || '—'}
                 </td>
               )}
               {visibleColumns.profile && (
-                <td
-                  style={{ padding: '6px', border: '1px solid #ddd', fontSize: '12px' }}
-                >
-                  {row.profile.lastName} {row.profile.firstName}.
+                <td className="cell-profile">
+                  {trimTrailingDots(`${row.profile.lastName} ${row.profile.firstName}`)}
+                </td>
+              )}
+              {visibleColumns.queries && (
+                <td className="cell-queries">
+                  {row.queries && row.queries.length > 0 ? (
+                    <ul className="report-queries-list">
+                      {row.queries.map((q) => (
+                        <li key={q.id}>{trimTrailingDots(q.name)}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="report-queries-empty">—</span>
+                  )}
                 </td>
               )}
             </tr>

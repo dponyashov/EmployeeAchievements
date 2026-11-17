@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import './ui.css';
 
 interface ErpComboboxItem {
   id: number;
@@ -26,7 +27,6 @@ export const ErpCombobox: React.FC<ErpComboboxProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Синхронизируем внутренний текст поиска с выбранным элементом при изменении извне
   useEffect(() => {
     const selectedItem = items.find((item) => item.id === selectedId);
     if (selectedItem) {
@@ -36,12 +36,10 @@ export const ErpCombobox: React.FC<ErpComboboxProps> = ({
     }
   }, [selectedId, items]);
 
-  // Закрытие списка при клике вне компонента
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
-        // Если ничего не выбрано, возвращаем текст к предыдущему валидному значению
         const selectedItem = items.find((item) => item.id === selectedId);
         setSearch(selectedItem ? selectedItem.name : '');
       }
@@ -55,26 +53,17 @@ export const ErpCombobox: React.FC<ErpComboboxProps> = ({
   );
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '4px',
-        position: 'relative',
-      }}
-    >
-      <label style={{ fontWeight: 'bold', color: '#333' }}>{label}</label>
+    <div ref={containerRef} className="erp-combobox">
+      <label className="erp-combobox-label">{label}</label>
 
       <div
-        style={{
-          display: 'flex',
-          border: '1px solid #bbb',
-          background: disabled ? '#f0f0f0' : '#fff',
-        }}
+        className={`erp-combobox-control ${
+          disabled ? 'erp-combobox-control--disabled' : ''
+        }`}
       >
         <input
           type="text"
+          className="erp-combobox-input"
           placeholder={placeholder}
           disabled={disabled}
           value={search}
@@ -82,65 +71,24 @@ export const ErpCombobox: React.FC<ErpComboboxProps> = ({
             setSearch(e.target.value);
             setIsOpen(true);
             if (selectedId !== 0) {
-              onChange(0, ''); // Сбрасываем выбор при редактировании строки
+              onChange(0, '');
             }
           }}
           onFocus={() => !disabled && setIsOpen(true)}
-          style={{
-            flex: 1,
-            padding: '5px',
-            border: 'none',
-            outline: 'none',
-            background: 'transparent',
-          }}
         />
-        {selectedId > 0 && (
-          <span
-            style={{
-              padding: '5px',
-              color: 'green',
-              fontSize: '11px',
-              alignSelf: 'center',
-              userSelect: 'none',
-            }}
-          >
-            ✓
-          </span>
-        )}
+        {selectedId > 0 && <span className="erp-combobox-check">✓</span>}
         <button
           type="button"
+          className="erp-combobox-toggle"
           disabled={disabled}
           onClick={() => setIsOpen(!isOpen)}
-          style={{
-            padding: '0 8px',
-            background: '#e6e6e6',
-            borderLeft: '1px solid #bbb',
-            borderTop: 'none',
-            borderRight: 'none',
-            borderBottom: 'none',
-            cursor: disabled ? 'default' : 'pointer',
-          }}
         >
           ▼
         </button>
       </div>
 
-      {/* Выпадающее окно в стиле Платформы  */}
       {isOpen && !disabled && filteredItems.length > 0 && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            background: '#fff',
-            border: '1px solid #ccc',
-            zIndex: 100,
-            maxHeight: '150px',
-            overflowY: 'auto',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          }}
-        >
+        <div className="erp-combobox-dropdown">
           {filteredItems.map((item) => {
             const isCurrent = item.id === selectedId;
             return (
@@ -151,19 +99,9 @@ export const ErpCombobox: React.FC<ErpComboboxProps> = ({
                   setSearch(item.name);
                   setIsOpen(false);
                 }}
-                style={{
-                  padding: '6px 10px',
-                  cursor: 'pointer',
-                  borderBottom: '1px solid #eee',
-                  background: isCurrent ? '#ffecb3' : 'transparent',
-                  fontWeight: isCurrent ? 'bold' : 'normal',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#ffecb3')}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = isCurrent
-                    ? '#ffecb3'
-                    : 'transparent')
-                }
+                className={`erp-combobox-option ${
+                  isCurrent ? 'erp-combobox-option--selected' : ''
+                }`}
               >
                 {item.name}
               </div>

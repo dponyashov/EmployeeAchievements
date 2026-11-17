@@ -1,7 +1,8 @@
 import * as XLSX from 'xlsx';
 import { type ReportResponse } from '../reportsApi';
 
-export type ReportColumnKey = 'period' | 'task' | 'service' | 'component' | 'profile';
+export type ReportColumnKey =
+  'period' | 'task' | 'service' | 'component' | 'profile' | 'queries';
 
 const formatFileTimestamp = (date: Date): string => {
   const pad = (num: number) => String(num).padStart(2, '0');
@@ -16,13 +17,20 @@ const formatFileTimestamp = (date: Date): string => {
   return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
 };
 
+export const trimTrailingDots = (value?: string | null): string =>
+  value ? value.replace(/\.+$/, '').trim() : '';
+
+export const formatQueriesText = (queries?: { id: number; name: string }[]): string => {
+  if (!queries || queries.length === 0) return '—';
+  return queries.map((q) => trimTrailingDots(q.name)).join('; ');
+};
+
 export const exportReportToExcel = (
   rows: ReportResponse['content'],
   visibleColumns: Record<ReportColumnKey, boolean>,
 ): void => {
   if (!rows || rows.length === 0) return;
 
-  // 1. Формируем массив строк с учетом текущих видимых столбцов
   const rowsForExcel = rows.map((row) => {
     const item: Record<string, string> = {};
 
@@ -34,34 +42,37 @@ export const exportReportToExcel = (
       item['Описание задачи'] = row.description || '';
     }
     if (visibleColumns.service) {
-      item['Услуга'] = row.service?.name || '—';
+      item['Услуга'] = trimTrailingDots(row.service?.name) || '—';
     }
     if (visibleColumns.component) {
-      item['Компонент'] = row.component?.name || '—';
+      item['Компонент'] = trimTrailingDots(row.component?.name) || '—';
     }
     if (visibleColumns.profile) {
-      item['Исполнитель'] = `${row.profile.lastName} ${row.profile.firstName}`.trim();
+      item['Исполнитель'] = trimTrailingDots(
+        `${row.profile.lastName} ${row.profile.firstName}`,
+      );
+    }
+    if (visibleColumns.queries) {
+      item['Запросы к задаче'] = formatQueriesText(row.queries);
     }
 
     return item;
   });
 
-  // 2. Создаем лист Excel
   const worksheet = XLSX.utils.json_to_sheet(rowsForExcel);
 
-  // 3. Настраиваем комфортную ширину столбцов под каждый видимый ключ
   const colWidths: { wch: number }[] = [];
   if (visibleColumns.period) colWidths.push({ wch: 12 });
   if (visibleColumns.task) {
-    colWidths.push({ wch: 35 }); // Задача
-    colWidths.push({ wch: 45 }); // Описание задачи
+    colWidths.push({ wch: 35 });
+    colWidths.push({ wch: 45 });
   }
   if (visibleColumns.service) colWidths.push({ wch: 28 });
   if (visibleColumns.component) colWidths.push({ wch: 28 });
   if (visibleColumns.profile) colWidths.push({ wch: 25 });
+  if (visibleColumns.queries) colWidths.push({ wch: 35 });
   worksheet['!cols'] = colWidths;
 
-  // 4. Собираем книгу и инициируем скачивание файла с датой и временем
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Отчет');
 

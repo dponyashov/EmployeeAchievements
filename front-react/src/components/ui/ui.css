@@ -1,0 +1,280 @@
+/* =========================================================
+   ОБЩИЕ UI-КОМПОНЕНТЫ ПЛАТФОРМЫ (1С:Такси)
+   ========================================================= */
+
+/* --- Командная панель (ErpCommandBar) --- */
+.erp-command-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.erp-command-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: none;
+  padding: 0;
+}
+
+.erp-cmd-btn--danger {
+  color: #a30000;
+}
+
+.erp-search-row {
+  margin-top: 4px;
+  padding-left: 2px;
+}
+
+.erp-search-input-field {
+  width: 100%;
+  max-width: 350px;
+  float: none;
+  margin: 0;
+  padding: 4px 6px;
+  border: 1px solid #c4c4c4;
+  font-size: 13px;
+}
+
+/* --- Кнопки формы (ErpFormButtons) --- */
+.erp-form-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.erp-form-btn-save {
+  width: 110px;
+}
+
+/* --- Комбобокс с поиском (ErpCombobox) --- */
+.erp-combobox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.erp-combobox-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.erp-combobox-control {
+  display: flex;
+  border: 1px solid #bbb;
+  background: #fff;
+}
+
+.erp-combobox-control--disabled {
+  background: #f0f0f0;
+}
+
+.erp-combobox-input {
+  flex: 1;
+  padding: 5px;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.erp-combobox-check {
+  padding: 5px;
+  color: green;
+  font-size: 11px;
+  align-self: center;
+  user-select: none;
+}
+
+.erp-combobox-toggle {
+  padding: 0 8px;
+  background: #e6e6e6;
+  border-left: 1px solid #bbb;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.erp-combobox-toggle:disabled {
+  cursor: default;
+}
+
+.erp-combobox-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  z-index: 100;
+  max-height: 150px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.erp-combobox-option {
+  padding: 6px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  background: transparent;
+  font-weight: normal;
+}
+
+.erp-combobox-option:hover {
+  background-color: #ffecb3;
+}
+
+.erp-combobox-option--selected {
+  background-color: #ffecb3;
+  font-weight: bold;
+}
+
+/* --- Баннер ошибок валидации (ErpErrorBanner) --- */
+.erp-ui-error-banner {
+  background: #fff0f0;
+  border: 1px solid #cc0000;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 12px;
+  color: #cc0000;
+  font-family: Arial, sans-serif;
+}
+
+.erp-ui-error-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* --- Панель пагинации (ErpPagination) --- */
+.erp-pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  background: #f5f5f5;
+  padding: 6px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+}
+
+.erp-pagination-controls {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.erp-pagination-btn {
+  padding: 2px 8px;
+  border: 1px solid #bbb;
+  background: #fff;
+  cursor: pointer;
+}
+
+.erp-pagination-btn:disabled {
+  cursor: default;
+}
+
+.erp-pagination-info {
+  padding: 2px 6px;
+}
+
+/* --- Настройка видимости колонок (ErpColumnSelector) --- */
+.erp-col-selector-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.erp-col-selector-hint {
+  color: #666;
+}
+
+.erp-col-selector-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.erp-col-selector-menu-wrap {
+  position: relative;
+}
+
+.erp-col-selector-btn {
+  padding: 4px 10px;
+  background: #f5f5f5;
+  border: 1px solid #aaa;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #333;
+}
+
+.erp-col-selector-btn--open {
+  background: #e6e6e6;
+}
+
+.erp-col-selector-badge {
+  background: #ffcc00;
+  border: 1px solid #997a00;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.erp-col-selector-arrow {
+  font-size: 10px;
+}
+
+.erp-col-selector-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  right: 0;
+  width: 210px;
+  background: #fff;
+  border: 1px solid #999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  padding: 8px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.erp-col-selector-dropdown-title {
+  font-weight: bold;
+  font-size: 11px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.erp-col-selector-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+  user-select: none;
+}
+
+.erp-col-selector-option--disabled {
+  cursor: not-allowed;
+  color: #999;
+}
+
+.erp-col-selector-reset-btn {
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: #ffcc00;
+  border: 1px solid #997a00;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  color: #333;
+}

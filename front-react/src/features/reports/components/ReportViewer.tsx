@@ -3,6 +3,7 @@ import { useGetReportDataQuery, type ReportQueryParams } from '../reportsApi';
 import { ReportFilters } from './ReportFilters';
 import { ReportTable } from './ReportTable';
 import { ErpErrorBanner } from '../../../components/ui/ErpErrorBanner';
+import '../reports.css';
 
 export const ReportViewer: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -27,23 +28,16 @@ export const ReportViewer: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        background: '#fff',
-        fontSize: '13px',
-      }}
-    >
-      {/* Панель фильтров с поддержкой множественного выбора годов */}
+    <div className="report-viewer">
       <ReportFilters isFetching={isFetching} onGenerate={handleFiltersChange} />
 
-      <div style={{ padding: reportError ? '10px 15px 0 15px' : '0' }}>
-        <ErpErrorBanner error={reportError} title="Ошибка построения отчета:" />
-      </div>
+      {reportError && (
+        <div className="report-viewer-error">
+          <ErpErrorBanner error={reportError} title="Ошибка построения отчета:" />
+        </div>
+      )}
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+      <div className="report-viewer-content">
         <ReportTable
           result={reportResult}
           activeFilters={activeFilters}
