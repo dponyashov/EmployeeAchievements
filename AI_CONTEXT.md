@@ -1,13 +1,19 @@
 # AI_CONTEXT.md — Проект «1С:ERP Управление предприятием» (Frontend & Backend Integration)
 
-## 1. Технологический стек и сборка
+## 1. Технологический стек, сборка и инфраструктура
 
 - **Frontend Core:** Vite + React + TypeScript
 - **State & Data Fetching:** Redux Toolkit + RTK Query + Axios (кастомный `axiosBaseQuery`, префикс `/api`)
 - **Backend & DB:** Java 21 + Spring Boot (`back-java`) + PostgreSQL 17 + Flyway (`V01`..`V05`)
-- **Routing:** React Router v6 (`createBrowserRouter` / `RouterProvider`), состояние вкладок в подсистемах сохраняется в URL query-параметре `?tab=...` через `useSearchParams` (устойчиво к `F5`).
+- **Routing:** React Router v6 (`createBrowserRouter` / `RouterProvider`). Состояние активных вкладок в подсистемах сохраняется в URL query-параметре `?tab=...` через `useSearchParams` (устойчиво к обновлению страницы `F5`).
 - **Экспорт документов:** `xlsx` (SheetJS) для Excel, `jspdf` + `jspdf-autotable` (с локальным шрифтом `public/fonts/DejaVuSans.ttf`) для PDF.
-- **Сборка и деплой:** Docker (`docker-compose.yml`, Nginx-прокси `/api/` -> `backend-java:8080`). Переменные `VITE_*` прокидываются на этапе сборки через `build.args` в `docker-compose.yml` и `ARG`/`ENV` в `Dockerfile` (`VITE_BACK_URL`, `VITE_APP_TITLE`, `VITE_NEWS_APP_URL`). В корне настроен `.npmrc` с `legacy-peer-deps=true`.
+- **Сборка и деплой (Docker & Nginx):**
+  - В корне фронтенда настроен `.npmrc` с `legacy-peer-deps=true`.
+  - Переменные `VITE_*` прокидываются на этапе сборки через `build.args` в `docker-compose.yml` и `ARG`/`ENV` в `docker/front/Dockerfile`:
+    - `VITE_BACK_URL=${BACK_URL}`
+    - `VITE_APP_TITLE=${FRONT_TITLE}`
+    - `VITE_NEWS_APP_URL=${NEWS_APP_URL}` (в `.env` указывается корневой URL фронтенда новостей **без** `/api/v1`, например `http://192.168.31`).
+  - **Сетевая доступность (UFW):** на сервере должны быть открыты порты фронтенда и бэкенда новостей (`sudo ufw allow 5174/tcp`, `sudo ufw allow 8085/tcp`), чтобы браузеры клиентов в локальной сети могли загружать `iframe` новостей и выполнять API-запросы.
 
 ---
 
@@ -16,15 +22,15 @@
 - **Механизм токенов (JWT):**
   - `Access Token` хранится в Redux (`state.auth.accessToken`).
   - `Refresh Token` хранится в `HttpOnly Cookie` (`withCredentials: true` в `axiosInstance`).
-  - **Формат ключа подписи (Backend):** в обоих Java-бэкендах (`back-java` и `news-keeper-back`) используется единый криптографический стандарт **Base64-декодирования** секрета (`Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))` / `Base64.getDecoder().decode(secret)`) с общим `JWT_ACCESS_SECRET`.
+  - **Формат ключа подписи (Backend):** в обоих Java-бэкендах (`back-java` и `news-keeper-back`) используется единый криптографический стандарт **Base64-декодирования** секрета (`Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))` / `Base64.getDecoder().decode(secret)`) с общим `JWT_ACCESS_SECRET` (32-байтовый ключ, сгенерированный через `openssl rand -base64 32`).
 - **Защита от разлогинивания при простое и гонке запросов:**
   - `src/api/axios.ts` (`injectStoreToAxios`): подставляет `Authorization: Bearer <token>` во все запросы, **кроме** `/auth/refresh`, `/auth/login`, `/auth/registry`.
   - `src/api/baseQuery.ts` (`executeSilentRefresh`): единый промис-мьютекс (`refreshPromise`) для `POST /auth/refresh`. Предотвращает гонку параллельных 401-запросов и вызывает `logOut()` только при явном ответе `401`/`403` от `/auth/refresh`.
   - `src/App.tsx`: инициализация сессии при загрузке/F5 (`isInitializing`) и проактивное фоновое обновление токена за 60 секунд до истечения `exp` из JWT и при возврате на вкладку (`visibilitychange`).
 - **Шифрование персональных данных в БД (`back-java`):**
-  - `EncryptedStringConverter` (`ru.ponyashov.employee_achievements.security.crypto`): JPA `AttributeConverter` с алгоритмом **AES-256-GCM** (случайный 12-байтовый IV на каждое сохранение, префикс `ENC:v1:` + Base64, ключ из `PROFILE_ENCRYPTION_KEY` с фолбэком на `JWT_ACCESS_SECRET`).
+  - `EncryptedStringConverter` (`ru.ponyashov.employee_achievements.security.crypto`): JPA `AttributeConverter` с алгоритмом **AES-256-GCM** (случайный 12-байтовый IV на каждое сохранение, префикс `ENC:v1:` + Base64, ключ из `PROFILE_ENCRYPTION_KEY` с фолбэком на `JWT_ACCESS_SECRET`). Поддерживает обратную совместимость при чтении старых открытых строк.
   - Применяется к полям `firstName`, `lastName` и `phone` в `ProfileEntity` (колонки `VARCHAR(512)` по миграции `V05__add_phone_and_expand_profile_columns.sql`).
-  - `ProfileEncryptionMigrator` (`ApplicationRunner`): при старте приложения автоматически шифрует через `JdbcTemplate` любые оставшиеся открытые (не начинающиеся с `ENC:v1:`) значения в `t_profiles`.
+  - `ProfileEncryptionMigrator` (`ApplicationRunner`): при старте приложения автоматически шифрует через `JdbcTemplate` любые оставшиеся открытые (не начинающиеся с `ENC:v1:`) значения в таблице `t_profiles`.
 - **Роутинг и права доступа (`src/routes/` + `routes.css`):**
   - Защита маршрутов через `ProtectedRoute` и `RoleGuard` (`ROLE_ADMIN`, `ROLE_USER`, `ROLE_SERVICE`, `ROLE_REPORT`, `ROLE_SUPERVISOR`, `ROLE_DEPARTMENT_ALL`, `ROLE_NEWSMAKER`).
 
@@ -57,9 +63,9 @@
 
 ### 4.2. Сотрудники, кадры и встроенные справочники (`src/features/directories/` + `directories.css`)
 
-- Прямой маршрут `/directories/profile` -> `EmployeesPage.tsx` -> `ProfileComponents.tsx` (без промежуточного `DirectoryDispatcher`).
+- Прямой маршрут `/directories/profile` -> `EmployeesPage.tsx` -> `ProfileComponents.tsx`.
 - Вкладки через `?tab=` (`employees` | `departments` | `positions`):
-  - **«👥 Сотрудники»** (`ProfileListPane.tsx` + `ProfileCardPane.tsx`): отображение и редактирование ФИО, Email, **телефона (`phone`)**, должности и отдела; двойной фильтр в списке (по фамилии + поиск по номеру телефона с нормализацией цифр).
+  - **«👥 Сотрудники»** (`ProfileListPane.tsx` + `ProfileCardPane.tsx`): отображение и редактирование ФИО, Email, **телефона (`phone`)**, должности и отдела; двойной фильтр в списке (по фамилии + поиск по номеру телефона с нормализацией цифр). При выборе строки в списке режим создания (`editingId = 'new'`) корректно сбрасывается.
   - **«🏢 Отделы»** и **«💼 Должности»** (`SimpleDirectoryTab.tsx`): просмотр для всех открывших раздел, редактирование/создание/удаление для ролей `ROLE_SERVICE`, `ROLE_ADMIN`.
 
 ### 4.3. Мои задачи и встроенные справочники (`src/features/tasks/` + `tasks.css`)
@@ -105,11 +111,11 @@
 - `components/ui/`: `ErpCommandBar.tsx`, `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx`, `ErpPagination.tsx`, `ErpColumnSelector.tsx`, `ui.css`
 - `features/admin/`: `adminAuthApi.ts`, `admin.css`, `components/` (`AdminUserManagement.tsx`, `AdminUserList.tsx`, `AdminPasswordReset.tsx`, `AdminRoleMatrix.tsx`)
 - `features/auth/`: `authSlice.ts`, `authApi.ts`
-- `features/bookings/`: `bookingsApi.ts, bookings.css, components/ (BookingsPage.tsx, BookingsTimelineView.tsx, BookingsJournalTable.tsx, BookingFormModal.tsx, RoomsDirectoryTab.tsx)`
-- `features/dashboard/`: `ErpDashboard.tsx, dashboard.css, tiles/ (AdminTile.tsx, BookingsTile.tsx, EmployeesTile.tsx, NewsTile.tsx, ReportsTile.tsx, TasksTile.tsx)`
-- `features/directories/`: `directoriesApi.ts, directories.css, components/ (SimpleDirectoryTab.tsx, profile/EmployeesPage.tsx, profile/ProfileComponents.tsx, profile/ProfileListPane.tsx, profile/ProfileCardPane.tsx)`
-- `features/news/`: `NewsHostPage.tsx, news.css`
-- `features/reports/`: `reportsApi.ts, reports.css, components/ (ReportViewer.tsx, ReportFilters.tsx, ReportTable.tsx, ReportExportModal.tsx), utils/ (exportReportToExcel.ts, exportReportToPdf.ts)`
-- `features/tasks/`: `tasksApi.ts, tasks.css, components/ (TasksJournal.tsx, TasksEmployeeList.tsx, TasksTablePane.tsx, TaskForm.tsx, TaskQueriesPane.tsx)`
-- `layouts/`: `MainLayout.tsx, MainLayout.css, AuthLayout.tsx, AuthLayout.css`
-- `routes/`: `router.tsx, AppRoutes.tsx, ProtectedRoute.tsx, RoleGuard.tsx, menuConfig.ts, routes.css`
+- `features/bookings/`: `bookingsApi.ts`, `bookings.css`, `components/` (`BookingsPage.tsx`, `BookingsTimelineView.tsx`, `BookingsJournalTable.tsx`, `BookingFormModal.tsx`, `RoomsDirectoryTab.tsx`)
+- `features/dashboard/`: `ErpDashboard.tsx`, `dashboard.css`, `tiles/` (`AdminTile.tsx`, `BookingsTile.tsx`, `EmployeesTile.tsx`, `NewsTile.tsx`, `ReportsTile.tsx`, `TasksTile.tsx`)
+- `features/directories/`: `directoriesApi.ts`, `directories.css`, `components/` (`SimpleDirectoryTab.tsx`, `profile/EmployeesPage.tsx`, `profile/ProfileComponents.tsx`, `profile/ProfileListPane.tsx`, `profile/ProfileCardPane.tsx`)
+- `features/news/`: `NewsHostPage.tsx`, `news.css`
+- `features/reports/`: `reportsApi.ts`, `reports.css`, `components/` (`ReportViewer.tsx`, `ReportFilters.tsx`, `ReportTable.tsx`, `ReportExportModal.tsx`), `utils/` (`exportReportToExcel.ts`, `exportReportToPdf.ts`)
+- `features/tasks/`: `tasksApi.ts`, `tasks.css`, `components/` (`TasksJournal.tsx`, `TasksEmployeeList.tsx`, `TasksTablePane.tsx`, `TaskForm.tsx`, `TaskQueriesPane.tsx`)
+- `layouts/`: `MainLayout.tsx`, `MainLayout.css`, `AuthLayout.tsx`, `AuthLayout.css`
+- `routes/`: `router.tsx`, `AppRoutes.tsx`, `ProtectedRoute.tsx`, `RoleGuard.tsx`, `menuConfig.ts`, `routes.css`
