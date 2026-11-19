@@ -1,6 +1,7 @@
 package ru.ponyashov.employee_achievements.service.impl;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +36,7 @@ public class JwtServiceImpl implements JwtService {
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .claims(claims)
                 .expiration(new Date(System.currentTimeMillis() + appConfig.jwt().atExpiration()))
-                .signWith(Keys.hmacShaKeyFor(appConfig.jwt().atSecretKey().getBytes(StandardCharsets.UTF_8)))
+                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(appConfig.jwt().atSecretKey())))
                 .compact();
     }
 
@@ -44,7 +45,7 @@ public class JwtServiceImpl implements JwtService {
                 .subject(userName)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + appConfig.jwt().rtExpiration()))
-                .signWith(Keys.hmacShaKeyFor(appConfig.jwt().rtSecretKey().getBytes(StandardCharsets.UTF_8)))
+                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(appConfig.jwt().atSecretKey())))
                 .compact();
     }
 
@@ -58,7 +59,7 @@ public class JwtServiceImpl implements JwtService {
 
     public String extractUsername(String token) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(appConfig.jwt().atSecretKey().getBytes(StandardCharsets.UTF_8)))
+                .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(appConfig.jwt().atSecretKey())))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -67,7 +68,7 @@ public class JwtServiceImpl implements JwtService {
 
     public String extractRtUsername(String token) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(appConfig.jwt().rtSecretKey().getBytes(StandardCharsets.UTF_8)))
+                .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(appConfig.jwt().atSecretKey())))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -86,7 +87,7 @@ public class JwtServiceImpl implements JwtService {
 
     private boolean isTokenExpired(String token) {
         Date expiration = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(appConfig.jwt().atSecretKey().getBytes(StandardCharsets.UTF_8))).build()
+                .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(appConfig.jwt().atSecretKey()))).build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getExpiration();
@@ -95,7 +96,8 @@ public class JwtServiceImpl implements JwtService {
 
     private boolean isRTokenExpired(String token) {
         Date expiration = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(appConfig.jwt().rtSecretKey().getBytes(StandardCharsets.UTF_8))).build()
+                .verifyWith(Keys.hmacShaKeyFor(
+                        Decoders.BASE64.decode(appConfig.jwt().atSecretKey()))).build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getExpiration();

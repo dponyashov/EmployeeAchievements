@@ -1,5 +1,6 @@
 package ru.ponyashov.employee_achievements.config.security;
 
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -116,7 +117,7 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withSecretKey(
-                Keys.hmacShaKeyFor(appConfig.jwt().atSecretKey().getBytes(StandardCharsets.UTF_8))
+                Keys.hmacShaKeyFor(Decoders.BASE64.decode(appConfig.jwt().atSecretKey()))
         ).build();
     }
 

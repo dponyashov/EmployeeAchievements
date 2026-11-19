@@ -8,6 +8,7 @@ import { ReportsTile } from './tiles/ReportsTile';
 import { TasksTile } from './tiles/TasksTile';
 import { AdminTile } from './tiles/AdminTile';
 import './dashboard.css';
+import { NewsTile } from './tiles/NewsTile';
 
 export const ErpDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const ErpDashboard: React.FC = () => {
     '/directories': DirectoriesTile,
     '/reports': ReportsTile,
     '/tasks': TasksTile,
+    '/news': NewsTile,
   };
 
   const visibleTiles = erpMenuItems.filter((item) => {

@@ -9,6 +9,7 @@ import { DirectoryItemDispatcher } from '../features/directories/DirectoryItemDi
 import { AdminUserManagement } from '../features/admin/components/AdminUserManagement';
 import { TasksJournal } from '../features/tasks/components/TasksJournal';
 import { ReportViewer } from '../features/reports/components/ReportViewer';
+import { NewsHostPage } from '../features/news/NewsHostPage';
 
 export const erpRouter = createBrowserRouter([
   {
@@ -33,6 +34,14 @@ export const erpRouter = createBrowserRouter([
           {
             path: '/dashboard',
             element: <ErpDashboard />,
+          },
+          {
+            path: '/news',
+            element: (
+              <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_NEWSMAKER', 'ROLE_ADMIN']}>
+                <NewsHostPage />
+              </RoleGuard>
+            ),
           },
           {
             path: '/admin',

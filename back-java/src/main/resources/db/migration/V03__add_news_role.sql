@@ -1,0 +1,1 @@
+INSERT INTO public.t_roles(description, name) VALUES ('Роль для новостного редактора', 'ROLE_NEWSMAKER');

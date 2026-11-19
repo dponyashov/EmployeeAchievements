@@ -14,6 +14,12 @@ export const erpMenuItems: MenuItem[] = [
     allowedRoles: ['ROLE_USER', 'ROLE_ADMIN'],
   },
   {
+    path: '/news',
+    title: 'Новости',
+    icon: '📰',
+    allowedRoles: ['ROLE_USER', 'ROLE_NEWSMAKER', 'ROLE_ADMIN'],
+  },
+  {
     path: '/admin',
     title: 'Администрирование',
     icon: '🛠️',

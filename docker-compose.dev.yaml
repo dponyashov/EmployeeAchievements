@@ -45,14 +45,12 @@ services:
     build:
       dockerfile: ../docker/front/Dockerfile
       args:
-        - VITE_BACK_URL=${BACK_URL} # Передаем переменную из .env хоста в Dockerfile
+        - VITE_BACK_URL=${BACK_URL}
         - VITE_APP_TITLE=${FRONT_TITLE}
+        - VITE_NEWS_APP_URL=${NEWS_APP_URL}
       context: ./front-react
     container_name: ea-front
-    #    restart: always
     ports:
       - ${FRONT_PORT}:80
     depends_on:
       - backend-java
-    # volumes:
-    #   - ./docker/front/nginx.conf:/etc/nginx/conf.d/default.conf:ro
