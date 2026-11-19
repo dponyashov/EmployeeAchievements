@@ -10,6 +10,7 @@ import { AdminUserManagement } from '../features/admin/components/AdminUserManag
 import { TasksJournal } from '../features/tasks/components/TasksJournal';
 import { ReportViewer } from '../features/reports/components/ReportViewer';
 import { NewsHostPage } from '../features/news/NewsHostPage';
+import { BookingsPage } from '../features/bookings/components/BookingsPage';
 
 export const erpRouter = createBrowserRouter([
   {
@@ -48,6 +49,14 @@ export const erpRouter = createBrowserRouter([
             element: (
               <RoleGuard allowedRoles={['ROLE_ADMIN']}>
                 <AdminUserManagement />
+              </RoleGuard>
+            ),
+          },
+          {
+            path: '/bookings',
+            element: (
+              <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN']}>
+                <BookingsPage />
               </RoleGuard>
             ),
           },

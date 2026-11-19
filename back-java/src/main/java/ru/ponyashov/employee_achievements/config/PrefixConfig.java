@@ -27,6 +27,11 @@ public class PrefixConfig implements WebMvcConfigurer {
                         .and(HandlerTypePredicate.forAnnotation(RestController.class))
         );
 
+        configurer.addPathPrefix("/api/booking",
+                HandlerTypePredicate.forBasePackage("ru.ponyashov.employee_achievements.controller.booking")
+                        .and(HandlerTypePredicate.forAnnotation(RestController.class))
+        );
+
         configurer.addPathPrefix("/api/report",
                 HandlerTypePredicate.forBasePackage("ru.ponyashov.employee_achievements.controller.report")
                         .and(HandlerTypePredicate.forAnnotation(RestController.class))

@@ -1,0 +1,387 @@
+/* =========================================================
+   ПОДСИСТЕМА "БРОНИРОВАНИЕ ПОМЕЩЕНИЙ" (1С:Такси)
+   ========================================================= */
+
+.bookings-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  font-size: 13px;
+}
+
+/* --- Верхняя панель навигации и переключателей --- */
+.bookings-toolbar {
+  background: #f5f5f5;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.bookings-toolbar-left,
+.bookings-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bookings-date-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bookings-date-input {
+  padding: 4px 6px;
+  border: 1px solid #bbb;
+  background: #fff;
+  font-size: 13px;
+}
+
+.bookings-room-filter {
+  padding: 4px 6px;
+  border: 1px solid #bbb;
+  background: #fff;
+  font-size: 13px;
+  min-width: 210px;
+}
+
+/* Переключатель режимов (Шахматка / Журнал / Помещения) */
+.bookings-view-tabs {
+  display: inline-flex;
+  border: 1px solid #aaa;
+  background: #eaeaea;
+}
+
+.bookings-tab-btn {
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+  border-right: 1px solid #bbb;
+}
+
+.bookings-tab-btn:last-child {
+  border-right: none;
+}
+
+.bookings-tab-btn--active {
+  background: #ffcc00;
+  font-weight: bold;
+}
+
+.bookings-create-btn {
+  background: #ffcc00;
+  border: 1px solid #997a00;
+  padding: 5px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.bookings-create-btn:hover {
+  background: #f5c200;
+}
+
+/* --- Рабочая область --- */
+.bookings-content {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 14px;
+}
+
+/* --- Режим 1: Визуальная почасовая шахматка --- */
+.bookings-grid-wrap {
+  overflow-x: auto;
+  border: 1px solid #bbb;
+}
+
+.bookings-timeline-table {
+  width: 100%;
+  min-width: 960px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.bookings-timeline-table th {
+  background: #eaeaea;
+  border: 1px solid #bbb;
+  padding: 6px 4px;
+  font-size: 12px;
+  text-align: center;
+  color: #333;
+}
+
+.bookings-timeline-table th.col-room-name {
+  width: 220px;
+  text-align: left;
+  padding-left: 8px;
+}
+
+.bookings-timeline-table td {
+  border: 1px solid #ddd;
+  height: 54px;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+.bookings-room-cell {
+  background: #fafafa;
+  padding: 6px 8px !important;
+  border-right: 2px solid #bbb !important;
+}
+
+.bookings-room-title {
+  font-weight: bold;
+  color: #222;
+}
+
+.bookings-room-meta {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.bookings-slot-free {
+  cursor: pointer;
+  text-align: center;
+  color: transparent;
+  font-size: 14px;
+  transition: background 0.1s ease;
+}
+
+.bookings-slot-free:hover {
+  background: #fff9db;
+  color: #997a00;
+}
+
+.bookings-slot-busy {
+  background: #d8ebff;
+  border: 1px solid #7ab3ef !important;
+  padding: 4px 6px !important;
+  cursor: pointer;
+  vertical-align: top !important;
+  overflow: hidden;
+}
+
+.bookings-slot-busy--own {
+  background: #fff3bf;
+  border-color: #e6b800 !important;
+}
+
+.bookings-slot-busy-time {
+  font-size: 11px;
+  font-weight: bold;
+  color: #1c4e80;
+}
+
+.bookings-slot-busy--own .bookings-slot-busy-time {
+  color: #7a5c00;
+}
+
+.bookings-slot-busy-title {
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookings-slot-busy-author {
+  font-size: 11px;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookings-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #555;
+  align-items: center;
+}
+
+.bookings-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bookings-legend-box {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #999;
+  display: inline-block;
+}
+
+.bookings-legend-box--own {
+  background: #fff3bf;
+  border-color: #e6b800;
+}
+
+.bookings-legend-box--other {
+  background: #d8ebff;
+  border-color: #7ab3ef;
+}
+
+/* --- Режим 2: Табличный журнал броней --- */
+.bookings-journal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.bookings-journal-table th {
+  background: #eaeaea;
+  border: 1px solid #aaa;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.bookings-journal-table td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+}
+
+.bookings-journal-row {
+  cursor: pointer;
+}
+
+.bookings-journal-row--selected {
+  background-color: #c1d9ff;
+}
+
+.bookings-time-badge {
+  font-family: monospace;
+  font-weight: bold;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border: 1px solid #ccc;
+}
+
+/* --- Модальное окно формы бронирования / помещения --- */
+.bookings-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.bookings-modal-window {
+  background: #fff;
+  border: 1px solid #999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  width: 460px;
+  max-width: 95vw;
+  overflow: hidden;
+}
+
+.bookings-modal-header {
+  background: #ffcc00;
+  border-bottom: 1px solid #d4a000;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 13px;
+  color: #333;
+}
+
+.bookings-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+}
+
+.bookings-modal-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bookings-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bookings-form-row label {
+  font-weight: bold;
+  color: #444;
+  font-size: 12px;
+}
+
+.bookings-form-row input,
+.bookings-form-row select,
+.bookings-form-row textarea {
+  padding: 5px 6px;
+  border: 1px solid #bbb;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.bookings-form-time-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.bookings-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.bookings-delete-btn {
+  background: #fff0f0;
+  border: 1px solid #cc0000;
+  color: #cc0000;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.bookings-room-inactive {
+  color: #999;
+  text-decoration: line-through;
+}
+
+.bookings-status-pill {
+  padding: 2px 6px;
+  font-size: 11px;
+  border: 1px solid #bbb;
+}
+
+.bookings-status-pill--active {
+  background: #e6f4ea;
+  border-color: #449d44;
+  color: #2b662b;
+}
+
+.bookings-status-pill--closed {
+  background: #f5f5f5;
+  color: #777;
+}

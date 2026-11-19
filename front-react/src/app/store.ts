@@ -1,4 +1,3 @@
-// src/app/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import { authApi } from '../features/auth/authApi';
@@ -8,6 +7,7 @@ import { adminAuthApi } from '../features/admin/adminAuthApi';
 import { tasksApi } from '../features/tasks/tasksApi';
 import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
 import { reportsApi } from '../features/reports/reportsApi';
+import { bookingsApi } from '../features/bookings/bookingsApi';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +17,7 @@ export const store = configureStore({
     [adminAuthApi.reducerPath]: adminAuthApi.reducer,
     [tasksApi.reducerPath]: tasksApi.reducer,
     [reportsApi.reducerPath]: reportsApi.reducer,
+    [bookingsApi.reducerPath]: bookingsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -25,6 +26,7 @@ export const store = configureStore({
       adminAuthApi.middleware,
       tasksApi.middleware,
       reportsApi.middleware,
+      bookingsApi.middleware,
     ),
 });
 
@@ -33,6 +35,5 @@ injectStoreToAxios(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// Кастомные хуки для безопасной типизации по всему проекту
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
