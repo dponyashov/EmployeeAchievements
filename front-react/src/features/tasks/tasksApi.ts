@@ -11,8 +11,9 @@ export interface EmployeeProfile {
   email: string;
   firstName: string;
   lastName: string;
-  position: PositionOrDepartment | null;
-  department: PositionOrDepartment | null;
+  phone?: string | null;
+  position?: { id: number; name: string } | null;
+  department?: { id: number; name: string } | null;
 }
 
 export interface Task {

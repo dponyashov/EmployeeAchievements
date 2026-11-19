@@ -62,6 +62,9 @@ public class ProfileServiceImpl implements ProfileService {
         oldItem.setEmail(dto.getEmail() != null ? dto.getEmail() : oldItem.getEmail() );
         oldItem.setFirstName(dto.getFirstName() != null ? dto.getFirstName() : oldItem.getFirstName() );
         oldItem.setLastName(dto.getLastName() != null ? dto.getLastName() : oldItem.getLastName() );
+        if (dto.getPhone() != null) {
+            oldItem.setPhone(dto.getPhone());
+        }
 
         if(dto.getPositionId() != null){
             var newPosition = positionRepository.findById(dto.getPositionId())
@@ -123,6 +126,11 @@ public class ProfileServiceImpl implements ProfileService {
         item.setEmail(item.getEmail().trim().toLowerCase());
         item.setFirstName(item.getFirstName().trim());
         item.setLastName(item.getLastName().trim());
+
+        if (item.getPhone() != null) {
+            String trimmedPhone = item.getPhone().trim();
+            item.setPhone(trimmedPhone.isEmpty() ? null : trimmedPhone);
+        }
 
         var savedItem = profileRepository.save(item);
         return ProfileMapper.entityToDto(savedItem);

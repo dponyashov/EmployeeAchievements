@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../app/store';
 import { erpMenuItems } from '../../routes/menuConfig';
-import { DirectoriesTile } from './tiles/DirectoriesTile';
 import { EmployeesTile } from './tiles/EmployeesTile';
 import { ReportsTile } from './tiles/ReportsTile';
 import { TasksTile } from './tiles/TasksTile';
@@ -21,7 +20,6 @@ export const ErpDashboard: React.FC = () => {
     '/dashboard': () => null,
     '/admin': AdminTile,
     '/directories/profile': EmployeesTile,
-    '/directories': DirectoriesTile,
     '/reports': ReportsTile,
     '/tasks': TasksTile,
     '/news': NewsTile,

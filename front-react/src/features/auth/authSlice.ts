@@ -2,13 +2,14 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode'; // Импортируем декодер
 
 // 1. В интерфейсе UserInfo добавьте employeeId:
-interface UserInfo {
+export interface UserInfo {
   id: number;
-  email: string;
   name: string;
-  position: string;
-  department: string;
+  email?: string;
+  phone?: string;
   roles: string[];
+  position?: string;
+  department?: string;
 }
 
 interface AuthState {
@@ -91,20 +92,20 @@ const authSlice = createSlice({
         firstName: string;
         lastName: string;
         email: string;
+        phone?: string;
         position?: string;
         department?: string;
       }>,
     ) => {
-      if (!state.user) return;
-      const { firstName, lastName, email, position, department } = action.payload;
-
-      const displayName =
-        lastName || firstName ? `${lastName || ''} ${firstName || ''}`.trim() : email;
-
-      state.user.name = displayName;
-      state.user.email = email;
-      if (position !== undefined) state.user.position = position;
-      if (department !== undefined) state.user.department = department;
+      if (state.user) {
+        const { firstName, lastName, email, phone, position, department } =
+          action.payload;
+        state.user.name = `${lastName} ${firstName}`.trim();
+        state.user.email = email;
+        if (phone !== undefined) state.user.phone = phone;
+        if (position !== undefined) state.user.position = position;
+        if (department !== undefined) state.user.department = department;
+      }
     },
   },
 });

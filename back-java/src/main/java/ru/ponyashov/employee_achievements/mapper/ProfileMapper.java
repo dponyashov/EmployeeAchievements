@@ -12,9 +12,9 @@ public class ProfileMapper {
                 .email(dto.getEmail())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
+                .phone(dto.getPhone())
                 .department(dto.getDepartment() != null ? DepartmentMapper.dtoToEntity(dto.getDepartment()) : null)
                 .position(dto.getPosition() != null ? PositionMapper.dtoToEntity(dto.getPosition()) : null)
-//                .tasks(dto.getTasks() != null ? dto.getTasks().stream().map(TaskMapper::dtoToEntity).toList() : null)
                 .build();
     }
 
@@ -23,6 +23,7 @@ public class ProfileMapper {
                 .email(dto.getEmail())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
+                .phone(dto.getPhone())
                 .build();
     }
 
@@ -32,9 +33,9 @@ public class ProfileMapper {
                 .email(entity.getEmail())
                 .firstName(entity.getFirstName())
                 .lastName(entity.getLastName())
+                .phone(entity.getPhone())
                 .department(entity.getDepartment() != null ? DepartmentMapper.entityToDto(entity.getDepartment()) : null)
                 .position(entity.getPosition() != null ? PositionMapper.entityToDto(entity.getPosition()) : null)
-//                .tasks(entity.getTasks() != null ? entity.getTasks().stream().map(TaskMapper::entityToDto).toList() : null)
                 .build();
     }
 }

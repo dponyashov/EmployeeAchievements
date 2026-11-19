@@ -12,6 +12,7 @@ import { BookingFormModal } from './BookingFormModal';
 import { RoomsDirectoryTab } from './RoomsDirectoryTab';
 import { ErpCommandBar } from '../../../components/ui/ErpCommandBar';
 import '../bookings.css';
+import { useSearchParams } from 'react-router-dom';
 
 const getTodayIso = () => {
   const d = new Date();
@@ -43,7 +44,27 @@ export const BookingsPage: React.FC = () => {
 
   const [selectedDate, setSelectedDate] = useState<string>(getTodayIso);
   const [roomFilterId, setRoomFilterId] = useState<number>(0);
-  const [viewMode, setViewMode] = useState<'timeline' | 'journal' | 'rooms'>('timeline');
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const viewMode: 'timeline' | 'journal' | 'rooms' =
+    tabParam === 'journal' || tabParam === 'rooms' ? tabParam : 'timeline';
+
+  const handleViewModeChange = (mode: 'timeline' | 'journal' | 'rooms') => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (mode === 'timeline') {
+          next.delete('tab');
+        } else {
+          next.set('tab', mode);
+        }
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
 
   // Состояние модального окна бронирования
@@ -121,7 +142,7 @@ export const BookingsPage: React.FC = () => {
               className={`bookings-tab-btn ${
                 viewMode === 'timeline' ? 'bookings-tab-btn--active' : ''
               }`}
-              onClick={() => setViewMode('timeline')}
+              onClick={() => handleViewModeChange('timeline')}
             >
               🗓️ Шахматка
             </button>
@@ -130,7 +151,7 @@ export const BookingsPage: React.FC = () => {
               className={`bookings-tab-btn ${
                 viewMode === 'journal' ? 'bookings-tab-btn--active' : ''
               }`}
-              onClick={() => setViewMode('journal')}
+              onClick={() => handleViewModeChange('journal')}
             >
               📋 Журнал ({bookings.length})
             </button>
@@ -139,7 +160,7 @@ export const BookingsPage: React.FC = () => {
               className={`bookings-tab-btn ${
                 viewMode === 'rooms' ? 'bookings-tab-btn--active' : ''
               }`}
-              onClick={() => setViewMode('rooms')}
+              onClick={() => handleViewModeChange('rooms')}
             >
               🚪 Помещения ({rooms.length})
             </button>

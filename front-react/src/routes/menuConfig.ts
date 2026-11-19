@@ -39,12 +39,12 @@ export const erpMenuItems: MenuItem[] = [
     allowedRoles: ['ROLE_SUPERVISOR', 'ROLE_ADMIN'],
   },
   // Оставляем общий навигатор для должностей, отделов, услуг и компонентов
-  {
-    path: '/directories',
-    title: 'Справочники (НСИ)',
-    icon: '📚',
-    allowedRoles: ['ROLE_SERVICE', 'ROLE_ADMIN'],
-  },
+  // {
+  //   path: '/directories',
+  //   title: 'Справочники (НСИ)',
+  //   icon: '📚',
+  //   allowedRoles: ['ROLE_SERVICE', 'ROLE_ADMIN'],
+  // },
   {
     path: '/reports',
     title: 'Отчеты и анализ',

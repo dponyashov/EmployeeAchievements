@@ -10,11 +10,13 @@ interface ProfileCardPaneProps {
   isSaving: boolean;
   formLastName: string;
   formFirstName: string;
+  formPhone: string;
   formEmail: string;
   formPositionId: string;
   formDepartmentId: string;
   onLastNameChange: (v: string) => void;
   onFirstNameChange: (v: string) => void;
+  onPhoneChange: (v: string) => void;
   onEmailChange: (v: string) => void;
   onPositionChange: (v: string) => void;
   onDepartmentChange: (v: string) => void;
@@ -31,11 +33,13 @@ export const ProfileCardPane: React.FC<ProfileCardPaneProps> = ({
   isSaving,
   formLastName,
   formFirstName,
+  formPhone,
   formEmail,
   formPositionId,
   formDepartmentId,
   onLastNameChange,
   onFirstNameChange,
+  onPhoneChange,
   onEmailChange,
   onPositionChange,
   onDepartmentChange,
@@ -73,6 +77,16 @@ export const ProfileCardPane: React.FC<ProfileCardPaneProps> = ({
               value={formFirstName}
               onChange={(e) => onFirstNameChange(e.target.value)}
               required
+            />
+          </div>
+
+          <div className="erp-form-group">
+            <label>Номер телефона:</label>
+            <input
+              type="tel"
+              placeholder="+7 (999) 000-00-00"
+              value={formPhone}
+              onChange={(e) => onPhoneChange(e.target.value)}
             />
           </div>
 
@@ -132,6 +146,10 @@ export const ProfileCardPane: React.FC<ProfileCardPaneProps> = ({
                 <td>
                   <strong>{selectedEmployee.id}</strong>
                 </td>
+              </tr>
+              <tr className="profile-view-row">
+                <td className="profile-view-label">Телефон:</td>
+                <td>{selectedEmployee.phone || 'Не указан'}</td>
               </tr>
               <tr className="profile-view-row">
                 <td className="profile-view-label">Email:</td>

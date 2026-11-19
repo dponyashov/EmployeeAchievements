@@ -14,8 +14,7 @@ public class ProfileResponseDto {
     private String email;
     private String firstName;
     private String lastName;
-//    private UserResponseDto user;
+    private String phone;
     private PositionResponseDto position;
     private DepartmentResponseDto department;
-//    private Collection<TaskResponseDto> tasks;
 }

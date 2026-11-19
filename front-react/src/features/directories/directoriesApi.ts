@@ -12,6 +12,7 @@ export interface ProfileItem {
   email: string;
   firstName: string;
   lastName: string;
+  phone?: string | null;
   position: { id: number; name: string } | null;
   department: { id: number; name: string } | null;
 }
@@ -75,15 +76,14 @@ export const directoriesApi = createApi({
       }),
       invalidatesTags: (result, error) => [{ type: 'DirectoryList', id: 'profile' }],
     }),
-
-    // 2. Вспомогательный запрос для выпадающего списка Должностей
     getPositionsForSelect: builder.query<any[], void>({
       query: () => ({ url: '/directory/position', method: 'GET' }),
+      providesTags: [{ type: 'DirectoryList', id: 'position' }],
     }),
 
-    // 3. Вспомогательный запрос для выпадающего списка Отделов
     getDepartmentsForSelect: builder.query<any[], void>({
       query: () => ({ url: '/directory/department', method: 'GET' }),
+      providesTags: [{ type: 'DirectoryList', id: 'department' }],
     }),
   }),
 });

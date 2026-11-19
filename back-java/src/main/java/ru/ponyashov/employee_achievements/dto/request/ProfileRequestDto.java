@@ -25,7 +25,8 @@ public class ProfileRequestDto {
     @Size(min = 5, max = 30, message = "Фамилия должна быть от 5 до 30 символов")
     private String lastName;
 
-//    private Long userId;
+    @Size(max = 30, message = "Номер телефона не должен превышать 30 символов")
+    private String phone;
 
     @NotBlank(message = "Код должности не должен быть пустым")
     @Min(value = 1, message = "Код должности должен быть не менее 1")

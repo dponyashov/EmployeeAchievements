@@ -2,6 +2,7 @@ package ru.ponyashov.employee_achievements.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.ponyashov.employee_achievements.security.crypto.EncryptedStringConverter;
 
 import java.util.Collection;
 
@@ -11,9 +12,7 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "t_profiles"
-//        , schema = "bs_schema"
-)
+@Table(name = "t_profiles")
 public class ProfileEntity {
 
     @Id
@@ -22,9 +21,17 @@ public class ProfileEntity {
 
     private String email;
 
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "first_name", length = 512)
     private String firstName;
 
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "last_name", length = 512)
     private String lastName;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "phone", length = 512)
+    private String phone;
 
     @OneToOne(fetch = FetchType.LAZY)
     private UserEntity user;

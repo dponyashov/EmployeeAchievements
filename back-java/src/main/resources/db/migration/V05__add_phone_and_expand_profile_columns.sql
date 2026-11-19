@@ -1,0 +1,6 @@
+ALTER TABLE t_profiles
+    ADD COLUMN IF NOT EXISTS phone VARCHAR(512);
+
+ALTER TABLE t_profiles
+    ALTER COLUMN first_name TYPE VARCHAR(512),
+    ALTER COLUMN last_name TYPE VARCHAR(512);

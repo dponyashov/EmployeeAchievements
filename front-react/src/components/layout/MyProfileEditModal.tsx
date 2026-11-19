@@ -39,6 +39,7 @@ export const MyProfileEditModal: React.FC<MyProfileEditModalProps> = ({ onClose 
   const [formEmail, setFormEmail] = useState('');
   const [formFirstName, setFormFirstName] = useState('');
   const [formLastName, setFormLastName] = useState('');
+  const [formPhone, setFormPhone] = useState('');
   const [formPositionId, setFormPositionId] = useState('');
   const [formDepartmentId, setFormDepartmentId] = useState('');
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
@@ -48,6 +49,7 @@ export const MyProfileEditModal: React.FC<MyProfileEditModalProps> = ({ onClose 
       setFormEmail(currentEmployee.email || '');
       setFormFirstName(currentEmployee.firstName || '');
       setFormLastName(currentEmployee.lastName || '');
+      setFormPhone(currentEmployee.phone || '');
       setFormPositionId(currentEmployee.position?.id?.toString() || '');
       setFormDepartmentId(currentEmployee.department?.id?.toString() || '');
     }
@@ -74,6 +76,7 @@ export const MyProfileEditModal: React.FC<MyProfileEditModalProps> = ({ onClose 
       email: formEmail,
       firstName: formFirstName,
       lastName: formLastName,
+      phone: formPhone,
       positionId: formPositionId ? Number(formPositionId) : null,
       departmentId: formDepartmentId ? Number(formDepartmentId) : null,
     };
@@ -89,6 +92,7 @@ export const MyProfileEditModal: React.FC<MyProfileEditModalProps> = ({ onClose 
         updateUserProfile({
           firstName: formFirstName,
           lastName: formLastName,
+          phone: formPhone,
           email: formEmail,
           position: selectedPos?.name ?? '',
           department: selectedDept?.name ?? '',
@@ -147,11 +151,13 @@ export const MyProfileEditModal: React.FC<MyProfileEditModalProps> = ({ onClose 
                 formLastName={formLastName}
                 formFirstName={formFirstName}
                 formEmail={formEmail}
+                formPhone={formPhone}
                 formPositionId={formPositionId}
                 formDepartmentId={formDepartmentId}
                 onLastNameChange={setFormLastName}
                 onFirstNameChange={setFormFirstName}
                 onEmailChange={setFormEmail}
+                onPhoneChange={setFormPhone}
                 onPositionChange={setFormPositionId}
                 onDepartmentChange={setFormDepartmentId}
                 onSave={handleSave}
