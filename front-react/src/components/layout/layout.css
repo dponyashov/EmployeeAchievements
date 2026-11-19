@@ -227,3 +227,16 @@
 .erp-profile-modal-form-wrap {
   width: 100%;
 }
+/* --- Подвал системы (ErpFooter) --- */
+.erp-footer {
+  background-color: #eaeaea;
+  border-top: 1px solid var(--1c-border, #ccc);
+  height: 25px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  font-size: 11px;
+  color: var(--1c-text-muted, #666);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
