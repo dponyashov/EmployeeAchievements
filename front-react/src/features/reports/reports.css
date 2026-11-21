@@ -2,12 +2,11 @@
    ПОДСИСТЕМА "ОТЧЕТЫ И АНАЛИЗ" (1С:Такси)
    ========================================================= */
 
-/* --- Общий контейнер отчета (ReportViewer) --- */
 .report-viewer {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
+  background: var(--1c-white);
   font-size: 13px;
 }
 
@@ -21,10 +20,10 @@
   padding: 12px;
 }
 
-/* --- Панель фильтров и компоновки (ReportFilters) --- */
+/* --- Панель фильтров и компоновки --- */
 .report-filters-form {
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  background: var(--1c-bg-panel);
+  border-bottom: 1px solid var(--1c-border-medium);
   padding: 12px;
 }
 
@@ -47,21 +46,21 @@
 
 .report-filter-input {
   padding: 4px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   outline: none;
   font-size: 13px;
-  background: #fff;
+  background: var(--1c-white);
 }
 
-/* Лента активных токенов отбора */
+/* --- Лента активных токенов отбора --- */
 .report-tokens-bar {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 12px;
-  background: #fff;
+  background: var(--1c-white);
   padding: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .report-token {
@@ -70,44 +69,44 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid #bbb;
-  background: #f5f5f5;
+  border: 1px solid var(--1c-border-strong);
+  background: var(--1c-bg-panel);
 }
 
 .report-token--year {
-  background: #f5f5f5;
-  border-color: #bbb;
+  background: var(--1c-bg-panel);
+  border-color: var(--1c-border-strong);
 }
 
 .report-token--profile {
-  background: #e1f5fe;
-  border-color: #03a9f4;
+  background: var(--1c-slot-blue-bg);
+  border-color: var(--1c-slot-blue-border);
 }
 
 .report-token--service {
-  background: #fff9e6;
-  border-color: #ffcc00;
+  background: var(--1c-yellow-soft);
+  border-color: var(--1c-yellow);
 }
 
 .report-token--component {
-  background: #e2ece9;
-  border-color: #a3c1ad;
+  background: var(--1c-success-bg);
+  border-color: var(--1c-success-green);
 }
 
 .report-token-remove {
   border: none;
   background: none;
   cursor: pointer;
-  color: red;
+  color: var(--1c-error-text);
   font-weight: bold;
   padding: 0 2px;
 }
 
-/* Нижняя панель месяцев, размера страницы и кнопки запуска */
+/* --- Нижняя панель месяцев, размера страницы и кнопки запуска --- */
 .report-filters-bottom {
   display: flex;
   align-items: center;
-  border-top: 1px dashed #ccc;
+  border-top: 1px dashed var(--1c-border-medium);
   padding-top: 10px;
   flex-wrap: wrap;
   gap: 15px;
@@ -121,15 +120,15 @@
 .report-month-btn {
   padding: 2px 6px;
   margin-right: 3px;
-  background: #fff;
-  border: 1px solid #bbb;
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border-strong);
   cursor: pointer;
   font-size: 11px;
   font-weight: normal;
 }
 
 .report-month-btn--selected {
-  background: #ffcc00;
+  background: var(--1c-yellow);
   font-weight: bold;
 }
 
@@ -143,21 +142,21 @@
 
 .report-page-size-label {
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .report-page-size-select {
   padding: 2px 6px;
-  border: 1px solid #bbb;
-  background: #fff;
+  border: 1px solid var(--1c-border-strong);
+  background: var(--1c-white);
   outline: none;
   cursor: pointer;
   font-weight: bold;
 }
 
 .report-generate-btn {
-  background: #ffcc00;
-  border: 1px solid #997a00;
+  background: var(--1c-yellow);
+  border: 1px solid var(--1c-yellow-border);
   padding: 4px 25px;
   font-weight: bold;
   cursor: pointer;
@@ -169,27 +168,27 @@
   opacity: 0.7;
 }
 
-/* --- Таблица отчета (ReportTable) --- */
+/* --- Таблица отчета --- */
 .report-table-empty {
   display: flex;
   height: 100%;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: var(--1c-text-muted);
   font-size: 14px;
   margin-top: 60px;
 }
 
 .report-export-trigger-btn {
   padding: 4px 10px;
-  background: #f5f5f5;
-  border: 1px solid #aaa;
+  background: var(--1c-bg-panel);
+  border: 1px solid var(--1c-border-dark);
   cursor: pointer;
   font-size: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .report-grid {
@@ -199,14 +198,14 @@
 }
 
 .report-grid thead tr {
-  background: #eaeaea;
-  border-bottom: 2px solid #333;
+  background: var(--1c-bg-header-cell);
+  border-bottom: 2px solid var(--1c-text-dark);
   text-align: left;
 }
 
 .report-grid th {
   padding: 6px;
-  border: 1px solid #aaa;
+  border: 1px solid var(--1c-border-dark);
 }
 
 .report-grid th.col-period {
@@ -228,12 +227,12 @@
 }
 
 .report-grid tbody tr {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--1c-border-medium);
 }
 
 .report-grid td {
   padding: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .report-grid td.cell-period {
@@ -248,11 +247,11 @@
 
 .report-grid-task-desc {
   font-size: 11px;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .report-grid td.cell-directory {
-  color: #444;
+  color: var(--1c-text-secondary);
 }
 
 .report-grid td.cell-profile,
@@ -263,7 +262,7 @@
 .report-queries-list {
   margin: 0;
   padding-left: 16px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .report-queries-list li {
@@ -271,14 +270,14 @@
 }
 
 .report-queries-empty {
-  color: #888;
+  color: var(--1c-text-muted);
 }
 
-/* --- Модальное окно экспорта (ReportExportModal) --- */
+/* --- Модальное окно экспорта --- */
 .report-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: var(--1c-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,24 +285,24 @@
 }
 
 .report-modal-window {
-  background-color: #fff;
-  border: 1px solid #999;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  background-color: var(--1c-white);
+  border: 1px solid var(--1c-border-dark);
+  box-shadow: var(--1c-shadow-modal);
   width: 360px;
   max-width: 95vw;
   overflow: hidden;
 }
 
 .report-modal-header {
-  background-color: #ffcc00;
-  border-bottom: 1px solid #d4a000;
+  background-color: var(--1c-yellow);
+  border-bottom: 1px solid var(--1c-yellow-header-border);
   padding: 8px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
   font-size: 13px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .report-modal-close {
@@ -312,12 +311,12 @@
   font-size: 14px;
   cursor: pointer;
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .report-modal-body {
   padding: 20px;
-  background: #fff;
+  background: var(--1c-white);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -326,7 +325,7 @@
 
 .report-modal-info {
   font-size: 12px;
-  color: #555;
+  color: var(--1c-text-secondary);
   text-align: center;
 }
 
@@ -335,7 +334,7 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -348,11 +347,11 @@
 }
 
 .report-modal-btn--excel {
-  background: #ffcc00;
-  border: 1px solid #997a00;
+  background: var(--1c-yellow);
+  border: 1px solid var(--1c-yellow-border);
 }
 
 .report-modal-btn--pdf {
-  background: #f5f5f5;
-  border: 1px solid #999;
+  background: var(--1c-bg-panel);
+  border: 1px solid var(--1c-border-dark);
 }

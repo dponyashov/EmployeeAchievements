@@ -18,7 +18,7 @@
 }
 
 .erp-cmd-btn--danger {
-  color: #a30000;
+  color: var(--1c-error-dark);
 }
 
 .erp-search-row {
@@ -32,7 +32,7 @@
   float: none;
   margin: 0;
   padding: 4px 6px;
-  border: 1px solid #c4c4c4;
+  border: 1px solid var(--1c-border-strong);
   font-size: 13px;
 }
 
@@ -57,17 +57,17 @@
 
 .erp-combobox-label {
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .erp-combobox-control {
   display: flex;
-  border: 1px solid #bbb;
-  background: #fff;
+  border: 1px solid var(--1c-border-strong);
+  background: var(--1c-white);
 }
 
 .erp-combobox-control--disabled {
-  background: #f0f0f0;
+  background: var(--1c-bg-gray);
 }
 
 .erp-combobox-input {
@@ -80,7 +80,7 @@
 
 .erp-combobox-check {
   padding: 5px;
-  color: green;
+  color: var(--1c-success-green);
   font-size: 11px;
   align-self: center;
   user-select: none;
@@ -88,8 +88,8 @@
 
 .erp-combobox-toggle {
   padding: 0 8px;
-  background: #e6e6e6;
-  border-left: 1px solid #bbb;
+  background: var(--1c-bg-control);
+  border-left: 1px solid var(--1c-border-strong);
   border-top: none;
   border-right: none;
   border-bottom: none;
@@ -105,39 +105,39 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: #fff;
-  border: 1px solid #ccc;
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border-medium);
   z-index: 100;
   max-height: 150px;
   overflow-y: auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--1c-shadow-dropdown);
 }
 
 .erp-combobox-option {
   padding: 6px 10px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--1c-border-row);
   background: transparent;
   font-weight: normal;
 }
 
-.erp-combobox-option:hover {
-  background-color: #ffecb3;
+.erp-combobox-option:hover,
+.erp-combobox-option--selected {
+  background-color: var(--1c-yellow-selected);
 }
 
 .erp-combobox-option--selected {
-  background-color: #ffecb3;
   font-weight: bold;
 }
 
 /* --- Баннер ошибок валидации (ErpErrorBanner) --- */
 .erp-ui-error-banner {
-  background: #fff0f0;
-  border: 1px solid #cc0000;
+  background: var(--1c-error-bg);
+  border: 1px solid var(--1c-error-text);
   padding: 10px;
   margin-bottom: 15px;
   font-size: 12px;
-  color: #cc0000;
+  color: var(--1c-error-text);
   font-family: Arial, sans-serif;
 }
 
@@ -152,9 +152,9 @@
   align-items: center;
   gap: 10px;
   margin-top: 15px;
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
   padding: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--1c-border-medium);
   font-size: 12px;
 }
 
@@ -166,8 +166,8 @@
 
 .erp-pagination-btn {
   padding: 2px 8px;
-  border: 1px solid #bbb;
-  background: #fff;
+  border: 1px solid var(--1c-border-strong);
+  background: var(--1c-white);
   cursor: pointer;
 }
 
@@ -189,7 +189,7 @@
 }
 
 .erp-col-selector-hint {
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .erp-col-selector-actions {
@@ -204,23 +204,23 @@
 
 .erp-col-selector-btn {
   padding: 4px 10px;
-  background: #f5f5f5;
-  border: 1px solid #aaa;
+  background: var(--1c-bg-panel);
+  border: 1px solid var(--1c-border-dark);
   cursor: pointer;
   font-size: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .erp-col-selector-btn--open {
-  background: #e6e6e6;
+  background: var(--1c-bg-control);
 }
 
 .erp-col-selector-badge {
-  background: #ffcc00;
-  border: 1px solid #997a00;
+  background: var(--1c-yellow);
+  border: 1px solid var(--1c-yellow-border);
   padding: 0 5px;
   font-size: 11px;
   font-weight: bold;
@@ -235,9 +235,9 @@
   top: calc(100% + 2px);
   right: 0;
   width: 210px;
-  background: #fff;
-  border: 1px solid #999;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border-dark);
+  box-shadow: var(--1c-shadow-dropdown);
   padding: 8px;
   z-index: 100;
   display: flex;
@@ -248,8 +248,8 @@
 .erp-col-selector-dropdown-title {
   font-weight: bold;
   font-size: 11px;
-  color: #555;
-  border-bottom: 1px solid #eee;
+  color: var(--1c-text-secondary);
+  border-bottom: 1px solid var(--1c-border-row);
   padding-bottom: 4px;
 }
 
@@ -259,22 +259,22 @@
   gap: 8px;
   cursor: pointer;
   font-size: 12px;
-  color: #333;
+  color: var(--1c-text-dark);
   user-select: none;
 }
 
 .erp-col-selector-option--disabled {
   cursor: not-allowed;
-  color: #999;
+  color: var(--1c-text-disabled);
 }
 
 .erp-col-selector-reset-btn {
   margin-top: 4px;
   padding: 4px 8px;
-  background: #ffcc00;
-  border: 1px solid #997a00;
+  background: var(--1c-yellow);
+  border: 1px solid var(--1c-yellow-border);
   cursor: pointer;
   font-size: 11px;
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }

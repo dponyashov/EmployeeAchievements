@@ -1,12 +1,58 @@
 :root {
-  --1c-yellow: #ffcc00; /* Фирменный желтый  */
+  /* --- Брендовые цвета 1С:Такси --- */
+  --1c-yellow: #ffcc00;
   --1c-yellow-hover: #e6b800;
-  --1c-bg-gray: #f2f2f2; /* Серая подложка */
-  --1c-border: #d3d3d3; /* Границы элементов */
-  --1c-text-dark: #333333; /* Основной текст */
-  --1c-text-muted: #777777; /* Подписи, копирайт */
+  --1c-yellow-border: #997a00;
+  --1c-yellow-header-border: #d4a000;
+  --1c-yellow-soft: #fff9db;
+  --1c-yellow-selected: #ffecb3;
+  --1c-yellow-tint: #fffffa;
+
+  /* --- Фоны и поверхности --- */
   --1c-white: #ffffff;
-  --1c-active-blue: #0056b3; /* Ссылки и фокус */
+  --1c-bg-gray: #f2f2f2;
+  --1c-bg-panel: #f5f5f5;
+  --1c-bg-subtle: #fafafa;
+  --1c-bg-sidebar: #ebebeb;
+  --1c-bg-header-cell: #eaeaea;
+  --1c-bg-control: #e6e6e6;
+
+  /* --- Границы --- */
+  --1c-border: #d3d3d3;
+  --1c-border-medium: #cccccc;
+  --1c-border-strong: #bbbbbb;
+  --1c-border-dark: #999999;
+  --1c-border-light: #e0e0e0;
+  --1c-border-row: #eeeeee;
+
+  /* --- Текст --- */
+  --1c-text-dark: #333333;
+  --1c-text-secondary: #555555;
+  --1c-text-muted: #777777;
+  --1c-text-disabled: #999999;
+
+  /* --- Акценты и выделение --- */
+  --1c-active-blue: #0056b3;
+  --1c-link-dark: #2b579a;
+  --1c-row-selected: #c1d9ff;
+  --1c-slot-blue-bg: #d8ebff;
+  --1c-slot-blue-border: #7ab3ef;
+  --1c-slot-blue-text: #1c4e80;
+
+  /* --- Статусы (Ошибки / Успех) --- */
+  --1c-error-text: #cc0000;
+  --1c-error-dark: #a30000;
+  --1c-error-bg: #fff0f0;
+  --1c-error-border: #ffbbbb;
+
+  --1c-success-green: #449d44;
+  --1c-success-bg: #e6f4ea;
+  --1c-success-text: #2b662b;
+
+  /* --- Тени и оверлеи --- */
+  --1c-overlay-bg: rgba(0, 0, 0, 0.45);
+  --1c-shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.18);
+  --1c-shadow-modal: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 body {

@@ -1,29 +1,12 @@
 /* =========================================================
-   ПОДСИСТЕМА НСИ / СПРАВОЧНИКИ (1С:Такси)
+   ПОДСИСТЕМА НСИ / СПРАВОЧНИКИ И СОТРУДНИКИ (1С:Такси)
    ========================================================= */
 
-/* --- Общие контейнеры и навигация (DirectoryDispatcher) --- */
-.dir-sub-view {
-  padding: 20px;
-}
-
+.dir-sub-view,
 .dir-loading-text {
   padding: 20px;
 }
 
-.dir-nav-list {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-.dir-nav-item {
-  cursor: pointer;
-  color: var(--1c-active-blue);
-  margin-bottom: 8px;
-  text-decoration: underline;
-}
-
-/* --- Таблицы справочников --- */
 .dir-col-code-sm {
   width: 80px;
 }
@@ -32,66 +15,12 @@
   width: 100px;
 }
 
-.erp-v8-table tr.erp-row-selected {
-  background-color: #c1d9ff;
-}
-
-/* --- Диспетчер формы элемента (DirectoryItemDispatcher) --- */
-.erp-directory-form-container {
-  padding: 20px;
-  background: #fff;
-  height: 100%;
-}
-
-.dir-form-error-banner {
-  margin-bottom: 15px;
-}
-
-.dir-form-wrapper--saving {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* --- Формы простых справочников (Должности, Отделы, Услуги, Компоненты) --- */
-.dir-item-form {
-  padding: 20px;
-  background: #fff;
-}
-
-.dir-item-form-title {
-  margin: 0 0 15px 0;
-  font-weight: normal;
-  border-bottom: 1px solid #d3d3d3;
-  padding-bottom: 5px;
-}
-
 .dir-item-form-label {
-  color: #777;
+  color: var(--1c-text-muted);
   margin-bottom: 4px;
 }
 
-.dir-item-form-input {
-  padding: 5px;
-  width: 350px;
-  border: 1px solid #c4c4c4;
-  outline: none;
-  margin-bottom: 15px;
-}
-
-.dir-item-form-input--compact {
-  padding: 4px;
-  width: 300px;
-}
-
-.dir-item-form-actions {
-  margin-top: 15px;
-}
-
-.dir-item-form-actions--lg {
-  margin-top: 20px;
-}
-
-/* --- Двухпанельный журнал сотрудников (ProfileComponents, ProfileListPane, ProfileCardPane) --- */
+/* --- Двухпанельный журнал сотрудников --- */
 .profile-two-pane {
   height: 100%;
   width: 100%;
@@ -109,22 +38,48 @@
 }
 
 .profile-table-wrapper {
-  border: 1px solid #d3d3d3;
+  border: 1px solid var(--1c-border);
 }
 
 .profile-col-code {
   width: 50px;
 }
 
+.profile-col-phone {
+  width: 145px;
+}
+
 .profile-col-email {
   width: 220px;
 }
 
-.profile-cell-email {
-  color: #555;
+.profile-cell-phone {
+  font-family: monospace;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-/* Правая панель сотрудника (форма редактирования / анкета просмотра) */
+.profile-cell-email {
+  color: var(--1c-text-secondary);
+}
+
+.profile-search-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.profile-phone-search-input {
+  width: 100%;
+  max-width: 350px;
+  padding: 4px 6px;
+  border: 1px solid var(--1c-border-strong);
+  font-size: 13px;
+  box-sizing: border-box;
+  margin-left: 2px;
+}
+
 .profile-form--saving {
   opacity: 0.6;
 }
@@ -132,13 +87,13 @@
 .profile-form-title {
   margin-top: 0;
   font-weight: normal;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--1c-border);
   padding-bottom: 5px;
 }
 
 .profile-view-card {
-  background: #fff;
-  border: 1px solid #d3d3d3;
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border);
   padding: 20px;
   max-width: 500px;
 }
@@ -155,12 +110,12 @@
 }
 
 .profile-view-row {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--1c-border-row);
 }
 
 .profile-view-label {
   padding: 8px 0;
-  color: #777;
+  color: var(--1c-text-muted);
 }
 
 .profile-view-edit-btn {
@@ -169,7 +124,7 @@
 
 .profile-empty-pane {
   text-align: center;
-  color: #999;
+  color: var(--1c-text-disabled);
   padding-top: 100px;
 }
 
@@ -177,7 +132,7 @@
   font-size: 40px;
 }
 
-/* --- Вкладки справочников внутри подсистем (Сотрудники / Задачи) --- */
+/* --- Вкладки справочников внутри подсистем --- */
 .dir-section-header {
   display: flex;
   align-items: center;
@@ -188,18 +143,18 @@
 
 .dir-section-tabs {
   display: inline-flex;
-  border: 1px solid #aaa;
-  background: #eaeaea;
+  border: 1px solid var(--1c-border-dark);
+  background: var(--1c-bg-header-cell);
 }
 
 .dir-section-tab-btn {
   padding: 5px 14px;
   border: none;
-  border-right: 1px solid #bbb;
+  border-right: 1px solid var(--1c-border-strong);
   background: transparent;
   cursor: pointer;
   font-size: 13px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .dir-section-tab-btn:last-child {
@@ -207,13 +162,13 @@
 }
 
 .dir-section-tab-btn--active {
-  background: #ffcc00;
+  background: var(--1c-yellow);
   font-weight: bold;
 }
 
 .dir-embedded-tab {
   padding: 12px 16px;
-  background: #fff;
+  background: var(--1c-white);
   flex: 1;
   overflow-y: auto;
 }
@@ -231,7 +186,7 @@
 .dir-readonly-search {
   max-width: 350px;
   padding: 4px 6px;
-  border: 1px solid #c4c4c4;
+  border: 1px solid var(--1c-border-strong);
   font-size: 13px;
 }
 
@@ -239,7 +194,7 @@
 .dir-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: var(--1c-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,24 +202,24 @@
 }
 
 .dir-modal-window {
-  background: #fff;
-  border: 1px solid #999;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border-dark);
+  box-shadow: var(--1c-shadow-modal);
   width: 440px;
   max-width: 95vw;
   overflow: hidden;
 }
 
 .dir-modal-header {
-  background: #ffcc00;
-  border-bottom: 1px solid #d4a000;
+  background: var(--1c-yellow);
+  border-bottom: 1px solid var(--1c-yellow-header-border);
   padding: 8px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
   font-size: 13px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .dir-modal-close {
@@ -273,7 +228,7 @@
   font-size: 14px;
   cursor: pointer;
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .dir-modal-body {
@@ -286,7 +241,7 @@
 .dir-modal-input {
   width: 100%;
   padding: 5px 6px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   font-size: 13px;
   box-sizing: border-box;
   outline: none;
@@ -298,32 +253,5 @@
   gap: 8px;
   margin-top: 6px;
   padding-top: 10px;
-  border-top: 1px solid #eee;
-}
-/* --- Блок двойного поиска в списке сотрудников (фамилия + телефон) --- */
-.profile-search-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.profile-phone-search-input {
-  width: 100%;
-  max-width: 350px;
-  padding: 4px 6px;
-  border: 1px solid #c4c4c4;
-  font-size: 13px;
-  box-sizing: border-box;
-  margin-left: 2px;
-}
-
-.profile-col-phone {
-  width: 145px;
-}
-
-.profile-cell-phone {
-  font-family: monospace;
-  font-size: 12px;
-  white-space: nowrap;
+  border-top: 1px solid var(--1c-border-row);
 }

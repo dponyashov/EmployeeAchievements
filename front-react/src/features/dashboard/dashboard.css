@@ -2,41 +2,6 @@
    ПОДСИСТЕМА "РАБОЧИЙ СТОЛ" (1С:Такси)
    ========================================================= */
 
-/* --- Общий контейнер и сетка плиток (ErpDashboard) --- */
-
-.erp-tile {
-  background: var(--1c-white);
-  border: 1px solid var(--1c-border);
-  padding: 12px 15px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.erp-tile-counter {
-  margin-top: auto;
-  align-self: flex-end;
-  background-color: #ff4444;
-  color: white;
-  padding: 2px 6px;
-  font-weight: bold;
-  font-size: 11px;
-  border-radius: 2px;
-}
-
-.erp-tile-badge {
-  margin-top: auto;
-  align-self: flex-start;
-  background-color: #e2e2e2;
-  color: #555555;
-  padding: 1px 5px;
-  font-size: 11px;
-  border: 1px solid #cccccc;
-}
-
 .erp-dashboard-container {
   padding: 20px;
   height: 100%;
@@ -55,46 +20,6 @@
   cursor: pointer;
 }
 
-/* --- Плитка "Справочники (НСИ)" (DirectoriesTile) --- */
-.dir-tile-sublist {
-  margin-top: 5px;
-  display: flex;
-  flex-direction: column;
-  max-height: 80px;
-  height: 80px;
-  overflow-y: auto;
-  padding-right: 2px;
-  gap: 1px;
-}
-
-.dir-tile-loading {
-  font-size: 14px;
-}
-
-.dir-tile-sublink {
-  color: var(--1c-active-blue);
-  font-size: 12px;
-  text-decoration: underline;
-  font-size: 14px;
-  line-height: 18px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.erp-tile-sublink:hover {
-  color: #003366;
-}
-
-.erp-tile-counter.dir-tile-counter {
-  background-color: #0056b3;
-}
-
-/* --- Плитка "Сотрудники" (EmployeesTile) --- */
-.erp-tile-counter.emp-tile-counter {
-  background-color: #449d44;
-}
-
 .erp-tile {
   background: var(--1c-white);
   border: 1px solid var(--1c-border);
@@ -103,22 +28,53 @@
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  position: relative;
 }
+
 .erp-tile:hover {
   border-color: var(--1c-yellow-hover);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  background: #fffffa;
+  background: var(--1c-yellow-tint);
 }
+
 .erp-tile-icon {
   font-size: 24px;
   margin-bottom: 8px;
 }
+
 .erp-tile-title {
   font-weight: bold;
   color: var(--1c-active-blue);
   margin-bottom: 5px;
 }
+
 .erp-tile-info {
   font-size: 12px;
   color: var(--1c-text-muted);
+}
+
+.erp-tile-counter {
+  margin-top: auto;
+  align-self: flex-end;
+  background-color: var(--1c-error-text);
+  color: var(--1c-white);
+  padding: 2px 6px;
+  font-weight: bold;
+  font-size: 11px;
+  border-radius: 2px;
+}
+
+.erp-tile-counter.emp-tile-counter {
+  background-color: var(--1c-success-green);
+}
+
+.erp-tile-badge {
+  margin-top: auto;
+  align-self: flex-start;
+  background-color: var(--1c-bg-header-cell);
+  color: var(--1c-text-secondary);
+  padding: 1px 5px;
+  font-size: 11px;
+  border: 1px solid var(--1c-border-medium);
 }

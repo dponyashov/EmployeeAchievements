@@ -6,14 +6,13 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
+  background: var(--1c-white);
   font-size: 13px;
 }
 
-/* --- Верхняя панель навигации и переключателей --- */
 .bookings-toolbar {
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  background: var(--1c-bg-panel);
+  border-bottom: 1px solid var(--1c-border-medium);
   padding: 10px 14px;
   display: flex;
   align-items: center;
@@ -36,26 +35,22 @@
   gap: 4px;
 }
 
-.bookings-date-input {
+.bookings-date-input,
+.bookings-room-filter {
   padding: 4px 6px;
-  border: 1px solid #bbb;
-  background: #fff;
+  border: 1px solid var(--1c-border-strong);
+  background: var(--1c-white);
   font-size: 13px;
 }
 
 .bookings-room-filter {
-  padding: 4px 6px;
-  border: 1px solid #bbb;
-  background: #fff;
-  font-size: 13px;
   min-width: 210px;
 }
 
-/* Переключатель режимов (Шахматка / Журнал / Помещения) */
 .bookings-view-tabs {
   display: inline-flex;
-  border: 1px solid #aaa;
-  background: #eaeaea;
+  border: 1px solid var(--1c-border-dark);
+  background: var(--1c-bg-header-cell);
 }
 
 .bookings-tab-btn {
@@ -64,8 +59,8 @@
   background: transparent;
   cursor: pointer;
   font-size: 12px;
-  color: #333;
-  border-right: 1px solid #bbb;
+  color: var(--1c-text-dark);
+  border-right: 1px solid var(--1c-border-strong);
 }
 
 .bookings-tab-btn:last-child {
@@ -73,13 +68,13 @@
 }
 
 .bookings-tab-btn--active {
-  background: #ffcc00;
+  background: var(--1c-yellow);
   font-weight: bold;
 }
 
 .bookings-create-btn {
-  background: #ffcc00;
-  border: 1px solid #997a00;
+  background: var(--1c-yellow);
+  border: 1px solid var(--1c-yellow-border);
   padding: 5px 14px;
   font-weight: bold;
   cursor: pointer;
@@ -87,10 +82,9 @@
 }
 
 .bookings-create-btn:hover {
-  background: #f5c200;
+  background: var(--1c-yellow-hover);
 }
 
-/* --- Рабочая область --- */
 .bookings-content {
   flex: 1;
   overflow: auto;
@@ -100,7 +94,7 @@
 /* --- Режим 1: Визуальная почасовая шахматка --- */
 .bookings-grid-wrap {
   overflow-x: auto;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
 }
 
 .bookings-timeline-table {
@@ -111,12 +105,12 @@
 }
 
 .bookings-timeline-table th {
-  background: #eaeaea;
-  border: 1px solid #bbb;
+  background: var(--1c-bg-header-cell);
+  border: 1px solid var(--1c-border-strong);
   padding: 6px 4px;
   font-size: 12px;
   text-align: center;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .bookings-timeline-table th.col-room-name {
@@ -126,26 +120,26 @@
 }
 
 .bookings-timeline-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
   height: 54px;
   vertical-align: middle;
   padding: 2px;
 }
 
 .bookings-room-cell {
-  background: #fafafa;
+  background: var(--1c-bg-subtle);
   padding: 6px 8px !important;
-  border-right: 2px solid #bbb !important;
+  border-right: 2px solid var(--1c-border-strong) !important;
 }
 
 .bookings-room-title {
   font-weight: bold;
-  color: #222;
+  color: var(--1c-text-dark);
 }
 
 .bookings-room-meta {
   font-size: 11px;
-  color: #666;
+  color: var(--1c-text-secondary);
   margin-top: 2px;
 }
 
@@ -158,13 +152,13 @@
 }
 
 .bookings-slot-free:hover {
-  background: #fff9db;
-  color: #997a00;
+  background: var(--1c-yellow-soft);
+  color: var(--1c-yellow-border);
 }
 
 .bookings-slot-busy {
-  background: #d8ebff;
-  border: 1px solid #7ab3ef !important;
+  background: var(--1c-slot-blue-bg);
+  border: 1px solid var(--1c-slot-blue-border) !important;
   padding: 4px 6px !important;
   cursor: pointer;
   vertical-align: top !important;
@@ -172,18 +166,18 @@
 }
 
 .bookings-slot-busy--own {
-  background: #fff3bf;
-  border-color: #e6b800 !important;
+  background: var(--1c-yellow-selected);
+  border-color: var(--1c-yellow-hover) !important;
 }
 
 .bookings-slot-busy-time {
   font-size: 11px;
   font-weight: bold;
-  color: #1c4e80;
+  color: var(--1c-slot-blue-text);
 }
 
 .bookings-slot-busy--own .bookings-slot-busy-time {
-  color: #7a5c00;
+  color: var(--1c-yellow-border);
 }
 
 .bookings-slot-busy-title {
@@ -196,7 +190,7 @@
 
 .bookings-slot-busy-author {
   font-size: 11px;
-  color: #555;
+  color: var(--1c-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -207,7 +201,7 @@
   gap: 16px;
   margin-top: 10px;
   font-size: 12px;
-  color: #555;
+  color: var(--1c-text-secondary);
   align-items: center;
 }
 
@@ -220,18 +214,18 @@
 .bookings-legend-box {
   width: 14px;
   height: 14px;
-  border: 1px solid #999;
+  border: 1px solid var(--1c-border-dark);
   display: inline-block;
 }
 
 .bookings-legend-box--own {
-  background: #fff3bf;
-  border-color: #e6b800;
+  background: var(--1c-yellow-selected);
+  border-color: var(--1c-yellow-hover);
 }
 
 .bookings-legend-box--other {
-  background: #d8ebff;
-  border-color: #7ab3ef;
+  background: var(--1c-slot-blue-bg);
+  border-color: var(--1c-slot-blue-border);
 }
 
 /* --- Режим 2: Табличный журнал броней --- */
@@ -243,14 +237,14 @@
 }
 
 .bookings-journal-table th {
-  background: #eaeaea;
-  border: 1px solid #aaa;
+  background: var(--1c-bg-header-cell);
+  border: 1px solid var(--1c-border-dark);
   padding: 6px 8px;
   text-align: left;
 }
 
 .bookings-journal-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
   padding: 6px 8px;
 }
 
@@ -259,22 +253,22 @@
 }
 
 .bookings-journal-row--selected {
-  background-color: #c1d9ff;
+  background-color: var(--1c-row-selected);
 }
 
 .bookings-time-badge {
   font-family: monospace;
   font-weight: bold;
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
   padding: 2px 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--1c-border-medium);
 }
 
 /* --- Модальное окно формы бронирования / помещения --- */
 .bookings-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: var(--1c-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -282,24 +276,24 @@
 }
 
 .bookings-modal-window {
-  background: #fff;
-  border: 1px solid #999;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border-dark);
+  box-shadow: var(--1c-shadow-modal);
   width: 460px;
   max-width: 95vw;
   overflow: hidden;
 }
 
 .bookings-modal-header {
-  background: #ffcc00;
-  border-bottom: 1px solid #d4a000;
+  background: var(--1c-yellow);
+  border-bottom: 1px solid var(--1c-yellow-header-border);
   padding: 8px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
   font-size: 13px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .bookings-modal-close {
@@ -308,7 +302,7 @@
   font-size: 14px;
   cursor: pointer;
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .bookings-modal-body {
@@ -326,7 +320,7 @@
 
 .bookings-form-row label {
   font-weight: bold;
-  color: #444;
+  color: var(--1c-text-secondary);
   font-size: 12px;
 }
 
@@ -334,7 +328,7 @@
 .bookings-form-row select,
 .bookings-form-row textarea {
   padding: 5px 6px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   font-size: 13px;
   outline: none;
   font-family: inherit;
@@ -352,36 +346,36 @@
   align-items: center;
   margin-top: 8px;
   padding-top: 10px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--1c-border-row);
 }
 
 .bookings-delete-btn {
-  background: #fff0f0;
-  border: 1px solid #cc0000;
-  color: #cc0000;
+  background: var(--1c-error-bg);
+  border: 1px solid var(--1c-error-text);
+  color: var(--1c-error-text);
   padding: 5px 12px;
   cursor: pointer;
   font-weight: bold;
 }
 
 .bookings-room-inactive {
-  color: #999;
+  color: var(--1c-text-disabled);
   text-decoration: line-through;
 }
 
 .bookings-status-pill {
   padding: 2px 6px;
   font-size: 11px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
 }
 
 .bookings-status-pill--active {
-  background: #e6f4ea;
-  border-color: #449d44;
-  color: #2b662b;
+  background: var(--1c-success-bg);
+  border-color: var(--1c-success-green);
+  color: var(--1c-success-text);
 }
 
 .bookings-status-pill--closed {
-  background: #f5f5f5;
-  color: #777;
+  background: var(--1c-bg-panel);
+  color: var(--1c-text-muted);
 }

@@ -1,8 +1,7 @@
 /* =========================================================
-   ШАПКА СИСТЕМЫ И ЛИЧНЫЙ КАБИНЕТ ПОЛЬЗОВАТЕЛЯ (1С:Такси)
+   ШАПКА СИСТЕМЫ, ПОДВАЛ И ЛИЧНЫЙ КАБИНЕТ (1С:Такси)
    ========================================================= */
 
-/* --- Шапка приложения (ErpHeader) --- */
 .erp-header {
   background-color: var(--1c-yellow);
   height: 45px;
@@ -10,35 +9,104 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 15px;
-  border-bottom: 2px solid #ddbb00;
+  border-bottom: 2px solid var(--1c-yellow-header-border);
   position: relative;
   overflow: visible !important;
-  color: var(--1c-text-dark, #333);
+  color: var(--1c-text-dark);
   z-index: 100;
 }
 
-.erp-header-left,
-.erp-header-right {
+.erp-header-left-group,
+.erp-header-right-group {
   display: flex;
   align-items: center;
-  gap: 15px;
 }
 
 .erp-header-left-group {
-  display: flex;
-  align-items: center;
+  gap: 10px;
 }
 
+.erp-header-right-group {
+  gap: 10px;
+  position: relative;
+}
+
+/* --- Кнопка-бутерброд "Меню функций" --- */
+.erp-burger-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.erp-burger-btn {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 7px 6px;
+  margin: 0;
+  border-radius: 2px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.erp-burger-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.erp-burger-btn--open {
+  background: var(--1c-yellow-hover);
+  border-color: var(--1c-yellow-border);
+}
+
+.erp-burger-line {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: var(--1c-text-dark);
+  border-radius: 1px;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
+  transform-origin: center;
+}
+
+.erp-burger-btn--open .erp-burger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.erp-burger-btn--open .erp-burger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.erp-burger-btn--open .erp-burger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --- Логотип, заголовок и кнопки навигации --- */
 .erp-logo {
-  width: 45px;
-  height: 45px;
-  margin: 5px;
+  width: 40px;
+  height: 40px;
   padding: 3px;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .erp-logo img {
@@ -49,17 +117,13 @@
   border-radius: 3px;
 }
 
-.erp-logo.erp-header-logo {
-  margin-left: 10px;
-}
-
 .erp-project-name {
   font-weight: bold;
-  color: var(--1c-text-dark, #333);
+  color: var(--1c-text-dark);
 }
 
 .erp-project-name.erp-header-title {
-  margin-right: 15px;
+  margin-right: 5px;
 }
 
 .erp-btn-logout {
@@ -73,52 +137,15 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-.erp-btn-logout.erp-header-home-btn {
-  margin-left: 5px;
-}
-
-.erp-header-menu-btn {
-  background: #fff;
-  border: 1px solid #b3b3b3;
-  padding: 4px 10px;
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.erp-header-menu-btn:hover {
-  background: var(--1c-bg-gray);
-}
-
-.erp-dropdown-menu {
-  position: absolute;
-  top: 40px;
-  left: 15px;
-  background: var(--1c-white);
-  border: 1px solid var(--1c-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  width: 250px;
-}
-
-.erp-header-right-group {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
 .erp-username.erp-header-user-btn {
   font-size: 13px;
-  margin-right: 10px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 3px;
   padding: 3px 8px;
   cursor: pointer;
   text-decoration: underline;
-  color: var(--1c-text-dark, #333);
+  color: var(--1c-text-dark);
   font-weight: bold;
 }
 
@@ -132,9 +159,9 @@
   top: 100%;
   right: 70px;
   margin-top: 4px;
-  background-color: #fff;
-  border: 1px solid #b5b5b5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  background-color: var(--1c-white);
+  border: 1px solid var(--1c-border-strong);
+  box-shadow: var(--1c-shadow-dropdown);
   padding: 10px;
   z-index: 900;
   display: flex;
@@ -145,8 +172,8 @@
 
 .erp-user-popover-meta {
   font-size: 11px;
-  color: #777;
-  border-bottom: 1px solid #eee;
+  color: var(--1c-text-muted);
+  border-bottom: 1px solid var(--1c-border-row);
   padding-bottom: 4px;
 }
 
@@ -156,11 +183,11 @@
   padding: 6px 10px;
 }
 
-/* --- Модальные окна личного кабинета (смена пароля / профиль) --- */
+/* --- Модальные окна личного кабинета --- */
 .erp-layout-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: var(--1c-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,9 +195,9 @@
 }
 
 .erp-layout-modal-window {
-  background-color: #fff;
-  border: 1px solid #999;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  background-color: var(--1c-white);
+  border: 1px solid var(--1c-border-dark);
+  box-shadow: var(--1c-shadow-modal);
   width: 440px;
   max-width: 95vw;
   overflow: hidden;
@@ -181,15 +208,15 @@
 }
 
 .erp-layout-modal-header {
-  background-color: #ffcc00;
-  border-bottom: 1px solid #d4a000;
+  background-color: var(--1c-yellow);
+  border-bottom: 1px solid var(--1c-yellow-header-border);
   padding: 8px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
   font-size: 13px;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .erp-layout-modal-close {
@@ -198,13 +225,12 @@
   font-size: 14px;
   cursor: pointer;
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
-/* --- Тело модального окна редактирования профиля (MyProfileEditModal) --- */
 .erp-profile-modal-body {
   padding: 16px;
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
 }
 
 .erp-error-banner.erp-profile-modal-error {
@@ -215,28 +241,29 @@
 .erp-profile-modal-loading {
   padding: 20px;
   text-align: center;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .erp-profile-modal-not-found {
   padding: 20px;
   text-align: center;
-  color: #b71c1c;
+  color: var(--1c-error-dark);
 }
 
 .erp-profile-modal-form-wrap {
   width: 100%;
 }
+
 /* --- Подвал системы (ErpFooter) --- */
 .erp-footer {
-  background-color: #eaeaea;
-  border-top: 1px solid var(--1c-border, #ccc);
+  background-color: var(--1c-bg-header-cell);
+  border-top: 1px solid var(--1c-border-medium);
   height: 25px;
   display: flex;
   align-items: center;
   padding: 0 15px;
   font-size: 11px;
-  color: var(--1c-text-muted, #666);
+  color: var(--1c-text-muted);
   box-sizing: border-box;
   flex-shrink: 0;
 }

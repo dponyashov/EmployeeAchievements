@@ -7,7 +7,7 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background: #fff;
+  background: var(--1c-white);
   overflow: hidden;
 }
 
@@ -21,8 +21,8 @@
 
 .news-host-error {
   padding: 20px;
-  color: #cc0000;
-  background: #fff0f0;
-  border: 1px solid #ffbbbb;
+  color: var(--1c-error-text);
+  background: var(--1c-error-bg);
+  border: 1px solid var(--1c-error-border);
   margin: 20px;
 }

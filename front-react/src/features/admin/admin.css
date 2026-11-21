@@ -2,12 +2,11 @@
    ПОДСИСТЕМА "АДМИНИСТРИРОВАНИЕ" (1С:Такси)
    ========================================================= */
 
-/* --- Общий контейнер управления пользователями (AdminUserManagement) --- */
 .admin-container {
   display: flex;
   height: 100%;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--1c-border-medium);
+  background: var(--1c-white);
   font-size: 13px;
 }
 
@@ -19,13 +18,13 @@
 
 .admin-user-header {
   padding: 8px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  background: var(--1c-bg-panel);
+  border-bottom: 1px solid var(--1c-border-medium);
   font-weight: bold;
 }
 
 .admin-user-header-name {
-  color: #2b579a;
+  color: var(--1c-link-dark);
 }
 
 .admin-empty-pane {
@@ -33,35 +32,34 @@
   flex: 1;
   align-items: center;
   justify-content: center;
-  color: #888;
-  background: #fafafa;
+  color: var(--1c-text-muted);
+  background: var(--1c-bg-subtle);
 }
 
-/* --- Левая панель списка пользователей (AdminUserList) --- */
 .admin-users-pane {
   width: 300px;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid var(--1c-border-medium);
   display: flex;
   flex-direction: column;
-  background: #fcfcfc;
+  background: var(--1c-bg-subtle);
 }
 
 .admin-users-header {
   padding: 8px;
-  background: #e6e6e6;
-  border-bottom: 1px solid #ccc;
+  background: var(--1c-bg-control);
+  border-bottom: 1px solid var(--1c-border-medium);
   font-weight: bold;
 }
 
 .admin-users-search-box {
   padding: 6px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--1c-border);
 }
 
 .admin-users-search-input {
   width: 100%;
   padding: 4px 6px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   box-sizing: border-box;
 }
 
@@ -72,7 +70,7 @@
 
 .admin-users-loading {
   padding: 10px;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .admin-users-table {
@@ -83,11 +81,11 @@
 .admin-user-row {
   cursor: pointer;
   background: transparent;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--1c-border-row);
 }
 
 .admin-user-row--selected {
-  background: #ffecb3;
+  background: var(--1c-yellow-selected);
 }
 
 .admin-user-cell {
@@ -100,21 +98,20 @@
 }
 
 .admin-user-no-roles {
-  color: #aaa;
+  color: var(--1c-text-disabled);
   font-size: 11px;
 }
 
-/* --- Сброс пароля (AdminPasswordReset) --- */
 .admin-pwd-section {
   padding: 15px;
-  border-bottom: 1px solid #ccc;
-  background: #fff;
+  border-bottom: 1px solid var(--1c-border-medium);
+  background: var(--1c-white);
 }
 
 .admin-pwd-title {
   font-weight: bold;
   margin-bottom: 8px;
-  color: #555;
+  color: var(--1c-text-secondary);
 }
 
 .admin-pwd-form {
@@ -130,29 +127,29 @@
 .admin-pwd-input {
   width: 100%;
   padding: 4px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   box-sizing: border-box;
 }
 
 .admin-pwd-error {
-  background: #fff0f0;
-  border: 1px solid #cc0000;
+  background: var(--1c-error-bg);
+  border: 1px solid var(--1c-error-text);
   padding: 6px;
   margin-top: 5px;
   font-size: 12px;
-  color: #cc0000;
+  color: var(--1c-error-text);
 }
 
 .admin-pwd-success {
-  color: green;
+  color: var(--1c-success-green);
   font-size: 11px;
   margin-top: 4px;
 }
 
 .admin-pwd-submit {
   padding: 4px 15px;
-  background: #ffcc00;
-  border: 1px solid #997a00;
+  background: var(--1c-yellow);
+  border: 1px solid var(--1c-yellow-border);
   cursor: pointer;
   font-weight: bold;
 }
@@ -162,25 +159,24 @@
   opacity: 0.7;
 }
 
-/* --- Матрица ролей пользователя (AdminRoleMatrix) --- */
 .admin-roles-section {
   flex: 1;
   padding: 15px;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--1c-white);
 }
 
 .admin-roles-header {
   font-weight: bold;
   margin-bottom: 8px;
-  color: #555;
+  color: var(--1c-text-secondary);
   display: flex;
   justify-content: space-between;
 }
 
 .admin-roles-sync {
-  color: #888;
+  color: var(--1c-text-muted);
   font-weight: normal;
   font-size: 12px;
 }
@@ -188,12 +184,12 @@
 .admin-roles-table-wrap {
   flex: 1;
   overflow-y: auto;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .admin-roles-loading {
   padding: 10px;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .admin-roles-table {
@@ -202,14 +198,14 @@
 }
 
 .admin-roles-table thead tr {
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
   text-align: left;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--1c-border-medium);
 }
 
 .admin-roles-table th {
   padding: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .admin-roles-table th.col-access {
@@ -222,12 +218,12 @@
 }
 
 .admin-roles-table tbody tr {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--1c-border-row);
 }
 
 .admin-roles-table td {
   padding: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .admin-roles-table td.cell-access {
@@ -243,6 +239,6 @@
 }
 
 .admin-roles-table td.cell-role-desc {
-  color: #666;
+  color: var(--1c-text-secondary);
   font-size: 12px;
 }

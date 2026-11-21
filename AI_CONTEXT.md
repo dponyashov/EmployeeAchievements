@@ -12,7 +12,7 @@
   - Переменные `VITE_*` прокидываются на этапе сборки через `build.args` в `docker-compose.yml` и `ARG`/`ENV` в `docker/front/Dockerfile`:
     - `VITE_BACK_URL=${BACK_URL}`
     - `VITE_APP_TITLE=${FRONT_TITLE}`
-    - `VITE_NEWS_APP_URL=${NEWS_APP_URL}` (в `.env` указывается корневой URL фронтенда новостей **без** `/api/v1`, например `http://192.168.31`).
+    - `VITE_NEWS_APP_URL=${NEWS_APP_URL}` (корневой URL фронтенда новостей **без** `/api/v1`, например `http://192.168.31`).
   - **Сетевая доступность (UFW):** на сервере должны быть открыты порты фронтенда и бэкенда новостей (`sudo ufw allow 5174/tcp`, `sudo ufw allow 8085/tcp`), чтобы браузеры клиентов в локальной сети могли загружать `iframe` новостей и выполнять API-запросы.
 
 ---
@@ -36,20 +36,16 @@
 
 ---
 
-## 3. Дизайн-система, макет и общие UI-компоненты
+## 3. Дизайн-система, единые CSS-переменные и макет
 
-- **Стиль:** «1С:Такси» (желто-серая гамма, шапка `#FFCC00`). Все инлайн-стили полностью вынесены из TSX в модульные CSS-файлы по подсистемам.
-- **Макет (`src/layouts/` и `src/components/layout/`):**
-  - `MainLayout.tsx` + очищенный `MainLayout.css` (боковое меню + рабочая зона `Outlet`).
+- **Стиль и токены (`src/index.css`):** «1С:Такси» (желто-серая гамма, шапка `#FFCC00`). Все 12 CSS-файлов проекта унифицированы и используют централизованную палитру CSS-переменных в `:root` (`--1c-yellow`, `--1c-yellow-hover`, `--1c-yellow-border`, `--1c-yellow-header-border`, `--1c-yellow-soft`, `--1c-yellow-selected`, `--1c-yellow-tint`, `--1c-white`, `--1c-bg-gray`, `--1c-bg-panel`, `--1c-bg-subtle`, `--1c-bg-sidebar`, `--1c-bg-header-cell`, `--1c-bg-control`, `--1c-border`, `--1c-border-medium`, `--1c-border-strong`, `--1c-border-dark`, `--1c-border-light`, `--1c-border-row`, `--1c-text-dark`, `--1c-text-secondary`, `--1c-text-muted`, `--1c-text-disabled`, `--1c-active-blue`, `--1c-link-dark`, `--1c-row-selected`, `--1c-slot-blue-*`, `--1c-error-*`, `--1c-success-*`, `--1c-overlay-bg`, `--1c-shadow-*`). Инлайн-стили в TSX не используются.
+- **Макет и навигация (`src/layouts/` и `src/components/layout/`):**
+  - `MainLayout.tsx` + `MainLayout.css`: сворачиваемая левая панель разделов (`.erp-sidebar-menu` / `.erp-sidebar-menu--collapsed`, плавная анимация `width: 220px <-> 0px`, сохранение состояния в `localStorage` под ключом `erp_sidebar_collapsed`) и рабочая область `Outlet`.
+  - `ErpHeader.tsx` + `layout.css`: квадратная кнопка-«бутерброд» (`32×32 px`, `.erp-burger-btn` с плавной трансформацией полосок в крестик при открытой панели разделов), выпадающая панель пользователя с портальными модальными окнами (`createPortal(..., document.body)`), безопасный выход с `dispatch(logOut())` в `finally`.
+  - `ErpFooter.tsx` + `layout.css` (`.erp-footer` высотой `25px`).
   - `AuthLayout.tsx` + `AuthLayout.css` (авторизация и регистрация).
-  - `ErpHeader.tsx`, `ErpFooter.tsx` (`.erp-footer` высотой `25px`), `MyProfileEditModal.tsx` + `src/components/layout/layout.css` (шапка с `overflow: visible !important`, выпадающая панель пользователя, модальные окна через `createPortal(..., document.body)`).
 - **Общие UI-компоненты (`src/components/ui/` + `ui.css`):**
-  - `ErpCommandBar.tsx` — командная панель списков (Создать, Изменить, Удалить, Обновить + поиск).
-  - `ErpFormButtons.tsx` — кнопки сохранения/отмены форм (`type="submit"`).
-  - `ErpCombobox.tsx` — выпадающий список с поиском.
-  - `ErpErrorBanner.tsx` — баннер ошибок с рекурсивным разбором `400 Bad Request` (`parseErpError.ts`).
-  - `ErpPagination.tsx` — панель пагинации («Всего записей», «Назад / Вперед», «Страница X из Y»).
-  - `ErpColumnSelector.tsx` — переключатель видимости столбцов с чекбоксами, защитой от скрытия последнего столбца, кнопкой «Показать все» и слотом `extraActions`.
+  - `ErpCommandBar.tsx`, `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx` (рекурсивный разбор ошибок через `parseErpError.ts`), `ErpPagination.tsx`, `ErpColumnSelector.tsx`.
 
 ---
 
@@ -93,7 +89,7 @@
 
 ### 4.7. Администрирование (`src/features/admin/` + `admin.css`)
 
-- `AdminUserManagement`, `AdminUserList`, `AdminPasswordReset`, `AdminRoleMatrix` (ленивый дозапрос `GET /auth/user/{id}/roles` и оптимистичное обновление кэша в `onQueryStarted`).
+- `AdminUserManagement`, `AdminUserList`, `AdminPasswordReset` (с отключенным автозаполнением пароля), `AdminRoleMatrix` (ленивый дозапрос `GET /auth/user/{id}/roles` и оптимистичное обновление кэша в `onQueryStarted`).
 
 ### 4.8. Отчеты и анализ (`src/features/reports/` + `reports.css`)
 

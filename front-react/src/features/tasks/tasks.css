@@ -2,12 +2,11 @@
    ПОДСИСТЕМА "МОИ ЗАДАЧИ" (1С:Такси)
    ========================================================= */
 
-/* --- Общий контейнер журнала (TasksJournal) --- */
 .tasks-journal {
   display: flex;
   height: 100%;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--1c-border-medium);
+  background: var(--1c-white);
   font-size: 13px;
 }
 
@@ -24,35 +23,34 @@
   flex: 1;
   align-items: center;
   justify-content: center;
-  color: #888;
-  background: #fafafa;
+  color: var(--1c-text-muted);
+  background: var(--1c-bg-subtle);
 }
 
-/* --- Левая панель сотрудников (TasksEmployeeList) --- */
 .tasks-emp-pane {
   width: 300px;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid var(--1c-border-medium);
   display: flex;
   flex-direction: column;
-  background: #fcfcfc;
+  background: var(--1c-bg-subtle);
 }
 
 .tasks-emp-header {
   padding: 8px;
-  background: #e6e6e6;
-  border-bottom: 1px solid #ccc;
+  background: var(--1c-bg-control);
+  border-bottom: 1px solid var(--1c-border-medium);
   font-weight: bold;
 }
 
 .tasks-emp-search-box {
   padding: 6px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--1c-border);
 }
 
 .tasks-emp-search-input {
   width: 100%;
   padding: 4px 6px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   box-sizing: border-box;
 }
 
@@ -63,7 +61,7 @@
 
 .tasks-emp-loading {
   padding: 10px;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .tasks-emp-table {
@@ -74,11 +72,11 @@
 .tasks-emp-row {
   cursor: pointer;
   background: transparent;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--1c-border-row);
 }
 
 .tasks-emp-row--selected {
-  background: #ffecb3;
+  background: var(--1c-yellow-selected);
 }
 
 .tasks-emp-cell {
@@ -95,16 +93,15 @@
 
 .tasks-emp-position {
   font-size: 11px;
-  color: #666;
+  color: var(--1c-text-secondary);
   margin-top: 2px;
 }
 
-/* --- Правая панель таблицы задач (TasksTablePane) --- */
 .tasks-table-pane {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--1c-white);
   height: 100%;
 }
 
@@ -117,25 +114,25 @@
 
 .tasks-table-header {
   padding: 8px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  background: var(--1c-bg-panel);
+  border-bottom: 1px solid var(--1c-border-medium);
   font-weight: bold;
 }
 
 .tasks-table-header-name {
-  color: #2b579a;
+  color: var(--1c-link-dark);
 }
 
 .tasks-table-search-box {
   padding: 6px 10px;
-  background: #fafafa;
-  border-bottom: 1px solid #ddd;
+  background: var(--1c-bg-subtle);
+  border-bottom: 1px solid var(--1c-border);
 }
 
 .tasks-table-search-input {
   width: 100%;
   padding: 4px 8px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   box-sizing: border-box;
   font-size: 13px;
   outline: none;
@@ -148,11 +145,11 @@
 }
 
 .tasks-table-loading {
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .tasks-table-empty {
-  color: #888;
+  color: var(--1c-text-muted);
   text-align: center;
   margin-top: 10px;
 }
@@ -164,14 +161,14 @@
 }
 
 .tasks-grid thead tr {
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
   text-align: left;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 2px solid var(--1c-border-medium);
 }
 
 .tasks-grid th {
   padding: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .tasks-grid th.col-date {
@@ -191,18 +188,18 @@
 }
 
 .tasks-grid-row {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--1c-border-row);
   background: transparent;
   cursor: pointer;
 }
 
 .tasks-grid-row--selected {
-  background: #ffecb3;
+  background: var(--1c-yellow-selected);
 }
 
 .tasks-grid td {
   padding: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .tasks-grid td.cell-date {
@@ -211,7 +208,7 @@
 
 .tasks-grid-time {
   font-size: 11px;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .tasks-grid td.cell-period {
@@ -226,31 +223,30 @@
 
 .tasks-grid-desc {
   font-size: 11px;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
-/* --- Форма создания / редактирования задачи (TaskForm) --- */
 .task-form-container {
   flex: 1;
   padding: 15px;
-  background: #fff;
+  background: var(--1c-white);
   display: flex;
   flex-direction: column;
 }
 
 .task-form-header {
-  background: #ffcc00;
+  background: var(--1c-yellow);
   padding: 6px 12px;
   font-weight: bold;
-  border: 1px solid #ccc;
+  border: 1px solid var(--1c-border-medium);
   border-bottom: none;
   font-size: 13px;
 }
 
 .task-form-body {
-  border: 1px solid #ccc;
+  border: 1px solid var(--1c-border-medium);
   padding: 15px;
-  background: #fafafa;
+  background: var(--1c-bg-subtle);
   flex: 1;
   overflow-y: auto;
 }
@@ -280,28 +276,27 @@
 
 .task-form-label {
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
 .task-form-input,
 .task-form-textarea,
 .task-form-select {
   padding: 5px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   outline: none;
   font-size: 13px;
-  background: #fff;
+  background: var(--1c-white);
 }
 
 .task-form-textarea {
   resize: vertical;
 }
 
-/* --- Нижняя панель запросов к задаче (TaskQueriesPane) --- */
 .task-queries-pane {
   height: 220px;
-  border-top: 2px solid #ccc;
-  background: #fff;
+  border-top: 2px solid var(--1c-border-medium);
+  background: var(--1c-white);
   display: flex;
   flex-direction: column;
   font-size: 13px;
@@ -309,25 +304,25 @@
 
 .task-queries-placeholder {
   height: 220px;
-  border-top: 2px solid #ccc;
-  background: #fafafa;
+  border-top: 2px solid var(--1c-border-medium);
+  background: var(--1c-bg-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: var(--1c-text-muted);
   font-size: 13px;
 }
 
 .task-queries-header {
-  background: #e6e6e6;
+  background: var(--1c-bg-control);
   padding: 6px 10px;
   font-weight: bold;
-  border-bottom: 1px solid #ccc;
-  color: #333;
+  border-bottom: 1px solid var(--1c-border-medium);
+  color: var(--1c-text-dark);
 }
 
 .task-queries-header-title {
-  color: #2b579a;
+  color: var(--1c-link-dark);
 }
 
 .task-queries-content {
@@ -348,14 +343,14 @@
 }
 
 .task-queries-table thead tr {
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
   text-align: left;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--1c-border-medium);
 }
 
 .task-queries-table th {
   padding: 4px 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .task-queries-table th.col-num {
@@ -369,17 +364,17 @@
 }
 
 .task-queries-table tbody tr {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--1c-border-row);
 }
 
 .task-queries-table td {
   padding: 4px 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--1c-border);
 }
 
 .task-queries-table td.cell-num {
   text-align: center;
-  color: #666;
+  color: var(--1c-text-secondary);
 }
 
 .task-queries-table td.cell-name {
@@ -393,22 +388,22 @@
 .task-queries-empty {
   padding: 15px;
   text-align: center;
-  color: #888;
+  color: var(--1c-text-muted);
 }
 
 .task-queries-delete-btn {
   background: none;
   border: none;
-  color: #cc0000;
+  color: var(--1c-error-text);
   cursor: pointer;
   font-size: 11px;
 }
 
 .task-queries-add-pane {
   width: 320px;
-  border-left: 1px solid #ccc;
+  border-left: 1px solid var(--1c-border-medium);
   padding: 10px;
-  background: #fafafa;
+  background: var(--1c-bg-subtle);
 }
 
 .task-queries-add-form {
@@ -419,19 +414,19 @@
 
 .task-queries-add-label {
   font-weight: bold;
-  color: #555;
+  color: var(--1c-text-secondary);
 }
 
 .task-queries-add-input {
   padding: 5px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--1c-border-strong);
   font-size: 13px;
   outline: none;
 }
 
 .task-queries-add-btn {
-  background: #ffcc00;
-  border: 1px solid #997a00;
+  background: var(--1c-yellow);
+  border: 1px solid var(--1c-yellow-border);
   padding: 5px;
   font-weight: bold;
   cursor: pointer;
@@ -444,6 +439,6 @@
 
 .task-form-footer {
   margin-top: 20px;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--1c-border-medium);
   padding-top: 10px;
 }

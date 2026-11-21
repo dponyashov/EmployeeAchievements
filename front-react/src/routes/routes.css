@@ -2,13 +2,12 @@
    ПОДСИСТЕМА РОУТИНГА И ЗАЩИТЫ ДОСТУПА (1С:Такси)
    ========================================================= */
 
-/* --- Экран инициализации сессии (ProtectedRoute) --- */
 .route-init-screen {
   display: flex;
   height: 100vh;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
   font-family: Arial, sans-serif;
 }
 
@@ -23,20 +22,19 @@
 
 .route-init-text {
   font-weight: bold;
-  color: #333;
+  color: var(--1c-text-dark);
 }
 
-/* --- Экран нарушения прав доступа (RoleGuard) --- */
 .role-guard-denied {
   padding: 20px;
-  background: #fff0f0;
-  border: 1px solid #ffbbbb;
+  background: var(--1c-error-bg);
+  border: 1px solid var(--1c-error-border);
   margin: 20px;
   font-family: 'Segoe UI', sans-serif;
 }
 
 .role-guard-title {
-  color: #cc0000;
+  color: var(--1c-error-text);
   margin: 0 0 10px 0;
 }
 
@@ -44,20 +42,18 @@
   margin: 0;
 }
 
-.role-guard-meta {
+.role-guard-meta,
+.role-guard-meta--sub {
   font-size: 12px;
-  color: #777;
+  color: var(--1c-text-muted);
+}
+
+.role-guard-meta {
   margin-top: 10px;
 }
 
-.role-guard-meta--sub {
-  font-size: 12px;
-  color: #777;
-}
-
-/* --- Заглушки разделов (AppRoutes) --- */
 .route-stub-card {
-  background: #fff;
+  background: var(--1c-white);
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--1c-border-medium);
 }

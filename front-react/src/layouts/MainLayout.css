@@ -8,7 +8,6 @@
   height: 100vh;
 }
 
-/* Двухколоночный контур (боковое меню + рабочая область) */
 .erp-main-body-container {
   display: flex;
   flex: 1;
@@ -19,11 +18,24 @@
 /* Левая панель разделов */
 .erp-sidebar-menu {
   width: 220px;
-  background-color: #ebebeb;
+  min-width: 220px;
+  background-color: var(--1c-bg-sidebar);
   border-right: 1px solid var(--1c-border);
   display: flex;
   flex-direction: column;
   padding-top: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    width 0.2s ease,
+    min-width 0.2s ease,
+    border-right-width 0.2s ease;
+}
+
+.erp-sidebar-menu--collapsed {
+  width: 0;
+  min-width: 0;
+  border-right-width: 0;
 }
 
 .erp-menu-item {
@@ -33,13 +45,13 @@
   cursor: pointer;
   font-weight: 500;
   color: var(--1c-text-dark);
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--1c-border-light);
   gap: 10px;
   transition: background 0.15s ease;
 }
 
 .erp-menu-item:hover {
-  background-color: #e2e2e2;
+  background-color: var(--1c-bg-control);
 }
 
 .erp-menu-item.active {
@@ -56,14 +68,10 @@
 /* Правая рабочая зона */
 .erp-content-body {
   flex: 1;
+  min-width: 0;
   padding: 20px;
   overflow-y: auto;
   background: var(--1c-white);
-}
-
-.erp-content-body.erp-content-body--fill {
-  flex: 1;
-  background: #fff;
 }
 
 /* --- Базовые общие контейнеры форм и журналов --- */
@@ -93,7 +101,7 @@
   flex: 1;
   padding: 15px;
   overflow-y: auto;
-  background-color: #fafafa;
+  background-color: var(--1c-bg-subtle);
   box-sizing: border-box;
 }
 
@@ -102,21 +110,21 @@
   flex-direction: column;
   gap: 12px;
   max-width: 500px;
-  background: #fff;
+  background: var(--1c-white);
   border: 1px solid var(--1c-border);
   padding: 15px;
 }
 
 .erp-v8-form-grid label {
   font-weight: 500;
-  color: #555;
+  color: var(--1c-text-secondary);
   font-size: 13px;
 }
 
 .erp-v8-form-grid input,
 .erp-v8-form-grid select {
   padding: 5px;
-  border: 1px solid #c4c4c4;
+  border: 1px solid var(--1c-border-strong);
   outline: none;
   font-size: 13px;
   width: 100%;
@@ -126,12 +134,12 @@
 .erp-v8-form-grid input:focus,
 .erp-v8-form-grid select:focus {
   border-color: var(--1c-yellow-hover);
-  background-color: #fffffa;
+  background-color: var(--1c-yellow-tint);
 }
 
 .erp-v8-table tr.erp-row-selected {
-  background-color: #c1d9ff !important;
-  color: #000000;
+  background-color: var(--1c-row-selected) !important;
+  color: var(--1c-text-dark);
 }
 
 /* Стилизация скроллбара под интерфейс "Такси" */
@@ -140,14 +148,14 @@
 }
 
 .erp-v8-scrollbar::-webkit-scrollbar-track {
-  background: #f5f5f5;
+  background: var(--1c-bg-panel);
 }
 
 .erp-v8-scrollbar::-webkit-scrollbar-thumb {
-  background: #c4c4c4;
+  background: var(--1c-border-strong);
   border-radius: 2px;
 }
 
 .erp-v8-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a6a6a6;
+  background: var(--1c-border-dark);
 }
