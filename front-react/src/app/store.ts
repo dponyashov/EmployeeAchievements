@@ -8,6 +8,7 @@ import { tasksApi } from '../features/tasks/tasksApi';
 import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
 import { reportsApi } from '../features/reports/reportsApi';
 import { bookingsApi } from '../features/bookings/bookingsApi';
+import { testingApi } from '../features/testing/testingApi';
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     [tasksApi.reducerPath]: tasksApi.reducer,
     [reportsApi.reducerPath]: reportsApi.reducer,
     [bookingsApi.reducerPath]: bookingsApi.reducer,
+    [testingApi.reducerPath]: testingApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -27,6 +29,7 @@ export const store = configureStore({
       tasksApi.middleware,
       reportsApi.middleware,
       bookingsApi.middleware,
+      testingApi.middleware,
     ),
 });
 

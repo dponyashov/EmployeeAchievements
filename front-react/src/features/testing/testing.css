@@ -1,0 +1,468 @@
+/* =========================================================
+   ПОДСИСТЕМА "ТЕСТИРОВАНИЕ СОТРУДНИКОВ" (1С:Такси)
+   ========================================================= */
+
+.testing-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--1c-white);
+  font-size: 13px;
+}
+
+.testing-topbar {
+  background: var(--1c-bg-panel);
+  border-bottom: 1px solid var(--1c-border-medium);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.testing-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testing-page-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--1c-text-dark);
+}
+
+.testing-tabs {
+  display: inline-flex;
+  border: 1px solid var(--1c-border-dark);
+  background: var(--1c-bg-header-cell);
+}
+
+.testing-tab-btn {
+  padding: 5px 14px;
+  border: none;
+  border-right: 1px solid var(--1c-border-strong);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--1c-text-dark);
+}
+
+.testing-tab-btn:last-child {
+  border-right: none;
+}
+
+.testing-tab-btn--active {
+  background: var(--1c-yellow);
+  font-weight: bold;
+}
+
+.testing-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* --- Лента разделов и тестов по центру окна --- */
+.testing-feed-wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.testing-tests-grid {
+  max-width: 920px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.testing-section-card {
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border);
+  border-left: 5px solid var(--1c-yellow);
+  padding: 16px 20px;
+  cursor: pointer;
+  transition:
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.testing-section-card:hover {
+  background: var(--1c-yellow-tint);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.testing-section-card--inactive {
+  opacity: 0.65;
+  border-left-color: var(--1c-border-dark);
+}
+
+.testing-section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--1c-active-blue);
+  margin-bottom: 6px;
+}
+
+.testing-section-desc {
+  color: var(--1c-text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.testing-section-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.testing-test-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.testing-badge {
+  background: var(--1c-bg-panel);
+  border: 1px solid var(--1c-border-medium);
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--1c-text-dark);
+}
+
+.testing-badge--warn {
+  background: var(--1c-yellow-soft);
+  border-color: var(--1c-yellow-border);
+}
+
+.testing-badge--success {
+  background: var(--1c-success-bg);
+  border-color: var(--1c-success-green);
+  color: var(--1c-success-text);
+}
+
+.testing-badge--danger {
+  background: var(--1c-error-bg);
+  border-color: var(--1c-error-text);
+  color: var(--1c-error-text);
+}
+
+/* --- Окно прохождения теста (Runner) --- */
+.testing-runner-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  border: 1px solid var(--1c-border-medium);
+  background: var(--1c-white);
+}
+
+.testing-runner-header {
+  background: var(--1c-bg-panel);
+  border-bottom: 1px solid var(--1c-border-medium);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.testing-timer-box {
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 4px 10px;
+  background: var(--1c-yellow-soft);
+  border: 1px solid var(--1c-yellow-border);
+  color: var(--1c-text-dark);
+}
+
+.testing-timer-box--danger {
+  background: var(--1c-error-bg);
+  border-color: var(--1c-error-text);
+  color: var(--1c-error-text);
+}
+
+.testing-runner-body {
+  padding: 20px;
+}
+
+.testing-question-text {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+.testing-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.testing-option-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--1c-border);
+  background: var(--1c-white);
+  cursor: pointer;
+}
+
+.testing-option-row:hover {
+  background: var(--1c-yellow-tint);
+}
+
+.testing-option-row--selected {
+  background: var(--1c-yellow-selected);
+  border-color: var(--1c-yellow-border);
+}
+
+.testing-option-row--locked {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.testing-runner-footer {
+  background: var(--1c-bg-panel);
+  border-top: 1px solid var(--1c-border-medium);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.testing-result-summary {
+  padding: 24px;
+  text-align: center;
+  background: var(--1c-bg-subtle);
+}
+
+/* --- Редактор теста --- */
+.testing-editor-question-card {
+  border: 1px solid var(--1c-border-medium);
+  background: var(--1c-bg-subtle);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.testing-editor-option-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 120px 40px;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+/* --- Контроль тестирования и статистика --- */
+.testing-control-layout {
+  display: flex;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.testing-control-left {
+  width: 280px;
+  flex-shrink: 0;
+  height: 100%;
+  border: 1px solid var(--1c-border-medium);
+  background: var(--1c-bg-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.testing-control-right {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.testing-control-right .sub-view {
+  min-width: 0;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.testing-control-tab-fill {
+  flex: 1;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.testing-control-tab-fill > .sub-view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.testing-control-employees-pane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.testing-control-employees-left {
+  width: 25%;
+  min-width: 220px;
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.testing-control-employees-left > .sub-view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px;
+}
+
+.testing-control-employees-right {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.testing-control-employees-right > .sub-view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.testing-stats-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.testing-stat-box {
+  border: 1px solid var(--1c-border);
+  background: var(--1c-bg-panel);
+  padding: 10px 14px;
+}
+
+.testing-stat-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--1c-active-blue);
+  margin-top: 4px;
+}
+
+.testing-qstat-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.testing-qstat-bar-bg {
+  flex: 1;
+  height: 10px;
+  background: var(--1c-bg-header-cell);
+  border: 1px solid var(--1c-border-strong);
+  overflow: hidden;
+  min-width: 70px;
+}
+
+.testing-qstat-bar-fill {
+  height: 100%;
+  background: var(--1c-success-green);
+}
+
+.testing-qstat-bar-fill--warn {
+  background: var(--1c-yellow-hover);
+}
+
+.testing-qstat-bar-fill--danger {
+  background: var(--1c-error-text);
+}
+
+/* Прокручиваемые таблицы контроля и липкая шапка */
+.testing-qstat-scroll-wrap,
+.testing-emp-scroll-wrap,
+.testing-attempts-scroll-wrap {
+  margin-top: 10px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid var(--1c-border);
+}
+
+.testing-qstat-scroll-wrap,
+.testing-emp-scroll-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+.testing-attempts-scroll-wrap {
+  max-height: 200px;
+}
+
+.testing-qstat-scroll-wrap .erp-v8-table,
+.testing-emp-scroll-wrap .erp-v8-table,
+.testing-attempts-scroll-wrap .erp-v8-table {
+  margin-top: 0;
+  width: 100%;
+}
+
+.testing-qstat-scroll-wrap .erp-v8-table,
+.testing-attempts-scroll-wrap .erp-v8-table {
+  table-layout: fixed;
+}
+
+.testing-qstat-scroll-wrap .erp-v8-table thead th,
+.testing-emp-scroll-wrap .erp-v8-table thead th,
+.testing-attempts-scroll-wrap .erp-v8-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--1c-bg-header-cell);
+}
+
+.testing-qstat-question-cell,
+.testing-attempts-scroll-wrap .erp-v8-table td {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

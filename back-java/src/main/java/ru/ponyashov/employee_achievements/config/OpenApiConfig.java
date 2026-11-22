@@ -44,6 +44,14 @@ public class OpenApiConfig {
     }
 
     @Bean
+    public GroupedOpenApi testApi() {
+        return GroupedOpenApi.builder()
+                .group("Тестирование")
+                .packagesToScan("ru.ponyashov.employee_achievements.controller.testing") // Или фильтр по пакетам
+                .build();
+    }
+
+    @Bean
     public GroupedOpenApi roomApi() {
         return GroupedOpenApi.builder()
                 .group("Переговорные")

@@ -9,6 +9,7 @@ import { AdminTile } from './tiles/AdminTile';
 import './dashboard.css';
 import { NewsTile } from './tiles/NewsTile';
 import { BookingsTile } from './tiles/BookingsTile';
+import { TestingTile } from './tiles/TestingTile';
 
 export const ErpDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export const ErpDashboard: React.FC = () => {
     '/tasks': TasksTile,
     '/news': NewsTile,
     '/bookings': BookingsTile,
+    '/testing': TestingTile,
   };
 
   const visibleTiles = erpMenuItems.filter((item) => {
@@ -40,11 +42,7 @@ export const ErpDashboard: React.FC = () => {
           if (!Component) return null;
 
           return (
-            <div
-              key={tile.path}
-              onClick={() => navigate(tile.path)}
-              className="erp-dashboard-tile-wrapper"
-            >
+            <div key={tile.path} className="erp-dashboard-tile-wrapper">
               <Component onClick={() => navigate(tile.path)} />
             </div>
           );

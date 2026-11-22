@@ -46,6 +46,21 @@ export const AppRoutes: React.FC = () => {
               </RoleGuard>
             }
           />
+          <Route
+            path="/testing"
+            element={
+              <RoleGuard
+                allowedRoles={[
+                  'ROLE_TEST',
+                  'ROLE_TEST_CONTROL',
+                  'ROLE_TEST_ADMIN',
+                  'ROLE_ADMIN',
+                ]}
+              >
+                <TestingPage />
+              </RoleGuard>
+            }
+          />
 
           <Route
             path="reports"

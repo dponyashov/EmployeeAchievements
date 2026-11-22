@@ -38,13 +38,13 @@ export const erpMenuItems: MenuItem[] = [
     icon: '👥',
     allowedRoles: ['ROLE_SUPERVISOR', 'ROLE_ADMIN'],
   },
-  // Оставляем общий навигатор для должностей, отделов, услуг и компонентов
-  // {
-  //   path: '/directories',
-  //   title: 'Справочники (НСИ)',
-  //   icon: '📚',
-  //   allowedRoles: ['ROLE_SERVICE', 'ROLE_ADMIN'],
-  // },
+  {
+    title: 'Тестирование',
+    path: '/testing',
+    icon: '🎓',
+    allowedRoles: ['ROLE_TEST', 'ROLE_TEST_CONTROL', 'ROLE_TEST_ADMIN', 'ROLE_ADMIN'],
+  },
+
   {
     path: '/reports',
     title: 'Отчеты и анализ',

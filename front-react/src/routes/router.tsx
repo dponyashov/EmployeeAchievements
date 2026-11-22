@@ -4,14 +4,13 @@ import { MainLayout } from '../layouts/MainLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
 import { ErpDashboard } from '../features/dashboard/ErpDashboard';
-// import { DirectoryDispatcher } from '../features/directories/DirectoryDispatcher';
-// import { DirectoryItemDispatcher } from '../features/directories/DirectoryItemDispatcher';
 import { AdminUserManagement } from '../features/admin/components/AdminUserManagement';
 import { TasksJournal } from '../features/tasks/components/TasksJournal';
 import { ReportViewer } from '../features/reports/components/ReportViewer';
 import { NewsHostPage } from '../features/news/NewsHostPage';
 import { BookingsPage } from '../features/bookings/components/BookingsPage';
 import { EmployeesPage } from '../features/directories/components/profile/EmployeesPage';
+import { TestingPage } from '../features/testing/components/TestingPage';
 
 export const erpRouter = createBrowserRouter([
   {
@@ -69,30 +68,6 @@ export const erpRouter = createBrowserRouter([
               </RoleGuard>
             ),
           },
-          // {
-          //   path: '/directories',
-          //   element: (
-          //     <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN']}>
-          //       <DirectoryDispatcher />
-          //     </RoleGuard>
-          //   ),
-          // },
-          // {
-          //   path: '/directories/:directoryUrl',
-          //   element: (
-          //     <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN']}>
-          //       <DirectoryDispatcher />
-          //     </RoleGuard>
-          //   ),
-          // },
-          // {
-          //   path: '/directories/:directoryUrl/:id',
-          //   element: (
-          //     <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN']}>
-          //       <DirectoryItemDispatcher />
-          //     </RoleGuard>
-          //   ),
-          // },
           {
             path: '/reports',
             element: (
@@ -106,6 +81,21 @@ export const erpRouter = createBrowserRouter([
             element: (
               <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN']}>
                 <TasksJournal />
+              </RoleGuard>
+            ),
+          },
+          {
+            path: '/testing',
+            element: (
+              <RoleGuard
+                allowedRoles={[
+                  'ROLE_TEST',
+                  'ROLE_TEST_CONTROL',
+                  'ROLE_TEST_ADMIN',
+                  'ROLE_ADMIN',
+                ]}
+              >
+                <TestingPage />
               </RoleGuard>
             ),
           },

@@ -4,9 +4,9 @@
 
 - **Frontend Core:** Vite + React + TypeScript
 - **State & Data Fetching:** Redux Toolkit + RTK Query + Axios (кастомный `axiosBaseQuery`, префикс `/api`)
-- **Backend & DB:** Java 21 + Spring Boot (`back-java`) + PostgreSQL 17 + Flyway (`V01`..`V05`)
-- **Routing:** React Router v6 (`createBrowserRouter` / `RouterProvider`). Состояние активных вкладок в подсистемах сохраняется в URL query-параметре `?tab=...` через `useSearchParams` (устойчиво к обновлению страницы `F5`).
-- **Экспорт документов:** `xlsx` (SheetJS) для Excel, `jspdf` + `jspdf-autotable` (с локальным шрифтом `public/fonts/DejaVuSans.ttf`) для PDF.
+- **Backend & DB:** Java 21 + Spring Boot (`back-java`) + PostgreSQL 17 + Flyway (`V01`..`V06`)
+- **Routing:** React Router v6 (`createBrowserRouter` в `src/routes/router.tsx`). Состояние активных вкладок и выбранных разделов в подсистемах сохраняется в URL query-параметрах (`?tab=...`, `?sectionId=...`) через `useSearchParams` (устойчиво к обновлению страницы `F5`).
+- **Импорт и экспорт документов:** `xlsx` (SheetJS) для выгрузки отчетов/протоколов в Excel (`.xlsx`) и парсинга вопросов тестов из `.xlsx`/`.xls`/`.csv` (с автоопределением кодировок `UTF-8` и `Windows-1251`); `jspdf` + `jspdf-autotable` (с локальным шрифтом `public/fonts/DejaVuSans.ttf`) для генерации PDF-отчетов и справок.
 - **Сборка и деплой (Docker & Nginx):**
   - В корне фронтенда настроен `.npmrc` с `legacy-peer-deps=true`.
   - Переменные `VITE_*` прокидываются на этапе сборки через `build.args` в `docker-compose.yml` и `ARG`/`ENV` в `docker/front/Dockerfile`:
@@ -32,20 +32,21 @@
   - Применяется к полям `firstName`, `lastName` и `phone` в `ProfileEntity` (колонки `VARCHAR(512)` по миграции `V05__add_phone_and_expand_profile_columns.sql`).
   - `ProfileEncryptionMigrator` (`ApplicationRunner`): при старте приложения автоматически шифрует через `JdbcTemplate` любые оставшиеся открытые (не начинающиеся с `ENC:v1:`) значения в таблице `t_profiles`.
 - **Роутинг и права доступа (`src/routes/` + `routes.css`):**
-  - Защита маршрутов через `ProtectedRoute` и `RoleGuard` (`ROLE_ADMIN`, `ROLE_USER`, `ROLE_SERVICE`, `ROLE_REPORT`, `ROLE_SUPERVISOR`, `ROLE_DEPARTMENT_ALL`, `ROLE_NEWSMAKER`).
+  - Маршрутизация задаётся в `src/routes/router.tsx` (`erpRouter`) и синхронизирована с `src/routes/menuConfig.ts`.
+  - Защита маршрутов через `ProtectedRoute` и `RoleGuard` (`ROLE_ADMIN`, `ROLE_USER`, `ROLE_SERVICE`, `ROLE_REPORT`, `ROLE_SUPERVISOR`, `ROLE_DEPARTMENT_ALL`, `ROLE_NEWSMAKER`, `ROLE_TEST`, `ROLE_TEST_CONTROL`, `ROLE_TEST_ADMIN`).
 
 ---
 
 ## 3. Дизайн-система, единые CSS-переменные и макет
 
-- **Стиль и токены (`src/index.css`):** «1С:Такси» (желто-серая гамма, шапка `#FFCC00`). Все 12 CSS-файлов проекта унифицированы и используют централизованную палитру CSS-переменных в `:root` (`--1c-yellow`, `--1c-yellow-hover`, `--1c-yellow-border`, `--1c-yellow-header-border`, `--1c-yellow-soft`, `--1c-yellow-selected`, `--1c-yellow-tint`, `--1c-white`, `--1c-bg-gray`, `--1c-bg-panel`, `--1c-bg-subtle`, `--1c-bg-sidebar`, `--1c-bg-header-cell`, `--1c-bg-control`, `--1c-border`, `--1c-border-medium`, `--1c-border-strong`, `--1c-border-dark`, `--1c-border-light`, `--1c-border-row`, `--1c-text-dark`, `--1c-text-secondary`, `--1c-text-muted`, `--1c-text-disabled`, `--1c-active-blue`, `--1c-link-dark`, `--1c-row-selected`, `--1c-slot-blue-*`, `--1c-error-*`, `--1c-success-*`, `--1c-overlay-bg`, `--1c-shadow-*`). Инлайн-стили в TSX не используются.
+- **Стиль и токены (`src/index.css`):** «1С:Такси» (желто-серая гамма, шапка `#FFCC00`). Все 13 CSS-файлов проекта унифицированы и используют централизованную палитру CSS-переменных в `:root` (`--1c-yellow`, `--1c-yellow-hover`, `--1c-yellow-border`, `--1c-yellow-header-border`, `--1c-yellow-soft`, `--1c-yellow-selected`, `--1c-yellow-tint`, `--1c-white`, `--1c-bg-gray`, `--1c-bg-panel`, `--1c-bg-subtle`, `--1c-bg-sidebar`, `--1c-bg-header-cell`, `--1c-bg-control`, `--1c-border`, `--1c-border-medium`, `--1c-border-strong`, `--1c-border-dark`, `--1c-border-light`, `--1c-border-row`, `--1c-text-dark`, `--1c-text-secondary`, `--1c-text-muted`, `--1c-text-disabled`, `--1c-active-blue`, `--1c-link-dark`, `--1c-row-selected`, `--1c-slot-blue-*`, `--1c-error-*`, `--1c-success-*`, `--1c-overlay-bg`, `--1c-shadow-*`). Инлайн-стили в TSX не используются.
 - **Макет и навигация (`src/layouts/` и `src/components/layout/`):**
   - `MainLayout.tsx` + `MainLayout.css`: сворачиваемая левая панель разделов (`.erp-sidebar-menu` / `.erp-sidebar-menu--collapsed`, плавная анимация `width: 220px <-> 0px`, сохранение состояния в `localStorage` под ключом `erp_sidebar_collapsed`) и рабочая область `Outlet`.
   - `ErpHeader.tsx` + `layout.css`: квадратная кнопка-«бутерброд» (`32×32 px`, `.erp-burger-btn` с плавной трансформацией полосок в крестик при открытой панели разделов), выпадающая панель пользователя с портальными модальными окнами (`createPortal(..., document.body)`), безопасный выход с `dispatch(logOut())` в `finally`.
   - `ErpFooter.tsx` + `layout.css` (`.erp-footer` высотой `25px`).
   - `AuthLayout.tsx` + `AuthLayout.css` (авторизация и регистрация).
 - **Общие UI-компоненты (`src/components/ui/` + `ui.css`):**
-  - `ErpCommandBar.tsx`, `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx` (рекурсивный разбор ошибок через `parseErpError.ts`), `ErpPagination.tsx`, `ErpColumnSelector.tsx`.
+  - `ErpCommandBar.tsx` (обязателен проп `onRefresh`), `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx` (рекурсивный разбор ошибок через `parseErpError.ts`), `ErpPagination.tsx`, `ErpColumnSelector.tsx`.
 
 ---
 
@@ -53,7 +54,7 @@
 
 ### 4.1. Рабочий стол (`src/features/dashboard/` + `dashboard.css`)
 
-- `ErpDashboard.tsx` и плитки: `AdminTile`, `EmployeesTile`, `TasksTile`, `ReportsTile`, `NewsTile`, `BookingsTile` (отдельная плитка и пункт меню общих справочников удалены — справочники встроены вкладками в профильные разделы).
+- `ErpDashboard.tsx` и плитки: `AdminTile`, `EmployeesTile`, `TasksTile`, `ReportsTile`, `NewsTile`, `BookingsTile`, `TestingTile` (отдельная плитка и пункт меню общих справочников удалены — справочники встроены вкладками в профильные разделы).
 - Сетка плиток 4x3 высотой `180px` (`grid-auto-rows: 180px`, `display: contents` на обертках, синхронизация с `menuConfig.ts`).
 - `TasksTile.tsx` учитывает три уровня ролей при подсчете задач: `ROLE_DEPARTMENT_ALL` (все сотрудники через `useLazyGetAllEmployeesQuery`), `ROLE_SUPERVISOR` (сотрудники отдела) и обычный пользователь (личные задачи).
 
@@ -78,7 +79,7 @@
 
 ### 4.5. Подсистема «Новости» (`src/features/news/` + `news.css`)
 
-- Внешнее React-приложение (`news-keeper-front` + `news-keeper-back`), встраиваемое как микрофронтенд через `<iframe>` в `NewsHostPage.tsx` (маршрут `/news`, доступ для `ROLE_USER`, `ROLE_NEWSMAKER`, `ROLE_ADMIN`).
+- Внешнее React-приложение (`news-keeper-front` + `news-keeper-back`), встраиемое как микрофронтенд через `<iframe>` в `NewsHostPage.tsx` (маршрут `/news`, доступ для `ROLE_USER`, `ROLE_NEWSMAKER`, `ROLE_ADMIN`).
 - **Бесшовный вход (SSO):** `NewsHostPage.tsx` передает актуальный `accessToken` из Redux через query-параметр `?token=...` в URL `VITE_NEWS_APP_URL`. При обновлении токена в ERP (`key={accessToken}`) `iframe` автоматически получает свежий токен.
 
 ### 4.6. Личный кабинет пользователя в шапке (`ErpHeader.tsx`)
@@ -97,21 +98,39 @@
 - Колонки отчета (включая **«Запросы»**) настраиваются через `ErpColumnSelector` с сохранением в `localStorage` (`erp_report_visible_columns`).
 - **Выгрузка всех страниц сразу:** через `useLazyGetReportDataQuery` (`size: totalElements`) с учетом только видимых столбцов (`exportReportToExcel.ts` -> `.xlsx`, `exportReportToPdf.ts` -> `.pdf` с локальным шрифтом `/fonts/DejaVuSans.ttf`).
 
+### 4.9. Тестирование сотрудников (`src/features/testing/` + `testing.css`)
+
+- **Ролевая модель и БД (`back-java`):**
+  - Миграция Flyway `V06__create_testing_subsystem.sql`: добавление ролей `ROLE_TEST` (прохождение), `ROLE_TEST_CONTROL` (контроль и статистика), `ROLE_TEST_ADMIN` (полное управление разделами, тестами и контролем) через `INSERT ... SELECT ... WHERE NOT EXISTS` (в `t_roles` нет `UNIQUE`-ограничения на `name`).
+  - Таблицы БД: `t_test_sections`, `t_tests`, `t_test_questions`, `t_test_answer_options` (с символьным кодом ответа `a, b, c...`), `t_test_attempts`, `t_test_attempt_answers`, `t_test_extra_grants`.
+  - Контроллер `TestingController` (`/api/testing/...`) и сервис `TestingService`:
+    - При редактировании теста (`saveTest`) существующие вопросы и варианты ответов обновляются по `id`, чтобы не срабатывало `ON DELETE CASCADE` на `t_test_attempt_answers` и не терялась история пройденных попыток.
+    - Чтение и сохранение ответов попытки выполняется явно через `TestAttemptAnswerRepository` (без дублирования с каскадом коллекции `attempt.getAnswers()`).
+    - Серверный контроль таймера (`checkAndExpireIfNeeded`), блокировка изменения принятых ответов, строгое совпадение множества кодов при множественном выборе, блокировка повторного прохождения без выдачи разрешения контролером (`grantExtraAttempt`).
+- **Фронтенд (`TestingPage.tsx`, маршрут `/testing`, навигация через `?sectionId=...&tab=...`):**
+  - **Уровень 1 (Разделы):** центральная лента разделов (`TestSectionsFeed.tsx`) + вкладка `TestSectionEditorTab.tsx` для `ROLE_TEST_ADMIN`.
+  - **Уровень 2 (Внутри раздела):**
+    - **«📝 Тесты раздела»** (`SectionTestsTab.tsx`): карточки тестов в едином стиле ленты разделов (`testing-feed-wrap` / `testing-section-card`).
+    - **Экран прохождения теста** (`TestRunnerView.tsx`): обратный отсчёт времени с авто-фиксацией при истечении, счётчик отвеченных вопросов (`Принято ответов: X из Y`), кнопки `◀ Назад`, `✔ Принять ответ`, `Вперёд ▶`; символьные коды ответов (`a, b, c...`) при прохождении скрыты.
+    - **«⚙️ Редактирование тестов»** (`TestEditorTab.tsx`): настройка лимита вопросов, таймера, скрытия теста, конструктор вопросов с символьными кодами и массовый импорт вопросов из `.xlsx`/`.xls`/`.csv` (`importTestQuestions.ts` с шаблоном и автоопределением `UTF-8`/`Windows-1251`).
+    - **«📊 Контроль тестирования»** (`TestControlTab.tsx` + `control/TestControlSidebar.tsx`, `TestQuestionStatsCard.tsx`, `TestEmployeesTableCard.tsx`, `TestEmployeeAttemptsCard.tsx`): зафиксированный слева список тестов, общая сводка и две вкладки снизу — **«👥 Сотрудники, проходившие тест»** (двухпанельная раскладка `25%` список сотрудников / `75%` попытки, детализация ответов с кодами, открытие повторной попытки, выгрузка протокола в `.xlsx` и официальной справки в `.pdf` через `exportTestingFiles.ts`) и **«📈 Статистика ответов по вопросам»**.
+
 ---
 
 ## 5. Структура файлов проекта (`src/`)
 
 - `api/`: `axios.ts`, `baseQuery.ts`
-- `app/`: `store.ts`
+- `app/`: `store.ts` (подключён `testingApi`)
 - `components/layout/`: `ErpHeader.tsx`, `ErpFooter.tsx`, `MyProfileEditModal.tsx`, `layout.css`
 - `components/ui/`: `ErpCommandBar.tsx`, `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx`, `ErpPagination.tsx`, `ErpColumnSelector.tsx`, `ui.css`
 - `features/admin/`: `adminAuthApi.ts`, `admin.css`, `components/` (`AdminUserManagement.tsx`, `AdminUserList.tsx`, `AdminPasswordReset.tsx`, `AdminRoleMatrix.tsx`)
 - `features/auth/`: `authSlice.ts`, `authApi.ts`
 - `features/bookings/`: `bookingsApi.ts`, `bookings.css`, `components/` (`BookingsPage.tsx`, `BookingsTimelineView.tsx`, `BookingsJournalTable.tsx`, `BookingFormModal.tsx`, `RoomsDirectoryTab.tsx`)
-- `features/dashboard/`: `ErpDashboard.tsx`, `dashboard.css`, `tiles/` (`AdminTile.tsx`, `BookingsTile.tsx`, `EmployeesTile.tsx`, `NewsTile.tsx`, `ReportsTile.tsx`, `TasksTile.tsx`)
+- `features/dashboard/`: `ErpDashboard.tsx`, `dashboard.css`, `tiles/` (`AdminTile.tsx`, `BookingsTile.tsx`, `EmployeesTile.tsx`, `NewsTile.tsx`, `ReportsTile.tsx`, `TasksTile.tsx`, `TestingTile.tsx`)
 - `features/directories/`: `directoriesApi.ts`, `directories.css`, `components/` (`SimpleDirectoryTab.tsx`, `profile/EmployeesPage.tsx`, `profile/ProfileComponents.tsx`, `profile/ProfileListPane.tsx`, `profile/ProfileCardPane.tsx`)
 - `features/news/`: `NewsHostPage.tsx`, `news.css`
 - `features/reports/`: `reportsApi.ts`, `reports.css`, `components/` (`ReportViewer.tsx`, `ReportFilters.tsx`, `ReportTable.tsx`, `ReportExportModal.tsx`), `utils/` (`exportReportToExcel.ts`, `exportReportToPdf.ts`)
 - `features/tasks/`: `tasksApi.ts`, `tasks.css`, `components/` (`TasksJournal.tsx`, `TasksEmployeeList.tsx`, `TasksTablePane.tsx`, `TaskForm.tsx`, `TaskQueriesPane.tsx`)
+- `features/testing/`: `testingApi.ts`, `testing.css`, `components/` (`TestingPage.tsx`, `TestSectionsFeed.tsx`, `TestSectionEditorTab.tsx`, `SectionTestsTab.tsx`, `TestRunnerView.tsx`, `TestEditorTab.tsx`, `TestControlTab.tsx`, `control/TestControlSidebar.tsx`, `control/TestQuestionStatsCard.tsx`, `control/TestEmployeesTableCard.tsx`, `control/TestEmployeeAttemptsCard.tsx`), `utils/` (`exportTestingFiles.ts`, `importTestQuestions.ts`)
 - `layouts/`: `MainLayout.tsx`, `MainLayout.css`, `AuthLayout.tsx`, `AuthLayout.css`
 - `routes/`: `router.tsx`, `AppRoutes.tsx`, `ProtectedRoute.tsx`, `RoleGuard.tsx`, `menuConfig.ts`, `routes.css`
