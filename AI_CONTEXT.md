@@ -27,6 +27,8 @@
   - `src/api/axios.ts` (`injectStoreToAxios`): подставляет `Authorization: Bearer <token>` во все запросы, **кроме** `/auth/refresh`, `/auth/login`, `/auth/registry`.
   - `src/api/baseQuery.ts` (`executeSilentRefresh`): единый промис-мьютекс (`refreshPromise`) для `POST /auth/refresh`. Предотвращает гонку параллельных 401-запросов и вызывает `logOut()` только при явном ответе `401`/`403` от `/auth/refresh`.
   - `src/App.tsx`: инициализация сессии при загрузке/F5 (`isInitializing`) и проактивное фоновое обновление токена за 60 секунд до истечения `exp` из JWT и при возврате на вкладку (`visibilitychange`).
+  - **Очистка кэша RTK Query при смене пользователя (`src/app/store.ts`):**
+  - Корневой редьюсер `rootReducer` оборачивает `appReducer` (`combineReducers`) и при получении экшена `logOut.type` (`auth/logOut`) сбрасывает состояние стора в `undefined`. Это гарантирует полную очистку кэшей всех API-слайсов (`testingApi`, `tasksApi`, `directoriesApi`, `bookingsApi` и др.) при выходе из системы без перезагрузки страницы (`F5`).
 - **Шифрование персональных данных в БД (`back-java`):**
   - `EncryptedStringConverter` (`ru.ponyashov.employee_achievements.security.crypto`): JPA `AttributeConverter` с алгоритмом **AES-256-GCM** (случайный 12-байтовый IV на каждое сохранение, префикс `ENC:v1:` + Base64, ключ из `PROFILE_ENCRYPTION_KEY` с фолбэком на `JWT_ACCESS_SECRET`). Поддерживает обратную совместимость при чтении старых открытых строк.
   - Применяется к полям `firstName`, `lastName` и `phone` в `ProfileEntity` (колонки `VARCHAR(512)` по миграции `V05__add_phone_and_expand_profile_columns.sql`).
@@ -107,6 +109,8 @@
     - При редактировании теста (`saveTest`) существующие вопросы и варианты ответов обновляются по `id`, чтобы не срабатывало `ON DELETE CASCADE` на `t_test_attempt_answers` и не терялась история пройденных попыток.
     - Чтение и сохранение ответов попытки выполняется явно через `TestAttemptAnswerRepository` (без дублирования с каскадом коллекции `attempt.getAnswers()`).
     - Серверный контроль таймера (`checkAndExpireIfNeeded`), блокировка изменения принятых ответов, строгое совпадение множества кодов при множественном выборе, блокировка повторного прохождения без выдачи разрешения контролером (`grantExtraAttempt`).
+  - Защита скрытых разделов (`isActive = false`): на бэкенде методы `getTestsBySection` и `startOrResumeAttempt` блокируют прямой доступ к тестам скрытого раздела для пользователей без роли `ROLE_TEST_ADMIN` / `ROLE_ADMIN`; на фронтенде в `TestSectionEditorTab.tsx` реализовано быстрое переключение видимости из таблицы («🙈 Скрыть» / «👁️ Показать») с передачей полного DTO раздела и чекбокс «Скрыть раздел от пользователей» в модальном окне.
+
 - **Фронтенд (`TestingPage.tsx`, маршрут `/testing`, навигация через `?sectionId=...&tab=...`):**
   - **Уровень 1 (Разделы):** центральная лента разделов (`TestSectionsFeed.tsx`) + вкладка `TestSectionEditorTab.tsx` для `ROLE_TEST_ADMIN`.
   - **Уровень 2 (Внутри раздела):**

@@ -120,6 +120,12 @@ public class TestingServiceImpl implements TestingService {
 
     @Transactional
     public List<TestSummaryDto> getTestsBySection(Long sectionId) {
+        TestSectionEntity section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new RuntimeException("Раздел тестирования не найден"));
+        if (!Boolean.TRUE.equals(section.getIsActive()) && !isTestAdmin()) {
+            throw new RuntimeException("Данный раздел тестирования скрыт администратором");
+        }
+
         boolean admin = isTestAdmin();
         ProfileEntity currentProfile = getCurrentProfile();
 
@@ -315,6 +321,11 @@ public class TestingServiceImpl implements TestingService {
         if (Boolean.TRUE.equals(test.getIsHidden()) && !isTestAdmin()) {
             throw new RuntimeException("Данный тест скрыт администратором");
         }
+
+        if (!Boolean.TRUE.equals(test.getSection().getIsActive()) && !isTestAdmin()) {
+            throw new RuntimeException("Раздел данного теста скрыт администратором");
+        }
+
         if (test.getQuestions().isEmpty()) {
             throw new RuntimeException("В тесте отсутствуют вопросы");
         }

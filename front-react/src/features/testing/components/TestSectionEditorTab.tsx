@@ -97,6 +97,24 @@ export const TestSectionEditorTab: React.FC<TestSectionEditorTabProps> = ({
     }
   };
 
+  const handleToggleVisibility = async (e: React.MouseEvent, sec: TestSectionItem) => {
+    e.stopPropagation();
+    try {
+      setError(null);
+      await updateSection({
+        id: sec.id,
+        data: {
+          title: sec.title,
+          description: sec.description || '',
+          sortOrder: sec.sortOrder,
+          isActive: !sec.isActive,
+        },
+      }).unwrap();
+    } catch (err) {
+      setError(err);
+    }
+  };
+
   return (
     <div className="testing-feed-wrap">
       {Boolean(error) && <ErpErrorBanner error={error} />}
@@ -118,7 +136,8 @@ export const TestSectionEditorTab: React.FC<TestSectionEditorTabProps> = ({
             <th>Наименование раздела</th>
             <th>Описание</th>
             <th className="dir-col-code-md">Тестов</th>
-            <th className="dir-col-code-md">Статус</th>
+            <th className="dir-col-code-md">Видимость</th>
+            <th className="dir-col-code-md">Действие</th>
           </tr>
         </thead>
         <tbody>
@@ -139,11 +158,26 @@ export const TestSectionEditorTab: React.FC<TestSectionEditorTabProps> = ({
                   <span className="testing-badge testing-badge--warn">Скрыт</span>
                 )}
               </td>
+              <td className="text-center">
+                <button
+                  type="button"
+                  className="erp-cmd-btn"
+                  disabled={isUpdating}
+                  onClick={(e) => handleToggleVisibility(e, sec)}
+                  title={
+                    sec.isActive
+                      ? 'Скрыть раздел от сотрудников'
+                      : 'Показать раздел сотрудникам'
+                  }
+                >
+                  {sec.isActive ? '🙈 Скрыть' : '👁️ Показать'}
+                </button>
+              </td>
             </tr>
           ))}
           {filtered.length === 0 && (
             <tr>
-              <td colSpan={5} className="erp-empty-table">
+              <td colSpan={6} className="erp-empty-table">
                 Разделы тестирования не найдены.
               </td>
             </tr>
@@ -195,7 +229,7 @@ export const TestSectionEditorTab: React.FC<TestSectionEditorTabProps> = ({
                     onChange={(e) => setSortOrder(Number(e.target.value))}
                   />
                 </div>
-                <div className="bookings-form-row">
+                {/* <div className="bookings-form-row">
                   <label>Видимость</label>
                   <label>
                     <input
@@ -204,6 +238,17 @@ export const TestSectionEditorTab: React.FC<TestSectionEditorTabProps> = ({
                       onChange={(e) => setIsActive(e.target.checked)}
                     />{' '}
                     Отображать сотрудникам
+                  </label>
+                </div> */}
+                <div className="bookings-form-row">
+                  <label>Видимость раздела</label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={!isActive}
+                      onChange={(e) => setIsActive(!e.target.checked)}
+                    />{' '}
+                    Скрыть раздел от пользователей
                   </label>
                 </div>
               </div>
