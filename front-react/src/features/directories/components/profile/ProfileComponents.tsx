@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAppSelector } from '../../../../app/store';
 import {
   useGetPositionsForSelectQuery,
   useGetDepartmentsForSelectQuery,
@@ -8,9 +7,7 @@ import {
 import { parseErpError } from '../../../../utils/parseErpError';
 import { ProfileListPane } from './ProfileListPane';
 import { ProfileCardPane } from './ProfileCardPane';
-import { SimpleDirectoryTab } from '../SimpleDirectoryTab';
 import '../../directories.css';
-import { useSearchParams } from 'react-router-dom';
 
 interface ProfileListProps {
   data: any[];
@@ -27,30 +24,6 @@ export const ProfileComponents: React.FC<ProfileListProps> = ({
   onDelete,
   onRefresh,
 }) => {
-  const userRoles = useAppSelector((state) => state.auth.user?.roles || []);
-  const canEditDirectories =
-    userRoles.includes('ROLE_SERVICE') || userRoles.includes('ROLE_ADMIN');
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const tabParam = searchParams.get('tab');
-  const activeTab: 'employees' | 'departments' | 'positions' =
-    tabParam === 'departments' || tabParam === 'positions' ? tabParam : 'employees';
-
-  const handleTabChange = (tab: 'employees' | 'departments' | 'positions') => {
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev);
-        if (tab === 'employees') {
-          next.delete('tab');
-        } else {
-          next.set('tab', tab);
-        }
-        return next;
-      },
-      { replace: true },
-    );
-  };
-
   const [searchLastName, setSearchLastName] = useState('');
   const [searchPhone, setSearchPhone] = useState('');
   const [editingId, setEditingId] = useState<number | 'new' | null>(null);
@@ -142,122 +115,68 @@ export const ProfileComponents: React.FC<ProfileListProps> = ({
 
   return (
     <div className="erp-directory-container">
-      <div className="erp-directory-header dir-section-header">
-        <h2>Сотрудники и кадры</h2>
-
-        <div className="dir-section-tabs">
-          <button
-            type="button"
-            className={`dir-section-tab-btn ${
-              activeTab === 'employees' ? 'dir-section-tab-btn--active' : ''
-            }`}
-            onClick={() => handleTabChange('employees')}
-          >
-            👥 Сотрудники
-          </button>
-          <button
-            type="button"
-            className={`dir-section-tab-btn ${
-              activeTab === 'departments' ? 'dir-section-tab-btn--active' : ''
-            }`}
-            onClick={() => handleTabChange('departments')}
-          >
-            🏢 Отделы
-          </button>
-          <button
-            type="button"
-            className={`dir-section-tab-btn ${
-              activeTab === 'positions' ? 'dir-section-tab-btn--active' : ''
-            }`}
-            onClick={() => handleTabChange('positions')}
-          >
-            💼 Должности
-          </button>
-        </div>
-      </div>
-
-      {activeTab === 'employees' && (
-        <div className="erp-two-pane-container profile-two-pane">
-          {errorBanner && (
-            <div className="erp-error-banner profile-error-banner">
-              <span className="erp-error-icon">⚠️</span>
-              <div className="erp-error-text">
-                <strong>Ошибка:</strong> {errorBanner}
-              </div>
+      <div className="erp-two-pane-container profile-two-pane">
+        {errorBanner && (
+          <div className="erp-error-banner profile-error-banner">
+            <span className="erp-error-icon">⚠️</span>
+            <div className="erp-error-text">
+              <strong>Ошибка:</strong> {errorBanner}
             </div>
-          )}
+          </div>
+        )}
 
-          <ProfileListPane
-            filteredData={filteredData}
-            selectedId={selectedId}
-            searchLastName={searchLastName}
-            searchPhone={searchPhone}
-            onSearchChange={setSearchLastName}
-            onSearchPhoneChange={setSearchPhone}
-            onSelectRow={(id) => {
-              onSelectRow(id);
-              setEditingId(null);
-            }}
-            onCreateNew={() => {
-              setErrorBanner(null);
-              onSelectRow(null);
-              setEditingId('new');
-            }}
-            onStartEdit={() => {
-              if (selectedId) {
-                setErrorBanner(null);
-                setEditingId(selectedId);
-              } else alert('Выделите строку.');
-            }}
-            onDelete={() => selectedId && onDelete(selectedId)}
-            onRefresh={onRefresh}
-          />
-
-          <ProfileCardPane
-            editingId={editingId}
-            selectedEmployee={selectedEmployee}
-            positions={positions}
-            departments={departments}
-            isSaving={isSaving}
-            formLastName={formLastName}
-            formFirstName={formFirstName}
-            formPhone={formPhone}
-            formEmail={formEmail}
-            formPositionId={formPositionId}
-            formDepartmentId={formDepartmentId}
-            onLastNameChange={setFormLastName}
-            onFirstNameChange={setFormFirstName}
-            onPhoneChange={setFormPhone}
-            onEmailChange={setFormEmail}
-            onPositionChange={setFormPositionId}
-            onDepartmentChange={setFormDepartmentId}
-            onSave={handleSave}
-            onCancel={() => setEditingId(null)}
-            onStartEdit={() => {
+        <ProfileListPane
+          filteredData={filteredData}
+          selectedId={selectedId}
+          searchLastName={searchLastName}
+          searchPhone={searchPhone}
+          onSearchChange={setSearchLastName}
+          onSearchPhoneChange={setSearchPhone}
+          onSelectRow={(id) => {
+            onSelectRow(id);
+            setEditingId(null);
+          }}
+          onCreateNew={() => {
+            setErrorBanner(null);
+            onSelectRow(null);
+            setEditingId('new');
+          }}
+          onStartEdit={() => {
+            if (selectedId) {
               setErrorBanner(null);
               setEditingId(selectedId);
-            }}
-          />
-        </div>
-      )}
-
-      {activeTab === 'departments' && (
-        <SimpleDirectoryTab
-          cleanKey="department"
-          title="Структурные подразделения (Отделы)"
-          itemLabel="Наименование отдела"
-          canEdit={canEditDirectories}
+            } else alert('Выделите строку.');
+          }}
+          onDelete={() => selectedId && onDelete(selectedId)}
+          onRefresh={onRefresh}
         />
-      )}
 
-      {activeTab === 'positions' && (
-        <SimpleDirectoryTab
-          cleanKey="position"
-          title="Должности"
-          itemLabel="Наименование должности"
-          canEdit={canEditDirectories}
+        <ProfileCardPane
+          editingId={editingId}
+          selectedEmployee={selectedEmployee}
+          positions={positions}
+          departments={departments}
+          isSaving={isSaving}
+          formLastName={formLastName}
+          formFirstName={formFirstName}
+          formPhone={formPhone}
+          formEmail={formEmail}
+          formPositionId={formPositionId}
+          formDepartmentId={formDepartmentId}
+          onLastNameChange={setFormLastName}
+          onFirstNameChange={setFormFirstName}
+          onPhoneChange={setFormPhone}
+          onEmailChange={setFormEmail}
+          onPositionChange={setFormPositionId}
+          onDepartmentChange={setFormDepartmentId}
+          onSave={handleSave}
+          onCancel={() => setEditingId(null)}
+          onStartEdit={() => {
+            setErrorBanner(null);
+            setEditingId(selectedId);
+          }}
         />
-      )}
+      </div>
     </div>
   );
 };

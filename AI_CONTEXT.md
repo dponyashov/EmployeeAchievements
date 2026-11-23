@@ -36,21 +36,24 @@
   - Применяется к полям `firstName`, `lastName` и `phone` в `ProfileEntity` (колонки `VARCHAR(512)` по миграции `V05__add_phone_and_expand_profile_columns.sql`).
   - `ProfileEncryptionMigrator` (`ApplicationRunner`): при старте приложения автоматически шифрует через `JdbcTemplate` любые оставшиеся открытые (не начинающиеся с `ENC:v1:`) значения в таблице `t_profiles`.
 - **Роутинг и права доступа (`src/routes/` + `routes.css`):**
-  - Маршрутизация задаётся в `src/routes/router.tsx` (`erpRouter`) и синхронизирована с `src/routes/menuConfig.ts`.
+  - Маршрутизация задаётся в `src/routes/router.tsx` (`erpRouter`) и синхронизирована с `src/routes/menuConfig.ts` (использует поле `allowedRoles`).
   - Защита маршрутов через `ProtectedRoute` и `RoleGuard` (`ROLE_ADMIN`, `ROLE_USER`, `ROLE_SERVICE`, `ROLE_REPORT`, `ROLE_SUPERVISOR`, `ROLE_DEPARTMENT_ALL`, `ROLE_NEWSMAKER`, `ROLE_TEST`, `ROLE_TEST_CONTROL`, `ROLE_TEST_ADMIN`).
 
 ---
 
 ## 3. Дизайн-система, единые CSS-переменные и макет
 
-- **Стиль и токены (`src/index.css`):** «1С:Такси» (желто-серая гамма, шапка `#FFCC00`). Все 13 CSS-файлов проекта унифицированы и используют централизованную палитру CSS-переменных в `:root` (`--1c-yellow`, `--1c-yellow-hover`, `--1c-yellow-border`, `--1c-yellow-header-border`, `--1c-yellow-soft`, `--1c-yellow-selected`, `--1c-yellow-tint`, `--1c-white`, `--1c-bg-gray`, `--1c-bg-panel`, `--1c-bg-subtle`, `--1c-bg-sidebar`, `--1c-bg-header-cell`, `--1c-bg-control`, `--1c-border`, `--1c-border-medium`, `--1c-border-strong`, `--1c-border-dark`, `--1c-border-light`, `--1c-border-row`, `--1c-text-dark`, `--1c-text-secondary`, `--1c-text-muted`, `--1c-text-disabled`, `--1c-active-blue`, `--1c-link-dark`, `--1c-row-selected`, `--1c-slot-blue-*`, `--1c-error-*`, `--1c-success-*`, `--1c-overlay-bg`, `--1c-shadow-*`). Инлайн-стили в TSX не используются.
+- **Стиль и токены (`src/index.css`):** «1С:Такси» (желто-серая гамма, шапка `#FFCC00`). Все CSS-файлы проекта унифицированы и используют централизованную палитру CSS-переменных в `:root` (`--1c-yellow`, `--1c-yellow-hover`, `--1c-yellow-border`, `--1c-yellow-header-border`, `--1c-yellow-soft`, `--1c-yellow-selected`, `--1c-yellow-tint`, `--1c-white`, `--1c-bg-gray`, `--1c-bg-panel`, `--1c-bg-subtle`, `--1c-bg-sidebar`, `--1c-bg-header-cell`, `--1c-bg-control`, `--1c-border`, `--1c-border-medium`, `--1c-border-strong`, `--1c-border-dark`, `--1c-border-light`, `--1c-border-row`, `--1c-text-dark`, `--1c-text-secondary`, `--1c-text-muted`, `--1c-text-disabled`, `--1c-active-blue`, `--1c-link-dark`, `--1c-row-selected`, `--1c-slot-blue-*`, `--1c-error-*`, `--1c-success-*`, `--1c-overlay-bg`, `--1c-shadow-*`). Инлайн-стили в TSX не используются.
+- **Единый паттерн шапки подсистем (`.testing-page`, `.testing-topbar`, `.testing-tabs`, `.testing-tab-btn`, `.testing-content`):**
+  - Применяется в подсистемах **«Задачи сотрудников»** (`AchievementsPage.tsx`), **«Сотрудники и кадры»** (`EmployeesPage.tsx`) и **«Тестирование сотрудников»** (`TestingPage.tsx`).
+  - В левой части шапки отображается динамический заголовок с иконкой активной вкладки (`TAB_TITLES`, синхронизированный с `document.title`), в правой — единая полоса вкладок через `?tab=...`. Внутренние компоненты не дублируют заголовки и панели вкладок.
 - **Макет и навигация (`src/layouts/` и `src/components/layout/`):**
   - `MainLayout.tsx` + `MainLayout.css`: сворачиваемая левая панель разделов (`.erp-sidebar-menu` / `.erp-sidebar-menu--collapsed`, плавная анимация `width: 220px <-> 0px`, сохранение состояния в `localStorage` под ключом `erp_sidebar_collapsed`) и рабочая область `Outlet`.
   - `ErpHeader.tsx` + `layout.css`: квадратная кнопка-«бутерброд» (`32×32 px`, `.erp-burger-btn` с плавной трансформацией полосок в крестик при открытой панели разделов), выпадающая панель пользователя с портальными модальными окнами (`createPortal(..., document.body)`), безопасный выход с `dispatch(logOut())` в `finally`.
   - `ErpFooter.tsx` + `layout.css` (`.erp-footer` высотой `25px`).
   - `AuthLayout.tsx` + `AuthLayout.css` (авторизация и регистрация).
 - **Общие UI-компоненты (`src/components/ui/` + `ui.css`):**
-  - `ErpCommandBar.tsx` (обязательные пропы: `onCreate`, `onEdit`, `onDelete`, `onRefresh`), `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx` (рекурсивный разбор ошибок через `parseErpError.ts`), `ErpPagination.tsx`, `ErpColumnSelector.tsx`.
+  - `ErpCommandBar.tsx` (принимает `onCreate`, `onEdit`, `onDelete`, `onRefresh`), `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx` (рекурсивный разбор ошибок через `parseErpError.ts`), `ErpPagination.tsx`, `ErpColumnSelector.tsx`.
 
 ---
 
@@ -58,22 +61,24 @@
 
 ### 4.1. Рабочий стол (`src/features/dashboard/` + `dashboard.css`)
 
-- `ErpDashboard.tsx` и плитки: `AdminTile`, `EmployeesTile`, `TasksTile`, `ReportsTile`, `NewsTile`, `BookingsTile`, `TestingTile` (отдельная плитка и пункт меню общих справочников удалены — справочники встроены вкладками в профильные разделы).
+- `ErpDashboard.tsx` и плитки: `AdminTile`, `EmployeesTile`, `AchievementsTile` (плитка **«✅ Задачи сотрудников»**, объединившая задачи и отчетность), `NewsTile`, `BookingsTile`, `TestingTile`.
 - Сетка плиток 4x3 высотой `180px` (`grid-auto-rows: 180px`, `display: contents` на обертках, синхронизация с `menuConfig.ts`).
-- `TasksTile.tsx` учитывает три уровня ролей при подсчете задач: `ROLE_DEPARTMENT_ALL` (все сотрудники через `useLazyGetAllEmployeesQuery`), `ROLE_SUPERVISOR` (сотрудники отдела) и обычный пользователь (личные задачи).
+- `AchievementsTile.tsx` учитывает три уровня ролей при подсчете задач: `ROLE_DEPARTMENT_ALL` / `ROLE_ADMIN` (все сотрудники через `useLazyGetAllEmployeesQuery` из `tasksApi`), `ROLE_SUPERVISOR` (сотрудники отдела) и обычный пользователь (личные задачи).
 
 ### 4.2. Сотрудники, кадры и встроенные справочники (`src/features/directories/` + `directories.css`)
 
-- Прямой маршрут `/directories/profile` -> `EmployeesPage.tsx` -> `ProfileComponents.tsx`.
+- Прямой маршрут `/directories/profile` -> `EmployeesPage.tsx` (единая верхняя шапка с динамическим заголовком и иконкой вкладки `TAB_TITLES`, загружает список через `useGetDirectoryDataQuery('profile')`).
 - Вкладки через `?tab=` (`employees` | `departments` | `positions`):
-  - **«👥 Сотрудники»** (`ProfileListPane.tsx` + `ProfileCardPane.tsx`): отображение и редактирование ФИО, Email, **телефона (`phone`)**, должности и отдела; двойной фильтр в списке (по фамилии + поиск по номеру телефона с нормализацией цифр). При выборе строки в списке режим создания (`editingId = 'new'`) корректно сбрасывается.
-  - **«🏢 Отделы»** и **«💼 Должности»** (`SimpleDirectoryTab.tsx`): просмотр для всех открывших раздел, редактирование/создание/удаление для ролей `ROLE_SERVICE`, `ROLE_ADMIN`.
+  - **«👥 Сотрудники»** (`ProfileComponents.tsx` -> `ProfileListPane.tsx` + `ProfileCardPane.tsx`, без дублирования заголовка и панели вкладок): отображение и редактирование ФИО, Email, **телефона (`phone`)**, должности и отдела; двойной фильтр в списке (по фамилии + поиск по номеру телефона с нормализацией цифр). При выборе строки в списке режим создания (`editingId = 'new'`) корректно сбрасывается.
+  - **«🏢 Отделы»** (`cleanKey="department"`) и **«💼 Должности»** (`cleanKey="position"`) через `SimpleDirectoryTab.tsx`: просмотр для всех открывших раздел, редактирование/создание/удаление для ролей `ROLE_SERVICE`, `ROLE_ADMIN`.
 
-### 4.3. Мои задачи и встроенные справочники (`src/features/tasks/` + `tasks.css`)
+### 4.3. Задачи сотрудников, отчетность и встроенные справочники (`src/features/achievements/` + `src/features/tasks/` + `src/features/reports/`)
 
-- Вкладки через `?tab=` (`tasks` | `services` | `components`):
-  - **«✅ Задачи»**: двухпанельный журнал (`TasksEmployeeList`, `TasksTablePane`, `TaskForm`, `TaskQueriesPane`) с поддержкой ролей `ROLE_SUPERVISOR` и `ROLE_DEPARTMENT_ALL`. В `TasksTablePane` хранится `selectedTaskId: number | null` для мгновенного обновления списка запросов из свежего кэша.
-  - **«🛠️ Услуги»** и **«🧩 Компоненты»** (`SimpleDirectoryTab.tsx`): права на редактирование у `ROLE_SERVICE`, `ROLE_ADMIN`.
+- Объединённый раздел **«✅ Задачи сотрудников»** по маршруту `/achievements` (`AchievementsPage.tsx`, старые маршруты `/tasks` и `/reports` настроены как `<Navigate>`-редиректы).
+- Единая верхняя панель из 4 вкладок через `?tab=` (`tasks` | `reports` | `services` | `components`) с динамическим заголовком и иконкой для каждой закладки:
+  - **«✅ Задачи»** (`TasksJournal.tsx` без внутренней полосы вкладок): двухпанельный журнал (`TasksEmployeeList`, `TasksTablePane`, `TaskForm`, `TaskQueriesPane`) с поддержкой ролей `ROLE_SUPERVISOR` и `ROLE_DEPARTMENT_ALL`. В `TasksTablePane` хранится `selectedTaskId: number | null` для мгновенного обновления списка запросов из свежего кэша.
+  - **«📊 Отчетность»** (`ReportViewer.tsx`, доступна для `ROLE_REPORT`, `ROLE_ADMIN`, `ROLE_SUPERVISOR`, `ROLE_DEPARTMENT_ALL`): фильтрация (`ReportFilters`), таблица (`ReportTable`), настройка видимых колонок (включая **«Запросы»**) через `ErpColumnSelector` с сохранением в `localStorage` (`erp_report_visible_columns`) и выгрузка всех страниц сразу через `useLazyGetReportDataQuery` (`size: totalElements`) в Excel (`exportReportToExcel.ts` -> `.xlsx`) и PDF (`exportReportToPdf.ts` -> `.pdf` с локальным шрифтом `/fonts/DejaVuSans.ttf`).
+  - **«🛠️ Услуги»** (`cleanKey="service"`, `itemLabel="Наименование услуги"`) и **«🧩 Компоненты»** (`cleanKey="component"`, `itemLabel="Наименование компонента"`) через `SimpleDirectoryTab.tsx`: права на редактирование у `ROLE_SERVICE`, `ROLE_ADMIN`.
 
 ### 4.4. Бронирование помещений / Переговорные (`src/features/bookings/` + `bookings.css`)
 
@@ -86,23 +91,12 @@
 - Внешнее React-приложение (`news-keeper-front` + `news-keeper-back`), встраиемое как микрофронтенд через `<iframe>` в `NewsHostPage.tsx` (маршрут `/news`, доступ для `ROLE_USER`, `ROLE_NEWSMAKER`, `ROLE_ADMIN`).
 - **Бесшовный вход (SSO):** `NewsHostPage.tsx` передает актуальный `accessToken` из Redux через query-параметр `?token=...` в URL `VITE_NEWS_APP_URL`. При обновлении токена в ERP (`key={accessToken}`) `iframe` автоматически получает свежий токен.
 
-### 4.6. Личный кабинет пользователя в шапке (`ErpHeader.tsx`)
+### 4.6. Личный кабинет пользователя и Администрирование (`ErpHeader.tsx` + `src/features/admin/`)
 
-- Выпадающая панель под именем пользователя с двумя портальными модальными окнами:
-  1. **«Изменить пароль»** — `AdminPasswordReset` (`userId={user.id}`, `autoComplete="new-password"`, закрытие по `onSuccess`).
-  2. **«Редактировать профиль»** — `MyProfileEditModal.tsx` (`GET /auth/user/{user.id}/profile`, сохранение ФИО, телефона и Email через `PATCH /directory/profile/{employeeId}` и обновление `authSlice`).
+- **Личный кабинет в шапке (`ErpHeader.tsx`):** выпадающая панель под именем пользователя с двумя портальными модальными окнами: **«Изменить пароль»** (`AdminPasswordReset`) и **«Редактировать профиль»** (`MyProfileEditModal.tsx`, `GET /auth/user/{user.id}/profile`, сохранение через `PATCH /directory/profile/{employeeId}`).
+- **Администрирование (`src/features/admin/` + `admin.css`):** `AdminUserManagement`, `AdminUserList`, `AdminPasswordReset` (с отключенным автозаполнением пароля), `AdminRoleMatrix` (ленивый дозапрос `GET /auth/user/{id}/roles` и оптимистичное обновление кэша в `onQueryStarted`).
 
-### 4.7. Администрирование (`src/features/admin/` + `admin.css`)
-
-- `AdminUserManagement`, `AdminUserList`, `AdminPasswordReset` (с отключенным автозаполнением пароля), `AdminRoleMatrix` (ленивый дозапрос `GET /auth/user/{id}/roles` и оптимистичное обновление кэша в `onQueryStarted`).
-
-### 4.8. Отчеты и анализ (`src/features/reports/` + `reports.css`)
-
-- `ReportViewer`, `ReportFilters`, `ReportTable`, `ReportExportModal`.
-- Колонки отчета (включая **«Запросы»**) настраиваются через `ErpColumnSelector` с сохранением в `localStorage` (`erp_report_visible_columns`).
-- **Выгрузка всех страниц сразу:** через `useLazyGetReportDataQuery` (`size: totalElements`) с учетом только видимых столбцов (`exportReportToExcel.ts` -> `.xlsx`, `exportReportToPdf.ts` -> `.pdf` с локальным шрифтом `/fonts/DejaVuSans.ttf`).
-
-### 4.9. Тестирование сотрудников (`src/features/testing/` + `testing.css`)
+### 4.7. Тестирование сотрудников (`src/features/testing/` + `testing.css`)
 
 - **Ролевая модель и БД (`back-java`):**
   - Миграция Flyway `V06__create_testing_subsystem.sql`: добавление ролей `ROLE_TEST` (прохождение), `ROLE_TEST_CONTROL` (контроль и статистика), `ROLE_TEST_ADMIN` (полное управление разделами, тестами и контролем) через `INSERT ... SELECT ... WHERE NOT EXISTS` (в `t_roles` нет `UNIQUE`-ограничения на `name`). Таблицы БД: `t_test_sections`, `t_tests`, `t_test_questions`, `t_test_answer_options` (с символьным кодом ответа `a, b, c...`), `t_test_attempts`, `t_test_attempt_answers`, `t_test_extra_grants`.
@@ -129,10 +123,11 @@
 - `app/`: `store.ts` (подключены `testingApi`, `authResetListener` и `injectStoreToAxios`)
 - `components/layout/`: `ErpHeader.tsx`, `ErpFooter.tsx`, `MyProfileEditModal.tsx`, `layout.css`
 - `components/ui/`: `ErpCommandBar.tsx`, `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx`, `ErpPagination.tsx`, `ErpColumnSelector.tsx`, `ui.css`
+- `features/achievements/`: `AchievementsPage.tsx` (объединённый раздел «✅ Задачи сотрудников» с вкладками Задачи, Отчетность, Услуги, Компоненты)
 - `features/admin/`: `adminAuthApi.ts`, `admin.css`, `components/` (`AdminUserManagement.tsx`, `AdminUserList.tsx`, `AdminPasswordReset.tsx`, `AdminRoleMatrix.tsx`)
 - `features/auth/`: `authSlice.ts`, `authApi.ts`
 - `features/bookings/`: `bookingsApi.ts`, `bookings.css`, `components/` (`BookingsPage.tsx`, `BookingsTimelineView.tsx`, `BookingsJournalTable.tsx`, `BookingFormModal.tsx`, `RoomsDirectoryTab.tsx`)
-- `features/dashboard/`: `ErpDashboard.tsx`, `dashboard.css`, `tiles/` (`AdminTile.tsx`, `BookingsTile.tsx`, `EmployeesTile.tsx`, `NewsTile.tsx`, `ReportsTile.tsx`, `TasksTile.tsx`, `TestingTile.tsx`)
+- `features/dashboard/`: `ErpDashboard.tsx`, `dashboard.css`, `tiles/` (`AchievementsTile.tsx`, `AdminTile.tsx`, `BookingsTile.tsx`, `EmployeesTile.tsx`, `NewsTile.tsx`, `TestingTile.tsx`)
 - `features/directories/`: `directoriesApi.ts`, `directories.css`, `components/` (`SimpleDirectoryTab.tsx`, `profile/EmployeesPage.tsx`, `profile/ProfileComponents.tsx`, `profile/ProfileListPane.tsx`, `profile/ProfileCardPane.tsx`)
 - `features/news/`: `NewsHostPage.tsx`, `news.css`
 - `features/reports/`: `reportsApi.ts`, `reports.css`, `components/` (`ReportViewer.tsx`, `ReportFilters.tsx`, `ReportTable.tsx`, `ReportExportModal.tsx`), `utils/` (`exportReportToExcel.ts`, `exportReportToPdf.ts`)

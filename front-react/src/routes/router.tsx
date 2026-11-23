@@ -5,12 +5,11 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
 import { ErpDashboard } from '../features/dashboard/ErpDashboard';
 import { AdminUserManagement } from '../features/admin/components/AdminUserManagement';
-import { TasksJournal } from '../features/tasks/components/TasksJournal';
-import { ReportViewer } from '../features/reports/components/ReportViewer';
 import { NewsHostPage } from '../features/news/NewsHostPage';
 import { BookingsPage } from '../features/bookings/components/BookingsPage';
 import { EmployeesPage } from '../features/directories/components/profile/EmployeesPage';
 import { TestingPage } from '../features/testing/components/TestingPage';
+import { AchievementsPage } from '../features/achievements/AchievementsPage';
 
 export const erpRouter = createBrowserRouter([
   {
@@ -69,20 +68,28 @@ export const erpRouter = createBrowserRouter([
             ),
           },
           {
-            path: '/reports',
+            path: 'achievements',
             element: (
-              <RoleGuard allowedRoles={['ROLE_REPORT', 'ROLE_ADMIN']}>
-                <ReportViewer />
+              <RoleGuard
+                allowedRoles={[
+                  'ROLE_USER',
+                  'ROLE_SUPERVISOR',
+                  'ROLE_DEPARTMENT_ALL',
+                  'ROLE_REPORT',
+                  'ROLE_ADMIN',
+                ]}
+              >
+                <AchievementsPage />
               </RoleGuard>
             ),
           },
           {
-            path: '/tasks',
-            element: (
-              <RoleGuard allowedRoles={['ROLE_USER', 'ROLE_ADMIN']}>
-                <TasksJournal />
-              </RoleGuard>
-            ),
+            path: 'tasks',
+            element: <Navigate to="/achievements?section=tasks" replace />,
+          },
+          {
+            path: 'reports',
+            element: <Navigate to="/achievements?section=reports" replace />,
           },
           {
             path: '/testing',

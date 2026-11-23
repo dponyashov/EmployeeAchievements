@@ -31,7 +31,6 @@ export const erpMenuItems: MenuItem[] = [
     icon: '🛠️',
     allowedRoles: ['ROLE_ADMIN'],
   },
-  // 🌟 Добавляем выделенный раздел для кадрового учета
   {
     path: '/directories/profile',
     title: 'Сотрудники и кадры',
@@ -44,17 +43,16 @@ export const erpMenuItems: MenuItem[] = [
     icon: '🎓',
     allowedRoles: ['ROLE_TEST', 'ROLE_TEST_CONTROL', 'ROLE_TEST_ADMIN', 'ROLE_ADMIN'],
   },
-
   {
-    path: '/reports',
-    title: 'Отчеты и анализ',
-    icon: '📊',
-    allowedRoles: ['ROLE_REPORT', 'ROLE_ADMIN'],
-  },
-  {
-    path: '/tasks',
-    title: 'Мои задачи',
+    path: '/achievements',
+    title: 'Задачи сотрудников',
     icon: '✅',
-    allowedRoles: ['ROLE_USER', 'ROLE_ADMIN'],
+    allowedRoles: [
+      'ROLE_USER',
+      'ROLE_SUPERVISOR',
+      'ROLE_DEPARTMENT_ALL',
+      'ROLE_REPORT',
+      'ROLE_ADMIN',
+    ],
   },
 ];

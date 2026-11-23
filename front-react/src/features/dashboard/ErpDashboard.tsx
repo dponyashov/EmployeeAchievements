@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../app/store';
 import { erpMenuItems } from '../../routes/menuConfig';
 import { EmployeesTile } from './tiles/EmployeesTile';
-import { ReportsTile } from './tiles/ReportsTile';
-import { TasksTile } from './tiles/TasksTile';
 import { AdminTile } from './tiles/AdminTile';
 import './dashboard.css';
 import { NewsTile } from './tiles/NewsTile';
 import { BookingsTile } from './tiles/BookingsTile';
 import { TestingTile } from './tiles/TestingTile';
+import { AchievementsTile } from './tiles/AchievementsTile';
 
 export const ErpDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -21,8 +20,9 @@ export const ErpDashboard: React.FC = () => {
     '/dashboard': () => null,
     '/admin': AdminTile,
     '/directories/profile': EmployeesTile,
-    '/reports': ReportsTile,
-    '/tasks': TasksTile,
+    '/reports': AchievementsTile, // ReportsTile,
+    '/tasks': AchievementsTile, // TasksTile,
+    '/achievements': AchievementsTile,
     '/news': NewsTile,
     '/bookings': BookingsTile,
     '/testing': TestingTile,
