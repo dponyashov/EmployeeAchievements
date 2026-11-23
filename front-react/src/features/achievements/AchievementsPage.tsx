@@ -16,6 +16,7 @@ const TAB_TITLES: Record<AchievementTab, string> = {
 };
 
 export const AchievementsPage: React.FC = () => {
+  const appTitle = import.meta.env.VITE_APP_TITLE;
   const [searchParams, setSearchParams] = useSearchParams();
   const user = useAppSelector((state) => state.auth.user);
   const roles = user?.roles || [];
@@ -44,7 +45,7 @@ export const AchievementsPage: React.FC = () => {
 
   useEffect(() => {
     const cleanTitle = currentTitle.replace(/^[^\p{L}\p{N}]+/u, '').trim();
-    document.title = `${cleanTitle} — 1С:ERP`;
+    document.title = `${cleanTitle} — ${appTitle}`;
   }, [currentTitle]);
 
   const handleSwitchTab = (nextTab: AchievementTab) => {

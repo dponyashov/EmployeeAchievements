@@ -18,6 +18,8 @@ const TAB_TITLES: Record<EmployeesTab, string> = {
 };
 
 export const EmployeesPage: React.FC = () => {
+  const appTitle = import.meta.env.VITE_APP_TITLE;
+
   const [searchParams, setSearchParams] = useSearchParams();
   const user = useAppSelector((state) => state.auth.user);
   const roles = user?.roles || [];
@@ -37,7 +39,8 @@ export const EmployeesPage: React.FC = () => {
   const currentTitle = TAB_TITLES[activeTab];
 
   useEffect(() => {
-    document.title = `${currentTitle} — 1С:ERP`;
+    const cleanTitle = currentTitle.replace(/^[^\p{L}\p{N}]+/u, '').trim();
+    document.title = `${cleanTitle} — ${appTitle}`;
   }, [currentTitle]);
 
   const handleSwitchTab = (nextTab: EmployeesTab) => {

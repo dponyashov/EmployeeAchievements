@@ -11,6 +11,9 @@ import { TestingTile } from './tiles/TestingTile';
 import { AchievementsTile } from './tiles/AchievementsTile';
 
 export const ErpDashboard: React.FC = () => {
+  const appTitle = import.meta.env.VITE_APP_TITLE;
+  document.title = `Рабочий стол — ${appTitle}`;
+
   const navigate = useNavigate();
 
   const { user } = useAppSelector((state) => state.auth);

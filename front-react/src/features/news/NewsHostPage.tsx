@@ -3,6 +3,9 @@ import { useAppSelector } from '../../app/store';
 import './news.css';
 
 export const NewsHostPage: React.FC = () => {
+  const appTitle = import.meta.env.VITE_APP_TITLE;
+  document.title = `Новости — ${appTitle}`;
+
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const baseNewsUrl = (import.meta.env.VITE_NEWS_APP_URL || '').trim();
 

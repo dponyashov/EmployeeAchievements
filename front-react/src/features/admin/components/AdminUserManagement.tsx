@@ -10,6 +10,9 @@ import { AdminRoleMatrix } from './AdminRoleMatrix';
 import '../admin.css';
 
 export const AdminUserManagement: React.FC = () => {
+  const appTitle = import.meta.env.VITE_APP_TITLE;
+  document.title = `Администрирование — ${appTitle}`;
+
   const { data: users = [], isLoading: usersLoading } = useGetAdminUsersQuery();
   const [triggerFetchRoles, { isFetching: isUserRolesLoading }] =
     useLazyGetUserRolesQuery();

@@ -11,6 +11,7 @@ import { TestControlTab } from './TestControlTab';
 import { SectionTestsTab } from './SectionTestsTab';
 
 export const TestingPage: React.FC = () => {
+  const appTitle = import.meta.env.VITE_APP_TITLE;
   const [searchParams, setSearchParams] = useSearchParams();
   const userRoles = useAppSelector((state) => state.auth.user?.roles || []);
 
@@ -40,6 +41,8 @@ export const TestingPage: React.FC = () => {
       : tabParam === 'control' && isTestControl
         ? 'control'
         : 'tests';
+
+  document.title = `Тестирование — ${appTitle}`;
 
   const handleSelectSection = (sectionId: number) => {
     setActiveSession(null);
@@ -105,7 +108,7 @@ export const TestingPage: React.FC = () => {
           <h2 className="testing-page-title">
             {selectedSection
               ? `Раздел: ${selectedSection.title}`
-              : '🎓 Подсистема тестирования сотрудников'}
+              : '🎓 Тестирование сотрудников'}
           </h2>
         </div>
 

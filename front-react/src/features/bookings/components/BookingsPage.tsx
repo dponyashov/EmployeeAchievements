@@ -29,6 +29,9 @@ const shiftDate = (isoDate: string, days: number) => {
 };
 
 export const BookingsPage: React.FC = () => {
+  const appTitle = import.meta.env.VITE_APP_TITLE;
+  document.title = `Переговорные — ${appTitle}`;
+
   const authUser = useAppSelector((state) => state.auth.user);
   const roles = authUser?.roles || [];
 
