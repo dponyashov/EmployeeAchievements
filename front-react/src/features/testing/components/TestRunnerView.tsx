@@ -17,24 +17,27 @@ export const TestRunnerView: React.FC<TestRunnerViewProps> = ({
 }) => {
   const [session, setSession] = useState<TestAttemptSession>(initialSession);
   const [currentIndex, setCurrentIndex] = useState<number>(() => {
-    // Открываем первый ещё не отвеченный вопрос (если есть)
     const firstUnanswered = initialSession.questions.findIndex((q) => !q.isAnswered);
     return firstUnanswered >= 0 ? firstUnanswered : 0;
   });
-
-  // Локальные черновики выбора для ещё не принятых вопросов: { [questionId]: string[] }
-  const [draftSelections, setDraftSelections] = useState<Record<number, string[]>>({});
+  const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(
-    initialSession.remainingSeconds ?? null,
+    initialSession.hasTimeLimit ? (initialSession.remainingSeconds ?? null) : null,
   );
   const [error, setError] = useState<unknown>(null);
 
   const [submitAnswer, { isLoading: isSubmitting }] = useSubmitTestAnswerMutation();
   const [finishAttempt, { isLoading: isFinishing }] = useFinishTestAttemptMutation();
 
-  const expiredTriggeredRef = useRef(false);
+  const autoFinishTriggered = useRef(false);
+  const currentQuestion = session.questions.at(currentIndex);
 
-  // Живой обратный отсчёт времени
+  useEffect(() => {
+    if (currentQuestion) {
+      setSelectedCodes(currentQuestion.selectedCodes || []);
+    }
+  }, [currentIndex, currentQuestion]);
+
   useEffect(() => {
     if (
       session.status !== 'IN_PROGRESS' ||
@@ -45,105 +48,52 @@ export const TestRunnerView: React.FC<TestRunnerViewProps> = ({
     }
 
     if (secondsLeft <= 0) {
-      if (!expiredTriggeredRef.current) {
-        expiredTriggeredRef.current = true;
+      if (!autoFinishTriggered.current) {
+        autoFinishTriggered.current = true;
         finishAttempt({ attemptId: session.attemptId, expired: true })
           .unwrap()
           .then((updated) => setSession(updated))
-          .catch((err) => setError(err));
+          .catch(() => {});
       }
       return;
     }
 
-    const timerId = window.setInterval(() => {
+    const timer = window.setInterval(() => {
       setSecondsLeft((prev) => (prev !== null && prev > 0 ? prev - 1 : 0));
     }, 1000);
 
-    return () => window.clearInterval(timerId);
+    return () => window.clearInterval(timer);
   }, [
+    secondsLeft,
     session.status,
     session.hasTimeLimit,
     session.attemptId,
-    secondsLeft,
     finishAttempt,
   ]);
 
-  const formatTimer = (totalSec: number) => {
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  const formatTimer = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
-
-  // Экран итогов после завершения или истечения времени
-  if (session.status !== 'IN_PROGRESS') {
-    const isExpired = session.status === 'EXPIRED';
-    return (
-      <div className="testing-runner-wrap">
-        <div className="testing-runner-header">
-          <strong>Тест завершён: {session.testTitle}</strong>
-          <span
-            className={`testing-badge ${
-              isExpired ? 'testing-badge--danger' : 'testing-badge--success'
-            }`}
-          >
-            {isExpired ? 'Время истекло (результат зафиксирован)' : 'Завершено'}
-          </span>
-        </div>
-
-        <div className="testing-result-summary">
-          <h3>Результат попытки №{session.attemptNumber}</h3>
-          <p>
-            Дано ответов:{' '}
-            <strong>
-              {session.answeredQuestions} из {session.totalQuestions}
-            </strong>
-          </p>
-          <p>
-            Правильных ответов:{' '}
-            <strong>
-              {session.correctAnswers} из {session.totalQuestions}
-            </strong>
-          </p>
-          <div className="testing-stat-value">Итоговый балл: {session.scorePercent}%</div>
-          <p className="dir-item-form-label">
-            Доступ к повторному прохождению закрыт. При необходимости обратитесь к
-            куратору тестирования.
-          </p>
-          <button type="button" className="bookings-create-btn" onClick={onExit}>
-            Вернуться к списку тестов
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const currentQuestion = session.questions[currentIndex];
-  if (!currentQuestion) return null;
-
-  const isLocked = currentQuestion.isAnswered;
-  const selectedCodes = isLocked
-    ? currentQuestion.selectedCodes
-    : draftSelections[currentQuestion.questionId] || [];
 
   const handleToggleOption = (code: string) => {
-    if (isLocked) return;
-    const normCode = code.toLowerCase();
+    if (!currentQuestion || currentQuestion.isAnswered) return;
+    if (session.status !== 'IN_PROGRESS') return;
 
-    setDraftSelections((prev) => {
-      const current = prev[currentQuestion.questionId] || [];
-      if (!currentQuestion.isMultipleChoice) {
-        return { ...prev, [currentQuestion.questionId]: [normCode] };
-      }
-      const exists = current.includes(normCode);
-      const next = exists
-        ? current.filter((c) => c !== normCode)
-        : [...current, normCode];
-      return { ...prev, [currentQuestion.questionId]: next };
-    });
+    const lower = code.toLowerCase();
+    if (currentQuestion.isMultipleChoice) {
+      setSelectedCodes((prev) =>
+        prev.includes(lower) ? prev.filter((c) => c !== lower) : [...prev, lower],
+      );
+    } else {
+      setSelectedCodes([lower]);
+    }
   };
 
+  // Остаёмся на текущем вопросе после принятия ответа, чтобы показать подсветку
   const handleAcceptAnswer = async () => {
-    if (isLocked || selectedCodes.length === 0) return;
+    if (!currentQuestion || selectedCodes.length === 0) return;
     try {
       setError(null);
       const updated = await submitAnswer({
@@ -155,26 +105,12 @@ export const TestRunnerView: React.FC<TestRunnerViewProps> = ({
       if (updated.remainingSeconds !== null && updated.remainingSeconds !== undefined) {
         setSecondsLeft(updated.remainingSeconds);
       }
-      // Автоматически переходим к следующему неотвеченному вопросу, если тест продолжается
-      if (
-        updated.status === 'IN_PROGRESS' &&
-        currentIndex < updated.questions.length - 1
-      ) {
-        setCurrentIndex((idx) => idx + 1);
-      }
     } catch (err) {
       setError(err);
     }
   };
 
-  const handleFinishEarly = async () => {
-    if (
-      !window.confirm(
-        `Завершить тестирование досрочно? Отвечено ${session.answeredQuestions} из ${session.totalQuestions} вопросов.`,
-      )
-    ) {
-      return;
-    }
+  const handleFinish = async () => {
     try {
       setError(null);
       const updated = await finishAttempt({
@@ -186,6 +122,70 @@ export const TestRunnerView: React.FC<TestRunnerViewProps> = ({
       setError(err);
     }
   };
+  if (session.status !== 'IN_PROGRESS') {
+    const passScore = session.passScorePercent ?? 80;
+    const isPassed = session.isPassed ?? session.scorePercent >= passScore;
+
+    return (
+      <div className="testing-runner-wrap">
+        <div className="testing-runner-header">
+          <strong>
+            {session.isTraining ? '🎓 Обучающий тест: ' : 'Тест: '}
+            {session.testTitle}
+          </strong>
+          <span className="testing-badge">
+            {session.status === 'EXPIRED'
+              ? 'Время истекло'
+              : session.isTraining
+                ? 'Обучающая попытка (без фиксации в журнале)'
+                : `Попытка №${session.attemptNumber}`}
+          </span>
+        </div>
+
+        <div className="testing-result-summary">
+          <h3>
+            {session.isTraining
+              ? 'Обучающее тестирование завершено'
+              : 'Тестирование завершено'}
+          </h3>
+          <p>
+            Отвечено вопросов: <strong>{session.answeredQuestions}</strong> из{' '}
+            <strong>{session.totalQuestions}</strong>
+          </p>
+          <p>
+            Правильных ответов: <strong>{session.correctAnswers}</strong> из{' '}
+            <strong>{session.totalQuestions}</strong>
+          </p>
+          <p>
+            Результат: <strong>{session.scorePercent}%</strong> (проходной балл:{' '}
+            {passScore}%)
+          </p>
+          <p>
+            Итог:{' '}
+            {isPassed ? (
+              <span className="testing-badge testing-badge--success">✔ СДАЛ</span>
+            ) : (
+              <span className="testing-badge testing-badge--danger">✖ НЕ СДАЛ</span>
+            )}
+          </p>
+
+          <button type="button" className="bookings-create-btn" onClick={onExit}>
+            Вернуться к списку тестов
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentQuestion) {
+    return null;
+  }
+
+  const isLocked = currentQuestion.isAnswered;
+  const isLastQuestion = currentIndex === session.questions.length - 1;
+  const correctSet = new Set(
+    (currentQuestion.correctCodes || []).map((c) => c.toLowerCase()),
+  );
 
   return (
     <div className="testing-runner-wrap">
@@ -194,59 +194,61 @@ export const TestRunnerView: React.FC<TestRunnerViewProps> = ({
       <div className="testing-runner-header">
         <div>
           <strong>
-            Вопрос {currentIndex + 1} из {session.totalQuestions}
-          </strong>{' '}
-          <span className="testing-badge">
-            Принято ответов:{' '}
-            <strong>
-              {session.answeredQuestions} из {session.totalQuestions}
-            </strong>
-          </span>
+            {session.isTraining ? '🎓 [Обучение] ' : ''}
+            {session.testTitle}
+          </strong>
+          <div className="tasks-emp-position">
+            Вопрос {currentIndex + 1} из {session.questions.length} • Принято ответов:{' '}
+            {session.answeredQuestions} из {session.totalQuestions}
+          </div>
         </div>
 
-        <div className="bookings-toolbar-right">
-          {session.hasTimeLimit && secondsLeft !== null && (
-            <div
-              className={`testing-timer-box ${
-                secondsLeft <= 60 ? 'testing-timer-box--danger' : ''
-              }`}
-            >
-              ⏱ Осталось: {formatTimer(secondsLeft)}
-            </div>
-          )}
-
-          <button
-            type="button"
-            className="erp-cmd-btn"
-            disabled={isFinishing}
-            onClick={handleFinishEarly}
+        {secondsLeft !== null && (
+          <div
+            className={`testing-timer-box ${
+              secondsLeft <= 60 ? 'testing-timer-box--danger' : ''
+            }`}
           >
-            Завершить тест
-          </button>
-        </div>
+            ⏱ Осталось: {formatTimer(secondsLeft)}
+          </div>
+        )}
       </div>
 
       <div className="testing-runner-body">
         <div className="testing-question-text">
-          {currentQuestion.questionOrder}. {currentQuestion.questionText}
+          {currentIndex + 1}. {currentQuestion.questionText}
         </div>
 
-        <div className="dir-item-form-label">
+        <div className="tasks-emp-position">
           {currentQuestion.isMultipleChoice
-            ? 'Выберите несколько правильных вариантов ответа:'
-            : 'Выберите один правильный вариант ответа:'}
-          {isLocked && ' (Ответ принят и зафиксирован)'}
+            ? 'Выберите все подходящие варианты ответа:'
+            : 'Выберите один вариант ответа:'}
         </div>
 
         <div className="testing-options-list">
           {currentQuestion.options.map((opt) => {
-            const isSelected = selectedCodes.includes(opt.code.toLowerCase());
+            const lowerCode = opt.code.toLowerCase();
+            const isSelected = selectedCodes.includes(lowerCode);
+            const isOptionCorrect = isLocked && correctSet.has(lowerCode);
+            const isOptionWrongSelected =
+              isLocked && isSelected && !correctSet.has(lowerCode);
+
+            let rowClass = 'testing-option-row';
+            if (isOptionCorrect) {
+              rowClass += ' testing-option-row--correct';
+            } else if (isOptionWrongSelected) {
+              rowClass += ' testing-option-row--wrong';
+            } else if (isSelected) {
+              rowClass += ' testing-option-row--selected';
+            }
+            if (isLocked) {
+              rowClass += ' testing-option-row--locked';
+            }
+
             return (
               <div
                 key={opt.id}
-                className={`testing-option-row ${
-                  isSelected ? 'testing-option-row--selected' : ''
-                } ${isLocked ? 'testing-option-row--locked' : ''}`}
+                className={rowClass}
                 onClick={() => handleToggleOption(opt.code)}
               >
                 <input
@@ -256,6 +258,13 @@ export const TestRunnerView: React.FC<TestRunnerViewProps> = ({
                   onChange={() => {}}
                 />
                 <span>{opt.optionText}</span>
+
+                {isOptionCorrect && (
+                  <span className="testing-option-status-tag">✔ Правильный ответ</span>
+                )}
+                {isOptionWrongSelected && (
+                  <span className="testing-option-status-tag">✖ Ваш ответ неверен</span>
+                )}
               </div>
             );
           })}
@@ -272,25 +281,41 @@ export const TestRunnerView: React.FC<TestRunnerViewProps> = ({
           ◀ Назад
         </button>
 
-        <button
-          type="button"
-          className="bookings-create-btn"
-          disabled={isLocked || selectedCodes.length === 0 || isSubmitting}
-          onClick={handleAcceptAnswer}
-        >
-          {isLocked ? '✔ Ответ принят' : '✔ Принять ответ'}
-        </button>
+        <div className="bookings-toolbar-right">
+          {!isLocked && (
+            <button
+              type="button"
+              className="bookings-create-btn"
+              disabled={selectedCodes.length === 0 || isSubmitting}
+              onClick={handleAcceptAnswer}
+            >
+              ✔ Принять ответ
+            </button>
+          )}
 
-        <button
-          type="button"
-          className="erp-cmd-btn"
-          disabled={currentIndex >= session.questions.length - 1}
-          onClick={() =>
-            setCurrentIndex((prev) => Math.min(session.questions.length - 1, prev + 1))
-          }
-        >
-          Вперёд ▶
-        </button>
+          {!isLastQuestion ? (
+            <button
+              type="button"
+              className="erp-cmd-btn"
+              onClick={() =>
+                setCurrentIndex((prev) =>
+                  Math.min(session.questions.length - 1, prev + 1),
+                )
+              }
+            >
+              Вперёд ▶
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="bookings-create-btn"
+              disabled={isFinishing}
+              onClick={handleFinish}
+            >
+              🏁 Завершить тест
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

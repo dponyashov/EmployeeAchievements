@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   useGetTestsBySectionQuery,
   useLazyGetTestAdminDetailQuery,
@@ -8,54 +8,99 @@ import {
   type TestQuestionUpsert,
   type TestOptionUpsert,
 } from '../testingApi';
-import { ErpErrorBanner } from '../../../components/ui/ErpErrorBanner';
-import { ErpCommandBar } from '../../../components/ui/ErpCommandBar';
+import {
+  type EditorMode,
+  type TestFormSettings,
+  type TestEditorTabProps,
+  INITIAL_TEST_SETTINGS,
+  createEmptyOption,
+  createEmptyQuestion,
+} from '../types/testEditor.types';
 import {
   downloadQuestionsTemplateExcel,
   parseQuestionsFromFile,
 } from '../utils/importTestQuestions';
-
-interface TestEditorTabProps {
-  sectionId: number;
-}
-
-const DEFAULT_CODES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
-const createEmptyQuestion = (order: number): TestQuestionUpsert => ({
-  questionText: '',
-  sortOrder: order,
-  options: [
-    { code: 'a', optionText: '', isCorrect: true },
-    { code: 'b', optionText: '', isCorrect: false },
-  ],
-});
+import { ErpCommandBar } from '../../../components/ui/ErpCommandBar';
+import { ErpErrorBanner } from '../../../components/ui/ErpErrorBanner';
+import { TestSettingsForm } from './editor/TestSettingsForm';
+import { TestQuestionCard } from './editor/TestQuestionCard';
 
 export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
   const { data: tests, isLoading, refetch } = useGetTestsBySectionQuery(sectionId);
-  const [fetchAdminDetail, { isFetching: isLoadingDetail }] =
+  const [fetchTestDetail, { isFetching: isDetailLoading }] =
     useLazyGetTestAdminDetailQuery();
   const [createTest, { isLoading: isCreating }] = useCreateTestMutation();
   const [updateTest, { isLoading: isUpdating }] = useUpdateTestMutation();
   const [deleteTest] = useDeleteTestMutation();
 
+  const [mode, setMode] = useState<EditorMode>('list');
   const [selectedTestId, setSelectedTestId] = useState<number | null>(null);
-  const [search, setSearch] = useState('');
-  const [error, setError] = useState<unknown>(null);
-
-  const [isEditingForm, setIsEditingForm] = useState(false);
-  const [editingTestId, setEditingTestId] = useState<number | null>(null);
-
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [questionsLimit, setQuestionsLimit] = useState(10);
-  const [hasTimeLimit, setHasTimeLimit] = useState(false);
-  const [timeLimitMinutes, setTimeLimitMinutes] = useState(15);
-  const [isHidden, setIsHidden] = useState(false);
+  const [settings, setSettings] = useState<TestFormSettings>(INITIAL_TEST_SETTINGS);
   const [questions, setQuestions] = useState<TestQuestionUpsert[]>([
     createEmptyQuestion(1),
   ]);
-
+  const [error, setError] = useState<unknown>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setMode('list');
+    setSelectedTestId(null);
+    setError(null);
+  }, [sectionId]);
+
+  const handleSettingChange = <K extends keyof TestFormSettings>(
+    field: K,
+    value: TestFormSettings[K],
+  ) => {
+    setSettings((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleOpenCreate = () => {
+    setError(null);
+    setSelectedTestId(null);
+    setSettings(INITIAL_TEST_SETTINGS);
+    setQuestions([createEmptyQuestion(1)]);
+    setMode('create');
+  };
+
+  const handleOpenEdit = async (testId?: number) => {
+    const targetId = testId ?? selectedTestId;
+    if (!targetId) return;
+
+    try {
+      setError(null);
+      const detail = await fetchTestDetail(targetId).unwrap();
+      setSelectedTestId(detail.id);
+      setSettings({
+        title: detail.title,
+        description: detail.description || '',
+        questionsLimit: detail.questionsLimit,
+        hasTimeLimit: detail.hasTimeLimit,
+        timeLimitMinutes: detail.timeLimitMinutes ?? 15,
+        isHidden: detail.isHidden,
+        allowTraining: Boolean(detail.allowTraining),
+        passScorePercent: detail.passScorePercent ?? 80,
+      });
+      setQuestions(
+        detail.questions.length > 0 ? detail.questions : [createEmptyQuestion(1)],
+      );
+      setMode('edit');
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (!selectedTestId) return;
+    if (!window.confirm('Удалить выбранный тест и всю его историю?')) return;
+    try {
+      setError(null);
+      await deleteTest(selectedTestId).unwrap();
+      setSelectedTestId(null);
+    } catch (err) {
+      setError(err);
+    }
+  };
 
   const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.item(0);
@@ -70,7 +115,6 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
 
       const baseOrder = isInitialBlank ? 1 : questions.length + 1;
       const imported = await parseQuestionsFromFile(file, baseOrder);
-
       setQuestions((prev) => (isInitialBlank ? imported : [...prev, ...imported]));
     } catch (err) {
       setError(err);
@@ -79,145 +123,20 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
     }
   };
 
-  const filteredTests = (tests || []).filter((t) =>
-    t.title.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  const handleCreateNew = () => {
-    setError(null);
-    setEditingTestId(null);
-    setTitle('');
-    setDescription('');
-    setQuestionsLimit(10);
-    setHasTimeLimit(false);
-    setTimeLimitMinutes(15);
-    setIsHidden(false);
-    setQuestions([createEmptyQuestion(1)]);
-    setIsEditingForm(true);
-  };
-
-  const handleEditSelected = async () => {
-    if (!selectedTestId) {
-      alert('Выделите тест в таблице для редактирования.');
-      return;
-    }
-    try {
-      setError(null);
-      const detail = await fetchAdminDetail(selectedTestId).unwrap();
-      setEditingTestId(detail.id);
-      setTitle(detail.title);
-      setDescription(detail.description || '');
-      setQuestionsLimit(detail.questionsLimit);
-      setHasTimeLimit(detail.hasTimeLimit);
-      setTimeLimitMinutes(detail.timeLimitMinutes || 15);
-      setIsHidden(detail.isHidden);
-      setQuestions(
-        detail.questions.length > 0
-          ? detail.questions.map((q) => ({
-              ...q,
-              options: q.options.map((o) => ({ ...o })),
-            }))
-          : [createEmptyQuestion(1)],
-      );
-      setIsEditingForm(true);
-    } catch (err) {
-      setError(err);
-    }
-  };
-
-  const handleDeleteSelected = async () => {
-    if (!selectedTestId) {
-      alert('Выделите тест для удаления.');
-      return;
-    }
-    if (!window.confirm('Удалить выбранный тест и всю историю его прохождения?')) {
-      return;
-    }
-    try {
-      setError(null);
-      await deleteTest(selectedTestId).unwrap();
-      setSelectedTestId(null);
-    } catch (err) {
-      setError(err);
-    }
-  };
-
-  const addQuestion = () => {
-    setQuestions((prev) => [...prev, createEmptyQuestion(prev.length + 1)]);
-  };
-
-  const removeQuestion = (qIndex: number) => {
-    if (questions.length <= 1) return;
-    setQuestions((prev) =>
-      prev
-        .filter((_, idx) => idx !== qIndex)
-        .map((q, idx) => ({ ...q, sortOrder: idx + 1 })),
-    );
-  };
-
-  const updateQuestionText = (qIndex: number, text: string) => {
-    setQuestions((prev) =>
-      prev.map((q, idx) => (idx === qIndex ? { ...q, questionText: text } : q)),
-    );
-  };
-
-  const addOption = (qIndex: number) => {
-    setQuestions((prev) =>
-      prev.map((q, idx) => {
-        if (idx !== qIndex) return q;
-        const nextCode =
-          DEFAULT_CODES[q.options.length] || String.fromCharCode(97 + q.options.length);
-        return {
-          ...q,
-          options: [...q.options, { code: nextCode, optionText: '', isCorrect: false }],
-        };
-      }),
-    );
-  };
-
-  const removeOption = (qIndex: number, oIndex: number) => {
-    setQuestions((prev) =>
-      prev.map((q, idx) => {
-        if (idx !== qIndex || q.options.length <= 2) return q;
-        return {
-          ...q,
-          options: q.options.filter((_, i) => i !== oIndex),
-        };
-      }),
-    );
-  };
-
-  const updateOptionField = <K extends keyof TestOptionUpsert>(
-    qIndex: number,
-    oIndex: number,
-    field: K,
-    value: TestOptionUpsert[K],
-  ) => {
-    setQuestions((prev) =>
-      prev.map((q, idx) => {
-        if (idx !== qIndex) return q;
-        return {
-          ...q,
-          options: q.options.map((opt, i) =>
-            i === oIndex ? { ...opt, [field]: value } : opt,
-          ),
-        };
-      }),
-    );
-  };
-
   const handleSaveTest = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setError(null);
       const payload = {
         sectionId,
-        title: title.trim(),
-        description: description.trim(),
-        questionsLimit: Number(questionsLimit) || 1,
-        hasTimeLimit,
-        timeLimitMinutes: hasTimeLimit ? Number(timeLimitMinutes) || 1 : null,
-        isHidden,
+        title: settings.title.trim(),
+        description: settings.description.trim(),
+        questionsLimit: settings.questionsLimit,
+        hasTimeLimit: settings.hasTimeLimit,
+        timeLimitMinutes: settings.hasTimeLimit ? settings.timeLimitMinutes : null,
+        isHidden: settings.isHidden,
+        allowTraining: settings.allowTraining,
+        passScorePercent: settings.passScorePercent,
         questions: questions.map((q, idx) => ({
           id: q.id,
           questionText: q.questionText.trim(),
@@ -231,101 +150,96 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
         })),
       };
 
-      if (editingTestId) {
-        await updateTest({ testId: editingTestId, data: payload }).unwrap();
-      } else {
+      if (mode === 'create') {
         await createTest(payload).unwrap();
+      } else if (mode === 'edit' && selectedTestId) {
+        await updateTest({ testId: selectedTestId, data: payload }).unwrap();
       }
-      setIsEditingForm(false);
+      setMode('list');
     } catch (err) {
       setError(err);
     }
   };
-  if (isEditingForm) {
+  const addQuestion = () => {
+    setQuestions((prev) => [...prev, createEmptyQuestion(prev.length + 1)]);
+  };
+
+  const removeQuestion = (qIndex: number) => {
+    setQuestions((prev) => prev.filter((_, idx) => idx !== qIndex));
+  };
+
+  const updateQuestionText = (qIndex: number, text: string) => {
+    setQuestions((prev) =>
+      prev.map((q, idx) => (idx === qIndex ? { ...q, questionText: text } : q)),
+    );
+  };
+
+  const addOption = (qIndex: number) => {
+    setQuestions((prev) =>
+      prev.map((q, idx) =>
+        idx === qIndex
+          ? { ...q, options: [...q.options, createEmptyOption(q.options.length)] }
+          : q,
+      ),
+    );
+  };
+
+  const updateOption = <K extends keyof TestOptionUpsert>(
+    qIndex: number,
+    oIndex: number,
+    field: K,
+    value: TestOptionUpsert[K],
+  ) => {
+    setQuestions((prev) =>
+      prev.map((q, idx) =>
+        idx === qIndex
+          ? {
+              ...q,
+              options: q.options.map((opt, oi) =>
+                oi === oIndex ? { ...opt, [field]: value } : opt,
+              ),
+            }
+          : q,
+      ),
+    );
+  };
+
+  const removeOption = (qIndex: number, oIndex: number) => {
+    setQuestions((prev) =>
+      prev.map((q, idx) =>
+        idx === qIndex
+          ? { ...q, options: q.options.filter((_, oi) => oi !== oIndex) }
+          : q,
+      ),
+    );
+  };
+
+  if (mode === 'create' || mode === 'edit') {
+    const isSaving = isCreating || isUpdating;
+
     return (
-      <div className="testing-tests-grid">
+      <form onSubmit={handleSaveTest} className="testing-tests-grid">
         {Boolean(error) && <ErpErrorBanner error={error} />}
 
-        <div className="task-form-header">
-          {editingTestId
-            ? `Редактирование теста №${editingTestId}`
-            : 'Создание нового теста'}
+        <div className="dir-section-header">
+          <strong>
+            {mode === 'create'
+              ? 'Создание нового теста'
+              : `Редактирование теста: ${settings.title}`}
+          </strong>
+          <div className="bookings-toolbar-right">
+            <button type="submit" className="bookings-create-btn" disabled={isSaving}>
+              💾 {isSaving ? 'Сохранение...' : 'Сохранить тест'}
+            </button>
+            <button type="button" className="erp-cmd-btn" onClick={() => setMode('list')}>
+              ✖ Отмена
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSaveTest} className="task-form-body">
-          <div className="bookings-form-row">
-            <label>Наименование теста *</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
+        <TestSettingsForm settings={settings} onChange={handleSettingChange} />
 
-          <div className="bookings-form-row">
-            <label>Описание / инструкция к тесту</label>
-            <textarea
-              rows={2}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-
-          <div className="bookings-form-time-grid">
-            <div className="bookings-form-row">
-              <label>На сколько вопросов отвечает сотрудник *</label>
-              <input
-                type="number"
-                min={1}
-                value={questionsLimit}
-                onChange={(e) => setQuestionsLimit(Number(e.target.value))}
-                required
-              />
-            </div>
-
-            <div className="bookings-form-row">
-              <label>Видимость теста</label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isHidden}
-                  onChange={(e) => setIsHidden(e.target.checked)}
-                />{' '}
-                Скрыть тест от пользователей
-              </label>
-            </div>
-          </div>
-
-          <div className="bookings-form-time-grid">
-            <div className="bookings-form-row">
-              <label>Ограничение по времени</label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={hasTimeLimit}
-                  onChange={(e) => setHasTimeLimit(e.target.checked)}
-                />{' '}
-                Включить обратный отсчёт времени
-              </label>
-            </div>
-
-            {hasTimeLimit && (
-              <div className="bookings-form-row">
-                <label>Лимит времени (в минутах) *</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={timeLimitMinutes}
-                  onChange={(e) => setTimeLimitMinutes(Number(e.target.value))}
-                  required
-                />
-              </div>
-            )}
-          </div>
-
-          <hr />
-
+        <div className="sub-view">
           <div className="dir-section-header">
             <strong>Банк вопросов теста ({questions.length})</strong>
             <div className="bookings-toolbar-right">
@@ -334,9 +248,8 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
                 className="erp-cmd-btn"
                 onClick={downloadQuestionsTemplateExcel}
               >
-                📥 Пример шаблона (Excel)
+                📥 Шаблон (Excel)
               </button>
-
               <button
                 type="button"
                 className="erp-cmd-btn"
@@ -344,7 +257,6 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
               >
                 📤 Загрузить из файла
               </button>
-
               <input
                 ref={fileInputRef}
                 type="file"
@@ -352,159 +264,72 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
                 hidden
                 onChange={handleImportFile}
               />
-
               <button type="button" className="erp-cmd-btn" onClick={addQuestion}>
                 ➕ Добавить вопрос
               </button>
             </div>
           </div>
 
-          {questions.map((q, qIdx) => (
-            <div key={qIdx} className="testing-editor-question-card">
-              <div className="dir-section-header">
-                <strong>Вопрос №{qIdx + 1}</strong>
-                {questions.length > 1 && (
-                  <button
-                    type="button"
-                    className="bookings-delete-btn"
-                    onClick={() => removeQuestion(qIdx)}
-                  >
-                    Удалить вопрос
-                  </button>
-                )}
-              </div>
-
-              <div className="bookings-form-row">
-                <label>Текст вопроса *</label>
-                <textarea
-                  rows={2}
-                  value={q.questionText}
-                  onChange={(e) => updateQuestionText(qIdx, e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="dir-item-form-label">
-                Варианты ответов (укажите символьный код a, b, c... и отметьте 1 или
-                несколько правильных):
-              </div>
-
-              {q.options.map((opt, oIdx) => (
-                <div key={oIdx} className="testing-editor-option-row">
-                  <input
-                    type="text"
-                    placeholder="Код (a)"
-                    maxLength={5}
-                    value={opt.code}
-                    onChange={(e) =>
-                      updateOptionField(qIdx, oIdx, 'code', e.target.value)
-                    }
-                    required
-                  />
-                  <input
-                    type="text"
-                    placeholder="Текст варианта ответа"
-                    value={opt.optionText}
-                    onChange={(e) =>
-                      updateOptionField(qIdx, oIdx, 'optionText', e.target.value)
-                    }
-                    required
-                  />
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={opt.isCorrect}
-                      onChange={(e) =>
-                        updateOptionField(qIdx, oIdx, 'isCorrect', e.target.checked)
-                      }
-                    />{' '}
-                    Верный
-                  </label>
-                  <button
-                    type="button"
-                    className="erp-cmd-btn"
-                    disabled={q.options.length <= 2}
-                    onClick={() => removeOption(qIdx, oIdx)}
-                    title="Удалить вариант"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-
-              <button
-                type="button"
-                className="erp-cmd-btn"
-                onClick={() => addOption(qIdx)}
-              >
-                + Вариант ответа
-              </button>
-            </div>
+          {questions.map((q, qIndex) => (
+            <TestQuestionCard
+              key={q.id ?? `new-q-${qIndex}`}
+              question={q}
+              index={qIndex}
+              canRemoveQuestion={questions.length > 1}
+              onChangeText={updateQuestionText}
+              onRemoveQuestion={removeQuestion}
+              onAddOption={addOption}
+              onChangeOption={updateOption}
+              onRemoveOption={removeOption}
+            />
           ))}
-
-          <div className="dir-modal-actions">
-            <button
-              type="button"
-              className="erp-cmd-btn"
-              onClick={() => setIsEditingForm(false)}
-            >
-              Отмена
-            </button>
-            <button
-              type="submit"
-              className="bookings-create-btn"
-              disabled={isCreating || isUpdating}
-            >
-              💾 Сохранить тест
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+      </form>
     );
   }
 
   return (
-    <div className="testing-tests-grid">
+    <div>
       {Boolean(error) && <ErpErrorBanner error={error} />}
 
       <ErpCommandBar
-        onCreate={handleCreateNew}
-        onEdit={handleEditSelected}
+        onCreate={handleOpenCreate}
+        onEdit={() => handleOpenEdit()}
         onDelete={handleDeleteSelected}
         onRefresh={refetch}
-        searchPlaceholder="Поиск теста по названию..."
-        searchValue={search}
-        onSearchChange={setSearch}
       />
 
-      {isLoading || isLoadingDetail ? (
-        <div>Загрузка...</div>
+      {isLoading ? (
+        <div>Загрузка списка тестов...</div>
       ) : (
         <table className="erp-v8-table">
           <thead>
             <tr>
-              <th className="dir-col-code-sm">Код</th>
-              <th>Название теста</th>
+              <th>Наименование теста</th>
               <th className="dir-col-code-md">Вопросов</th>
-              <th className="dir-col-code-md">Время</th>
+              <th className="dir-col-code-md">Проходной</th>
+              <th className="dir-col-code-md">Таймер</th>
+              <th className="dir-col-code-md">Обучение</th>
               <th className="dir-col-code-md">Статус</th>
             </tr>
           </thead>
           <tbody>
-            {filteredTests.map((t) => (
+            {tests?.map((t) => (
               <tr
                 key={t.id}
                 onClick={() => setSelectedTestId(t.id)}
+                onDoubleClick={() => handleOpenEdit(t.id)}
                 className={selectedTestId === t.id ? 'erp-row-selected' : ''}
               >
-                <td className="text-center">{t.id}</td>
                 <td className="font-medium">{t.title}</td>
                 <td className="text-center">
                   {t.questionsLimit} из {t.bankQuestionsCount}
                 </td>
+                <td className="text-center">{t.passScorePercent ?? 80}%</td>
                 <td className="text-center">
-                  {t.hasTimeLimit ? `${t.timeLimitMinutes} мин.` : 'Без лимита'}
+                  {t.hasTimeLimit ? `${t.timeLimitMinutes} мин.` : 'Нет'}
                 </td>
+                <td className="text-center">{t.allowTraining ? 'Разрешено' : 'Нет'}</td>
                 <td className="text-center">
                   {t.isHidden ? (
                     <span className="testing-badge testing-badge--warn">Скрыт</span>
@@ -514,10 +339,11 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
                 </td>
               </tr>
             ))}
-            {filteredTests.length === 0 && (
+            {(!tests || tests.length === 0) && (
               <tr>
-                <td colSpan={5} className="erp-empty-table">
-                  Тесты в разделе не найдены. Нажмите «Создать», чтобы добавить тест.
+                <td colSpan={6} className="erp-empty-table">
+                  В разделе пока нет тестов. Нажмите «Создать», чтобы добавить первый
+                  тест.
                 </td>
               </tr>
             )}

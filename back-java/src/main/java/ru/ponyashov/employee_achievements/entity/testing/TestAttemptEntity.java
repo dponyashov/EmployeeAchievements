@@ -54,6 +54,10 @@ public class TestAttemptEntity {
     private Double scorePercent;
 
     @Builder.Default
+    @Column(name = "is_training", nullable = false)
+    private Boolean isTraining = false;
+
+    @Builder.Default
     @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("questionOrder ASC, id ASC")
     private List<TestAttemptAnswerEntity> answers = new ArrayList<>();

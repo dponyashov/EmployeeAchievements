@@ -119,6 +119,7 @@ public class TestingServiceImpl implements TestingService {
     // =========================================================================
 
     @Transactional
+    @Override
     public List<TestSummaryDto> getTestsBySection(Long sectionId) {
         TestSectionEntity section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new RuntimeException("Раздел тестирования не найден"));
@@ -135,7 +136,11 @@ public class TestingServiceImpl implements TestingService {
 
         return tests.stream().map(t -> {
             List<TestAttemptEntity> attempts = attemptRepository
-                    .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(t.getId(), currentProfile.getId());
+                    .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(t.getId(), currentProfile.getId())
+                    .stream()
+                    .filter(a -> !Boolean.TRUE.equals(a.getIsTraining()))
+                    .toList();
+
 
             for (TestAttemptEntity a : attempts) {
                 if ("IN_PROGRESS".equals(a.getStatus())) {
@@ -170,6 +175,8 @@ public class TestingServiceImpl implements TestingService {
                     .canStartNow(canStart)
                     .hasInProgressAttempt(hasInProgress)
                     .lastScorePercent(lastScore)
+                    .allowTraining(Boolean.TRUE.equals(t.getAllowTraining()))
+                    .passScorePercent(t.getPassScorePercent() != null ? t.getPassScorePercent() : 80)
                     .build();
         }).toList();
     }
@@ -205,6 +212,9 @@ public class TestingServiceImpl implements TestingService {
                 .timeLimitMinutes(test.getTimeLimitMinutes())
                 .isHidden(test.getIsHidden())
                 .questions(questions)
+                .allowTraining(Boolean.TRUE.equals(test.getAllowTraining()))
+                .passScorePercent(test.getPassScorePercent() != null ? test.getPassScorePercent() : 80)
+
                 .build();
     }
     @Transactional
@@ -228,6 +238,8 @@ public class TestingServiceImpl implements TestingService {
         test.setHasTimeLimit(Boolean.TRUE.equals(dto.getHasTimeLimit()));
         test.setTimeLimitMinutes(Boolean.TRUE.equals(dto.getHasTimeLimit()) ? dto.getTimeLimitMinutes() : null);
         test.setIsHidden(Boolean.TRUE.equals(dto.getIsHidden()));
+        test.setAllowTraining(Boolean.TRUE.equals(dto.getAllowTraining()));
+        test.setPassScorePercent(dto.getPassScorePercent() != null ? dto.getPassScorePercent() : 80);
 
         Map<Long, TestQuestionEntity> existingQuestionsMap = test.getQuestions().stream()
                 .filter(q -> q.getId() != null)
@@ -313,7 +325,8 @@ public class TestingServiceImpl implements TestingService {
     // =========================================================================
 
     @Transactional
-    public TestAttemptSessionDto startOrResumeAttempt(Long testId) {
+    @Override
+    public TestAttemptSessionDto startOrResumeAttempt(Long testId, boolean training) {
         ProfileEntity profile = getCurrentProfile();
         TestEntity test = testRepository.findById(testId)
                 .orElseThrow(() -> new RuntimeException("Тест не найден"));
@@ -321,37 +334,54 @@ public class TestingServiceImpl implements TestingService {
         if (Boolean.TRUE.equals(test.getIsHidden()) && !isTestAdmin()) {
             throw new RuntimeException("Данный тест скрыт администратором");
         }
-
         if (!Boolean.TRUE.equals(test.getSection().getIsActive()) && !isTestAdmin()) {
             throw new RuntimeException("Раздел данного теста скрыт администратором");
         }
-
+        if (training && !Boolean.TRUE.equals(test.getAllowTraining())) {
+            throw new RuntimeException("Обучающий режим для данного теста отключён");
+        }
         if (test.getQuestions().isEmpty()) {
             throw new RuntimeException("В тесте отсутствуют вопросы");
         }
 
-        Optional<TestAttemptEntity> activeOpt = attemptRepository
-                .findFirstByTestIdAndProfileIdAndStatusOrderByIdDesc(testId, profile.getId(), "IN_PROGRESS");
+        List<TestAttemptEntity> allUserAttempts = attemptRepository
+                .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(testId, profile.getId());
 
-        if (activeOpt.isPresent()) {
-            TestAttemptEntity active = activeOpt.get();
-            checkAndExpireIfNeeded(active);
-            if ("IN_PROGRESS".equals(active.getStatus())) {
-                return buildSessionDto(active);
+        // Разделяем зачётные и обучающие попытки
+        List<TestAttemptEntity> previousAttempts = allUserAttempts.stream()
+                .filter(a -> Boolean.TRUE.equals(a.getIsTraining()) == training)
+                .toList();
+
+        // Если есть незавершённая попытка нужного режима — возвращаем её (с проверкой таймера)
+        Optional<TestAttemptEntity> inProgressOpt = previousAttempts.stream()
+                .filter(a -> "IN_PROGRESS".equals(a.getStatus()))
+                .findFirst();
+
+        if (inProgressOpt.isPresent()) {
+            TestAttemptEntity activeAttempt = inProgressOpt.get();
+            checkAndExpireIfNeeded(activeAttempt);
+            if ("IN_PROGRESS".equals(activeAttempt.getStatus())) {
+                return buildSessionDto(activeAttempt);
             }
         }
 
-        List<TestAttemptEntity> previousAttempts = attemptRepository
-                .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(testId, profile.getId());
+        // Для зачётного режима проверяем лимит попыток (для обучающего — без ограничений)
+        if (!training) {
+            long completedOrExpiredCount = previousAttempts.stream()
+                    .filter(a -> !"IN_PROGRESS".equals(a.getStatus()))
+                    .count();
+            List<TestExtraGrantEntity> unusedGrants = extraGrantRepository
+                    .findAllByTestIdAndProfileIdAndIsUsedFalse(testId, profile.getId());
 
-        if (!previousAttempts.isEmpty()) {
-            TestExtraGrantEntity grant = extraGrantRepository
-                    .findFirstByTestIdAndProfileIdAndIsUsedFalseOrderByIdAsc(testId, profile.getId())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Повторное тестирование закрыто. Обратитесь к ответственному за контроль тестирования."
-                    ));
-            grant.setIsUsed(true);
-            extraGrantRepository.save(grant);
+            if (completedOrExpiredCount > 0 && unusedGrants.isEmpty()) {
+                throw new RuntimeException("Попытка прохождения теста уже использована. Для повторного прохождения обратитесь к ответственному за тестирование.");
+            }
+
+            if (completedOrExpiredCount > 0 && !unusedGrants.isEmpty()) {
+                TestExtraGrantEntity grant = unusedGrants.get(0);
+                grant.setIsUsed(true);
+                extraGrantRepository.save(grant);
+            }
         }
 
         List<TestQuestionEntity> pool = new ArrayList<>(test.getQuestions());
@@ -362,7 +392,8 @@ public class TestingServiceImpl implements TestingService {
         TestAttemptEntity newAttempt = TestAttemptEntity.builder()
                 .test(test)
                 .profile(profile)
-                .attemptNumber(previousAttempts.size() + 1)
+                .attemptNumber(training ? 0 : previousAttempts.size() + 1)
+                .isTraining(training)
                 .status("IN_PROGRESS")
                 .startedAt(LocalDateTime.now())
                 .totalQuestions(limit)
@@ -388,7 +419,6 @@ public class TestingServiceImpl implements TestingService {
         attemptAnswerRepository.saveAll(answerEntities);
 
         return buildSessionDto(savedAttempt);
-
     }
 
     @Transactional
@@ -441,20 +471,23 @@ public class TestingServiceImpl implements TestingService {
         targetAnswer.setIsCorrect(isCorrect);
         targetAnswer.setAnsweredAt(LocalDateTime.now());
 
-        recalculateAttemptStats(attempt);
-
         attemptAnswerRepository.save(targetAnswer);
 
-        if (attempt.getAnsweredQuestions() >= attempt.getTotalQuestions()) {
-            attempt.setStatus("COMPLETED");
-            attempt.setFinishedAt(LocalDateTime.now());
-        }
+        recalculateAttemptStats(attempt);
+
+//        attemptAnswerRepository.save(targetAnswer);
+
+//        if (attempt.getAnsweredQuestions() >= attempt.getTotalQuestions()) {
+//            attempt.setStatus("COMPLETED");
+//            attempt.setFinishedAt(LocalDateTime.now());
+//        }
 
         attemptRepository.save(attempt);
         return buildSessionDto(attempt);
     }
 
     @Transactional
+    @Override
     public TestAttemptSessionDto finishAttempt(Long attemptId, boolean expiredByTimer) {
         ProfileEntity profile = getCurrentProfile();
         TestAttemptEntity attempt = attemptRepository.findById(attemptId)
@@ -532,6 +565,15 @@ public class TestingServiceImpl implements TestingService {
                             .build())
                     .toList();
 
+            List<String> correctCodes = null;
+            if (Boolean.TRUE.equals(ans.getIsAnswered()) || !"IN_PROGRESS".equals(attempt.getStatus())) {
+                correctCodes = ans.getQuestion().getOptions().stream()
+                        .filter(o -> Boolean.TRUE.equals(o.getIsCorrect()))
+                        .map(o -> o.getCode().toLowerCase())
+                        .sorted()
+                        .toList();
+            }
+
             return AttemptQuestionViewDto.builder()
                     .attemptAnswerId(ans.getId())
                     .questionId(q.getId())
@@ -542,8 +584,14 @@ public class TestingServiceImpl implements TestingService {
                     .isAnswered(ans.getIsAnswered())
                     .selectedCodes(selectedList)
                     .answeredAt(ans.getAnsweredAt())
+                    .correctCodes(correctCodes)
                     .build();
         }).toList();
+
+        int passScore = attempt.getTest().getPassScorePercent() != null
+                ? attempt.getTest().getPassScorePercent()
+                : 80;
+        boolean isPassed = attempt.getScorePercent() != null && attempt.getScorePercent() >= passScore;
 
         return TestAttemptSessionDto.builder()
                 .attemptId(attempt.getId())
@@ -561,6 +609,8 @@ public class TestingServiceImpl implements TestingService {
                 .correctAnswers(attempt.getCorrectAnswers())
                 .scorePercent(attempt.getScorePercent())
                 .questions(questionDtos)
+                .passScorePercent(passScore)
+                .isPassed(isPassed)
                 .build();
     }
     // =========================================================================
@@ -741,6 +791,9 @@ public class TestingServiceImpl implements TestingService {
                     .build();
         }).toList();
 
+        int passScore = t.getPassScorePercent() != null ? t.getPassScorePercent() : 80;
+        boolean isPassed = a.getScorePercent() != null && a.getScorePercent() >= passScore;
+
         return AttemptProtocolDto.builder()
                 .attemptId(a.getId())
                 .attemptNumber(a.getAttemptNumber())
@@ -757,7 +810,8 @@ public class TestingServiceImpl implements TestingService {
                 .correctAnswers(a.getCorrectAnswers())
                 .scorePercent(a.getScorePercent())
                 .answers(answerDtos)
+                .passScorePercent(passScore)
+                .isPassed(isPassed)
                 .build();
     }
-
 }

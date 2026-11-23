@@ -83,10 +83,13 @@ public class TestingController {
 
     // --- Прохождение тестирования ---
     @PostMapping("/tests/{testId}/start")
-    @PreAuthorize("hasAnyRole('TEST', 'TEST_CONTROL', 'TEST_ADMIN', 'ADMIN')")
-    public ResponseEntity<TestAttemptSessionDto> startTest(@PathVariable("testId") Long testId) {
-        return ResponseEntity.ok(testingService.startOrResumeAttempt(testId));
+    public ResponseEntity<TestAttemptSessionDto> startTest(
+            @PathVariable Long testId,
+            @RequestParam(defaultValue = "false") boolean training
+    ) {
+        return ResponseEntity.ok(testingService.startOrResumeAttempt(testId, training));
     }
+
 
     @PostMapping("/attempts/{attemptId}/answer")
     @PreAuthorize("hasAnyRole('TEST', 'TEST_CONTROL', 'TEST_ADMIN', 'ADMIN')")

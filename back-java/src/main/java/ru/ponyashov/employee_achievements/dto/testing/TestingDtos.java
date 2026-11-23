@@ -63,6 +63,8 @@ public class TestingDtos {
         private Boolean hasTimeLimit = false;
         private Integer timeLimitMinutes;
         private Boolean isHidden = false;
+        private Boolean allowTraining;
+        private Integer passScorePercent;
         private List<TestQuestionUpsertDto> questions;
     }
 
@@ -78,6 +80,8 @@ public class TestingDtos {
         private Boolean hasTimeLimit;
         private Integer timeLimitMinutes;
         private Boolean isHidden;
+        private Boolean allowTraining;
+        private Integer passScorePercent;
         // Информация для текущего пользователя
         private Integer userAttemptsCount;
         private Boolean canStartNow;
@@ -96,6 +100,8 @@ public class TestingDtos {
         private Boolean hasTimeLimit;
         private Integer timeLimitMinutes;
         private Boolean isHidden;
+        private Boolean allowTraining;
+        private Integer passScorePercent;
         private List<TestQuestionUpsertDto> questions;
     }
 
@@ -119,6 +125,7 @@ public class TestingDtos {
         private List<AttemptOptionViewDto> options;
         private Boolean isAnswered;
         private List<String> selectedCodes;
+        private List<String> correctCodes;
         private LocalDateTime answeredAt;
     }
 
@@ -139,6 +146,9 @@ public class TestingDtos {
         private Integer answeredQuestions;
         private Integer correctAnswers;
         private Double scorePercent;
+        private Boolean isTraining;
+        private Integer passScorePercent;
+        private Boolean isPassed;
         private List<AttemptQuestionViewDto> questions;
     }
 
@@ -174,6 +184,8 @@ public class TestingDtos {
         private Integer totalParticipants;
         private Integer completedAttemptsTotal;
         private Double averageScorePercent;
+        private Integer passScorePercent;
+        private Boolean isPassed;
         private List<TestEmployeeControlRowDto> employees;
         private List<TestQuestionStatDto> questionStats;
     }
@@ -207,6 +219,8 @@ public class TestingDtos {
         private Integer answeredQuestions;
         private Integer correctAnswers;
         private Double scorePercent;
+        private Integer passScorePercent;
+        private Boolean isPassed;
         private List<AttemptProtocolAnswerDto> answers;
     }
 
@@ -220,5 +234,4 @@ public class TestingDtos {
         private Integer correctAnswersCount;
         private Double correctPercent;
     }
-
 }

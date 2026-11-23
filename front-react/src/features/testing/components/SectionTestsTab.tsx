@@ -21,10 +21,10 @@ export const SectionTestsTab: React.FC<SectionTestsTabProps> = ({
   const [startAttempt, { isLoading: isStarting }] = useStartTestAttemptMutation();
   const [error, setError] = useState<unknown>(null);
 
-  const handleStart = async (testId: number) => {
+  const handleStart = async (testId: number, training = false) => {
     try {
       setError(null);
-      const session = await startAttempt(testId).unwrap();
+      const session = await startAttempt({ testId, training }).unwrap();
       onStartSession(session);
     } catch (err) {
       setError(err);
@@ -90,6 +90,10 @@ export const SectionTestsTab: React.FC<SectionTestsTabProps> = ({
                 </span>
               )}
 
+              <span className="testing-badge">
+                Проходной балл: <strong>{test.passScorePercent ?? 80}%</strong>
+              </span>
+
               {test.isHidden && (
                 <span className="testing-badge testing-badge--warn">
                   Скрыт от сотрудников
@@ -104,7 +108,7 @@ export const SectionTestsTab: React.FC<SectionTestsTabProps> = ({
                 type="button"
                 className="bookings-create-btn"
                 disabled={isStarting}
-                onClick={() => handleStart(test.id)}
+                onClick={() => handleStart(test.id, false)}
               >
                 {test.hasInProgressAttempt
                   ? '▶ Продолжить тест'
@@ -116,6 +120,17 @@ export const SectionTestsTab: React.FC<SectionTestsTabProps> = ({
               <span className="testing-badge testing-badge--danger">
                 {test.bankQuestionsCount === 0 ? 'Нет вопросов' : 'Доступ закрыт'}
               </span>
+            )}
+
+            {test.allowTraining && test.bankQuestionsCount > 0 && (
+              <button
+                type="button"
+                className="erp-cmd-btn"
+                disabled={isStarting}
+                onClick={() => handleStart(test.id, true)}
+              >
+                🎓 Обучающее тестирование
+              </button>
             )}
           </div>
         </div>

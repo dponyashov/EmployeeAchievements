@@ -466,3 +466,23 @@
   word-break: break-word;
   overflow-wrap: anywhere;
 }
+
+.testing-option-row--correct {
+  background: var(--1c-success-bg);
+  border-color: var(--1c-success-green);
+  color: var(--1c-success-text);
+  font-weight: 500;
+}
+
+.testing-option-row--wrong {
+  background: var(--1c-error-bg);
+  border-color: var(--1c-error-text);
+  color: var(--1c-error-text);
+}
+
+.testing-option-status-tag {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+}

@@ -41,6 +41,12 @@ public class TestEntity {
     @Column(name = "is_hidden", nullable = false)
     private Boolean isHidden;
 
+    @Column(name = "allow_training", nullable = false)
+    private Boolean allowTraining = false;
+
+    @Column(name = "pass_score_percent", nullable = false)
+    private Integer passScorePercent = 80;
+
     @Builder.Default
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC, id ASC")

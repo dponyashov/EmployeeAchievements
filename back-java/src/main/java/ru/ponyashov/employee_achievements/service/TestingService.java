@@ -33,8 +33,9 @@ public interface TestingService {
     // =========================================================================
 // 3. ПРОХОЖДЕНИЕ ТЕСТИРОВАНИЯ СОТРУДНИКОМ
 // =========================================================================
+
     @Transactional
-    TestingDtos.TestAttemptSessionDto startOrResumeAttempt(Long testId);
+    TestingDtos.TestAttemptSessionDto startOrResumeAttempt(Long testId, boolean training);
 
     @Transactional
     TestingDtos.TestAttemptSessionDto submitAnswer(Long attemptId, TestingDtos.SubmitAnswerRequestDto dto);

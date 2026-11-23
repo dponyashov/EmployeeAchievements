@@ -20,6 +20,8 @@ export interface TestSummaryItem {
   hasTimeLimit: boolean;
   timeLimitMinutes?: number | null;
   isHidden: boolean;
+  allowTraining?: boolean;
+  passScorePercent?: number;
   userAttemptsCount: number;
   canStartNow: boolean;
   hasInProgressAttempt: boolean;
@@ -49,6 +51,8 @@ export interface TestAdminDetail {
   hasTimeLimit: boolean;
   timeLimitMinutes?: number | null;
   isHidden: boolean;
+  allowTraining?: boolean;
+  passScorePercent?: number;
   questions: TestQuestionUpsert[];
 }
 
@@ -67,6 +71,7 @@ export interface AttemptQuestionView {
   options: AttemptOptionView[];
   isAnswered: boolean;
   selectedCodes: string[];
+  correctCodes?: string[] | null;
   answeredAt?: string | null;
 }
 
@@ -85,6 +90,9 @@ export interface TestAttemptSession {
   answeredQuestions: number;
   correctAnswers: number;
   scorePercent: number;
+  isTraining?: boolean;
+  passScorePercent?: number;
+  isPassed?: boolean;
   questions: AttemptQuestionView[];
 }
 
@@ -115,6 +123,7 @@ export interface TestControlOverview {
   testTitle: string;
   sectionTitle: string;
   questionsLimit: number;
+  passScorePercent?: number;
   totalParticipants: number;
   completedAttemptsTotal: number;
   averageScorePercent: number;
@@ -147,6 +156,8 @@ export interface AttemptProtocol {
   answeredQuestions: number;
   correctAnswers: number;
   scorePercent: number;
+  passScorePercent?: number;
+  isPassed?: boolean;
   answers: AttemptProtocolAnswer[];
 }
 
@@ -216,9 +227,20 @@ export const testingApi = createApi({
       invalidatesTags: ['SectionTests', 'TestSections'],
     }),
 
-    // Прохождение теста
-    startTestAttempt: builder.mutation<TestAttemptSession, number>({
-      query: (testId) => ({ url: `/testing/tests/${testId}/start`, method: 'POST' }),
+    // Прохождение теста (зачётный и обучающий режимы)
+    startTestAttempt: builder.mutation<
+      TestAttemptSession,
+      number | { testId: number; training?: boolean }
+    >({
+      query: (arg) => {
+        const testId = typeof arg === 'number' ? arg : arg.testId;
+        const training = typeof arg === 'number' ? false : Boolean(arg.training);
+        return {
+          url: `/testing/tests/${testId}/start`,
+          method: 'POST',
+          params: { training },
+        };
+      },
       invalidatesTags: ['SectionTests', 'TestControl'],
     }),
     submitTestAnswer: builder.mutation<
@@ -278,6 +300,7 @@ export const {
   useUpdateTestSectionMutation,
   useDeleteTestSectionMutation,
   useGetTestsBySectionQuery,
+  useGetTestAdminDetailQuery,
   useLazyGetTestAdminDetailQuery,
   useCreateTestMutation,
   useUpdateTestMutation,
