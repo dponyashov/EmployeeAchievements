@@ -4,7 +4,7 @@
 
 - **Frontend Core:** Vite + React + TypeScript
 - **State & Data Fetching:** Redux Toolkit + RTK Query + Axios (кастомный `axiosBaseQuery`, префикс `/api`)
-- **Backend & DB:** Java 21 + Spring Boot (`back-java`) + PostgreSQL 17 + Flyway (`V01`..`V06`)
+- **Backend & DB:** Java 21 + Spring Boot (`back-java`) + PostgreSQL 17 + Flyway (`V01`..`V07`)
 - **Routing:** React Router v6 (`createBrowserRouter` в `src/routes/router.tsx`). Состояние активных вкладок и выбранных разделов в подсистемах сохраняется в URL query-параметрах (`?tab=...`, `?sectionId=...`) через `useSearchParams` (устойчиво к обновлению страницы `F5`).
 - **Импорт и экспорт документов:** `xlsx` (SheetJS) для выгрузки отчетов/протоколов в Excel (`.xlsx`) и парсинга вопросов тестов из `.xlsx`/`.xls`/`.csv` (с автоопределением кодировок `UTF-8` и `Windows-1251`); `jspdf` + `jspdf-autotable` (с локальным шрифтом `public/fonts/DejaVuSans.ttf`) для генерации PDF-отчетов и справок.
 - **Сборка и деплой (Docker & Nginx):**
@@ -27,7 +27,7 @@
   - `src/api/axios.ts` (`injectStoreToAxios`): подставляет `Authorization: Bearer <token>` во все запросы, **кроме** `/auth/refresh`, `/auth/login`, `/auth/registry`.
   - `src/api/baseQuery.ts` (`executeSilentRefresh`): единый промис-мьютекс (`refreshPromise`) для `POST /auth/refresh`. Предотвращает гонку параллельных 401-запросов и вызывает `logOut()` только при явном ответе `401`/`403` от `/auth/refresh`.
   - `src/App.tsx`: инициализация сессии при загрузке/F5 (`isInitializing`) и проактивное фоновое обновление токена за 60 секунд до истечения `exp` из JWT и при возврате на вкладку (`visibilitychange`).
-  - **Инициализация Axios и очистка кэша RTK Query при смене пользователя (`src/app/store.ts`):**
+- **Инициализация Axios и очистка кэша RTK Query при смене пользователя (`src/app/store.ts`):**
   - Привязка Redux Store к перехватчику запросов выполняется непосредственно при создании стора через `injectStoreToAxios(store)` в `src/app/store.ts`.
   - Для очистки данных предыдущей сессии без сброса самого стора и без перезагрузки страницы (`F5`) используется `authResetListener` (`createListenerMiddleware`), который по событиям `logOut` и `authApi.endpoints.login.matchFulfilled` сбрасывает кэши всех прикладных API-слайсов (`adminAuthApi`, `directoriesApi`, `tasksApi`, `reportsApi`, `bookingsApi`, `testingApi`) через `util.resetApiState()`.
   - Для `getTestSections` в `testingApi.ts` дополнительно задано `keepUnusedDataFor: 0`, чтобы скрытые администратором разделы тестирования не задерживались в памяти при переключении учётных записей.
@@ -50,7 +50,7 @@
   - `ErpFooter.tsx` + `layout.css` (`.erp-footer` высотой `25px`).
   - `AuthLayout.tsx` + `AuthLayout.css` (авторизация и регистрация).
 - **Общие UI-компоненты (`src/components/ui/` + `ui.css`):**
-  - `ErpCommandBar.tsx` (обязателен проп `onRefresh`), `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx` (рекурсивный разбор ошибок через `parseErpError.ts`), `ErpPagination.tsx`, `ErpColumnSelector.tsx`.
+  - `ErpCommandBar.tsx` (обязательные пропы: `onCreate`, `onEdit`, `onDelete`, `onRefresh`), `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx` (рекурсивный разбор ошибок через `parseErpError.ts`), `ErpPagination.tsx`, `ErpColumnSelector.tsx`.
 
 ---
 
@@ -105,20 +105,20 @@
 ### 4.9. Тестирование сотрудников (`src/features/testing/` + `testing.css`)
 
 - **Ролевая модель и БД (`back-java`):**
-  - Миграция Flyway `V06__create_testing_subsystem.sql`: добавление ролей `ROLE_TEST` (прохождение), `ROLE_TEST_CONTROL` (контроль и статистика), `ROLE_TEST_ADMIN` (полное управление разделами, тестами и контролем) через `INSERT ... SELECT ... WHERE NOT EXISTS` (в `t_roles` нет `UNIQUE`-ограничения на `name`).
-  - Таблицы БД: `t_test_sections`, `t_tests`, `t_test_questions`, `t_test_answer_options` (с символьным кодом ответа `a, b, c...`), `t_test_attempts`, `t_test_attempt_answers`, `t_test_extra_grants`.
+  - Миграция Flyway `V06__create_testing_subsystem.sql`: добавление ролей `ROLE_TEST` (прохождение), `ROLE_TEST_CONTROL` (контроль и статистика), `ROLE_TEST_ADMIN` (полное управление разделами, тестами и контролем) через `INSERT ... SELECT ... WHERE NOT EXISTS` (в `t_roles` нет `UNIQUE`-ограничения на `name`). Таблицы БД: `t_test_sections`, `t_tests`, `t_test_questions`, `t_test_answer_options` (с символьным кодом ответа `a, b, c...`), `t_test_attempts`, `t_test_attempt_answers`, `t_test_extra_grants`.
+  - Миграция Flyway `V07__add_testing_training_and_pass_score.sql`: добавление колонок `allow_training` (разрешение обучающего режима), `pass_score_percent` (проходной балл в процентах для оценки «Сдал / Не сдал») в `t_tests` и `is_training` в `t_test_attempts`.
   - Контроллер `TestingController` (`/api/testing/...`) и сервис `TestingService`:
     - При редактировании теста (`saveTest`) существующие вопросы и варианты ответов обновляются по `id`, чтобы не срабатывало `ON DELETE CASCADE` на `t_test_attempt_answers` и не терялась история пройденных попыток.
     - Чтение и сохранение ответов попытки выполняется явно через `TestAttemptAnswerRepository` (без дублирования с каскадом коллекции `attempt.getAnswers()`).
-    - Серверный контроль таймера (`checkAndExpireIfNeeded`), блокировка изменения принятых ответов, строгое совпадение множества кодов при множественном выборе, блокировка повторного прохождения без выдачи разрешения контролером (`grantExtraAttempt`).
-  - Защита скрытых разделов (`isActive = false`): на бэкенде методы `getTestsBySection` и `startOrResumeAttempt` блокируют прямой доступ к тестам скрытого раздела для пользователей без роли `ROLE_TEST_ADMIN` / `ROLE_ADMIN`; на фронтенде в `TestSectionEditorTab.tsx` реализовано быстрое переключение видимости из таблицы («🙈 Скрыть» / «👁️ Показать») с передачей полного DTO раздела и чекбокс «Скрыть раздел от пользователей» в модальном окне.
-
+    - Защита скрытых разделов (`isActive = false`): методы `getTestsBySection` и `startOrResumeAttempt` блокируют прямой доступ к тестам скрытого раздела для пользователей без роли `ROLE_TEST_ADMIN` / `ROLE_ADMIN`.
+    - Обучающее тестирование (`POST /testing/tests/{testId}/start?training=true`): запускается без ограничения количества попыток (`attemptNumber = 0`, `isTraining = true`), не расходует зачётные попытки/разрешения и отфильтровывается (`!Boolean.TRUE.equals(a.getIsTraining())`) из `getTestsBySection`, `getTestControlOverview` и `getEmployeeProtocols`.
+    - Серверный контроль таймера (`checkAndExpireIfNeeded`), блокировка изменения принятых ответов (без авто-завершения попытки на последнем вопросе, чтобы пользователь мог просмотреть подсветку и нажать «Завершить тест»), возврат `correctCodes` в `AttemptQuestionViewDto` только для принятых вопросов, расчёт `isPassed` по `passScorePercent`, проверка повторных зачётных попыток (`completedOrExpiredCount > 0 && unusedGrants.isEmpty()`).
 - **Фронтенд (`TestingPage.tsx`, маршрут `/testing`, навигация через `?sectionId=...&tab=...`):**
-  - **Уровень 1 (Разделы):** центральная лента разделов (`TestSectionsFeed.tsx`) + вкладка `TestSectionEditorTab.tsx` для `ROLE_TEST_ADMIN`.
+  - **Уровень 1 (Разделы):** центральная лента разделов (`TestSectionsFeed.tsx`) + вкладка `TestSectionEditorTab.tsx` для `ROLE_TEST_ADMIN` (быстрое переключение видимости из таблицы «🙈 Скрыть» / «👁️ Показать» с передачей полного DTO раздела и чекбокс «Скрыть раздел от пользователей» в модальном окне).
   - **Уровень 2 (Внутри раздела):**
-    - **«📝 Тесты раздела»** (`SectionTestsTab.tsx`): карточки тестов в едином стиле ленты разделов (`testing-feed-wrap` / `testing-section-card`).
-    - **Экран прохождения теста** (`TestRunnerView.tsx`): обратный отсчёт времени с авто-фиксацией при истечении, счётчик отвеченных вопросов (`Принято ответов: X из Y`), кнопки `◀ Назад`, `✔ Принять ответ`, `Вперёд ▶`; символьные коды ответов (`a, b, c...`) при прохождении скрыты.
-    - **«⚙️ Редактирование тестов»** (`TestEditorTab.tsx`): настройка лимита вопросов, таймера, скрытия теста, конструктор вопросов с символьными кодами и массовый импорт вопросов из `.xlsx`/`.xls`/`.csv` (`importTestQuestions.ts` с шаблоном и автоопределением `UTF-8`/`Windows-1251`).
+    - **«📝 Тесты раздела»** (`SectionTestsTab.tsx`): карточки тестов с бейджем проходного балла, кнопкой зачётного старта и кнопкой **«🎓 Обучающее тестирование»** (если разрешено в настройках теста).
+    - **Экран прохождения теста** (`TestRunnerView.tsx`): обратный отсчёт времени с авто-фиксацией при истечении, счётчик отвеченных вопросов (`Принято ответов: X из Y`), кнопки `◀ Назад`, `✔ Принять ответ`, `Вперёд ▶`, `🏁 Завершить тест`; символьные коды ответов скрыты; после нажатия «Принять ответ» пользователь остаётся на текущем вопросе, а все правильные варианты подсвечиваются зелёным (`testing-option-row--correct`), ошибочно выбранные пользователем — красным (`testing-option-row--wrong`); на экране результатов выводится итог **«✔ СДАЛ» / «✖ НЕ СДАЛ»**.
+    - **«⚙️ Редактирование тестов»** (`TestEditorTab.tsx`, типы в `types/testEditor.types.ts`, подкомпоненты `editor/TestSettingsForm.tsx` и `editor/TestQuestionCard.tsx`): настройка лимита вопросов, проходного балла (`%`), таймера, обучающего режима, скрытия теста, конструктор вопросов с символьными кодами и массовый импорт вопросов из `.xlsx`/`.xls`/`.csv` (`importTestQuestions.ts` с шаблоном и автоопределением `UTF-8`/`Windows-1251`).
     - **«📊 Контроль тестирования»** (`TestControlTab.tsx` + `control/TestControlSidebar.tsx`, `TestQuestionStatsCard.tsx`, `TestEmployeesTableCard.tsx`, `TestEmployeeAttemptsCard.tsx`): зафиксированный слева список тестов, общая сводка и две вкладки снизу — **«👥 Сотрудники, проходившие тест»** (двухпанельная раскладка `25%` список сотрудников / `75%` попытки, детализация ответов с кодами, открытие повторной попытки, выгрузка протокола в `.xlsx` и официальной справки в `.pdf` через `exportTestingFiles.ts`) и **«📈 Статистика ответов по вопросам»**.
 
 ---
@@ -126,7 +126,7 @@
 ## 5. Структура файлов проекта (`src/`)
 
 - `api/`: `axios.ts`, `baseQuery.ts`
-- `app/`: `store.ts` (подключён `testingApi`)
+- `app/`: `store.ts` (подключены `testingApi`, `authResetListener` и `injectStoreToAxios`)
 - `components/layout/`: `ErpHeader.tsx`, `ErpFooter.tsx`, `MyProfileEditModal.tsx`, `layout.css`
 - `components/ui/`: `ErpCommandBar.tsx`, `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx`, `ErpPagination.tsx`, `ErpColumnSelector.tsx`, `ui.css`
 - `features/admin/`: `adminAuthApi.ts`, `admin.css`, `components/` (`AdminUserManagement.tsx`, `AdminUserList.tsx`, `AdminPasswordReset.tsx`, `AdminRoleMatrix.tsx`)
@@ -137,6 +137,6 @@
 - `features/news/`: `NewsHostPage.tsx`, `news.css`
 - `features/reports/`: `reportsApi.ts`, `reports.css`, `components/` (`ReportViewer.tsx`, `ReportFilters.tsx`, `ReportTable.tsx`, `ReportExportModal.tsx`), `utils/` (`exportReportToExcel.ts`, `exportReportToPdf.ts`)
 - `features/tasks/`: `tasksApi.ts`, `tasks.css`, `components/` (`TasksJournal.tsx`, `TasksEmployeeList.tsx`, `TasksTablePane.tsx`, `TaskForm.tsx`, `TaskQueriesPane.tsx`)
-- `features/testing/`: `testingApi.ts`, `testing.css`, `components/` (`TestingPage.tsx`, `TestSectionsFeed.tsx`, `TestSectionEditorTab.tsx`, `SectionTestsTab.tsx`, `TestRunnerView.tsx`, `TestEditorTab.tsx`, `TestControlTab.tsx`, `control/TestControlSidebar.tsx`, `control/TestQuestionStatsCard.tsx`, `control/TestEmployeesTableCard.tsx`, `control/TestEmployeeAttemptsCard.tsx`), `utils/` (`exportTestingFiles.ts`, `importTestQuestions.ts`)
+- `features/testing/`: `testingApi.ts`, `testing.css`, `types/` (`testEditor.types.ts`), `components/` (`TestingPage.tsx`, `TestSectionsFeed.tsx`, `TestSectionEditorTab.tsx`, `SectionTestsTab.tsx`, `TestRunnerView.tsx`, `TestEditorTab.tsx`, `TestControlTab.tsx`, `editor/TestSettingsForm.tsx`, `editor/TestQuestionCard.tsx`, `control/TestControlSidebar.tsx`, `control/TestQuestionStatsCard.tsx`, `control/TestEmployeesTableCard.tsx`, `control/TestEmployeeAttemptsCard.tsx`), `utils/` (`exportTestingFiles.ts`, `importTestQuestions.ts`)
 - `layouts/`: `MainLayout.tsx`, `MainLayout.css`, `AuthLayout.tsx`, `AuthLayout.css`
 - `routes/`: `router.tsx`, `AppRoutes.tsx`, `ProtectedRoute.tsx`, `RoleGuard.tsx`, `menuConfig.ts`, `routes.css`

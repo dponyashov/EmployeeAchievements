@@ -50,6 +50,7 @@ public class TestingServiceImpl implements TestingService {
     // =========================================================================
 
     @Transactional(readOnly = true)
+    @Override
     public List<TestSectionResponseDto> getSections() {
         boolean admin = isTestAdmin();
         List<TestSectionEntity> sections = admin
@@ -72,6 +73,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Transactional
+    @Override
     public TestSectionResponseDto createSection(TestSectionRequestDto dto) {
         TestSectionEntity entity = TestSectionEntity.builder()
                 .title(dto.getTitle().trim())
@@ -91,6 +93,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Transactional
+    @Override
     public TestSectionResponseDto updateSection(Long id, TestSectionRequestDto dto) {
         TestSectionEntity entity = sectionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Раздел тестирования не найден"));
@@ -110,6 +113,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Transactional
+    @Override
     public boolean deleteSection(Long id) {
         sectionRepository.deleteById(id);
         return true;
@@ -182,6 +186,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public TestAdminDetailDto getTestAdminDetail(Long testId) {
         TestEntity test = testRepository.findById(testId)
                 .orElseThrow(() -> new RuntimeException("Тест не найден"));
@@ -218,6 +223,7 @@ public class TestingServiceImpl implements TestingService {
                 .build();
     }
     @Transactional
+    @Override
     public TestAdminDetailDto saveTest(Long testId, TestUpsertRequestDto dto) {
         validateTestQuestions(dto);
 
@@ -287,6 +293,7 @@ public class TestingServiceImpl implements TestingService {
 
 
     @Transactional
+    @Override
     public boolean deleteTest(Long testId) {
         testRepository.deleteById(testId);
         return true;
@@ -422,6 +429,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Transactional
+    @Override
     public TestAttemptSessionDto submitAnswer(Long attemptId, SubmitAnswerRequestDto dto) {
         ProfileEntity profile = getCurrentProfile();
         TestAttemptEntity attempt = attemptRepository.findById(attemptId)
@@ -474,13 +482,6 @@ public class TestingServiceImpl implements TestingService {
         attemptAnswerRepository.save(targetAnswer);
 
         recalculateAttemptStats(attempt);
-
-//        attemptAnswerRepository.save(targetAnswer);
-
-//        if (attempt.getAnsweredQuestions() >= attempt.getTotalQuestions()) {
-//            attempt.setStatus("COMPLETED");
-//            attempt.setFinishedAt(LocalDateTime.now());
-//        }
 
         attemptRepository.save(attempt);
         return buildSessionDto(attempt);
@@ -618,6 +619,7 @@ public class TestingServiceImpl implements TestingService {
     // =========================================================================
 
     @Transactional
+    @Override
     public TestControlOverviewDto getTestControlOverview(Long testId) {
         TestEntity test = testRepository.findById(testId)
                 .orElseThrow(() -> new RuntimeException("Тест не найден"));
@@ -721,6 +723,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Transactional
+    @Override
     public List<AttemptProtocolDto> getEmployeeAttemptsProtocols(Long testId, Long profileId) {
         List<TestAttemptEntity> attempts = attemptRepository
                 .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(testId, profileId);
@@ -735,6 +738,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Transactional
+    @Override
     public boolean grantExtraAttempt(Long testId, Long profileId) {
         TestEntity test = testRepository.findById(testId)
                 .orElseThrow(() -> new RuntimeException("Тест не найден"));
