@@ -1,4 +1,4 @@
-import { combineReducers, configureStore, type UnknownAction } from '@reduxjs/toolkit';
+import { configureStore, createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
 import authReducer, { logOut } from '../features/auth/authSlice';
 import { authApi } from '../features/auth/authApi';
@@ -8,41 +8,48 @@ import { tasksApi } from '../features/tasks/tasksApi';
 import { reportsApi } from '../features/reports/reportsApi';
 import { bookingsApi } from '../features/bookings/bookingsApi';
 import { testingApi } from '../features/testing/testingApi';
+import { injectStoreToAxios } from '../api/axios';
 
-const appReducer = combineReducers({
-  auth: authReducer,
-  [authApi.reducerPath]: authApi.reducer,
-  [adminAuthApi.reducerPath]: adminAuthApi.reducer,
-  [directoriesApi.reducerPath]: directoriesApi.reducer,
-  [tasksApi.reducerPath]: tasksApi.reducer,
-  [reportsApi.reducerPath]: reportsApi.reducer,
-  [bookingsApi.reducerPath]: bookingsApi.reducer,
-  [testingApi.reducerPath]: testingApi.reducer,
+const authResetListener = createListenerMiddleware();
+
+authResetListener.startListening({
+  matcher: isAnyOf(logOut, authApi.endpoints.login.matchFulfilled),
+  effect: (_action, listenerApi) => {
+    listenerApi.dispatch(adminAuthApi.util.resetApiState());
+    listenerApi.dispatch(directoriesApi.util.resetApiState());
+    listenerApi.dispatch(tasksApi.util.resetApiState());
+    listenerApi.dispatch(reportsApi.util.resetApiState());
+    listenerApi.dispatch(bookingsApi.util.resetApiState());
+    listenerApi.dispatch(testingApi.util.resetApiState());
+  },
 });
-
-const rootReducer = (
-  state: ReturnType<typeof appReducer> | undefined,
-  action: UnknownAction,
-) => {
-  if (action.type === logOut.type) {
-    state = undefined;
-  }
-  return appReducer(state, action);
-};
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    auth: authReducer,
+    [authApi.reducerPath]: authApi.reducer,
+    [adminAuthApi.reducerPath]: adminAuthApi.reducer,
+    [directoriesApi.reducerPath]: directoriesApi.reducer,
+    [tasksApi.reducerPath]: tasksApi.reducer,
+    [reportsApi.reducerPath]: reportsApi.reducer,
+    [bookingsApi.reducerPath]: bookingsApi.reducer,
+    [testingApi.reducerPath]: testingApi.reducer,
+  },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
-      authApi.middleware,
-      adminAuthApi.middleware,
-      directoriesApi.middleware,
-      tasksApi.middleware,
-      reportsApi.middleware,
-      bookingsApi.middleware,
-      testingApi.middleware,
-    ),
+    getDefaultMiddleware()
+      .prepend(authResetListener.middleware)
+      .concat(
+        authApi.middleware,
+        adminAuthApi.middleware,
+        directoriesApi.middleware,
+        tasksApi.middleware,
+        reportsApi.middleware,
+        bookingsApi.middleware,
+        testingApi.middleware,
+      ),
 });
+
+injectStoreToAxios(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -158,6 +158,7 @@ export const testingApi = createApi({
     // Разделы
     getTestSections: builder.query<TestSectionItem[], void>({
       query: () => ({ url: '/testing/sections', method: 'GET' }),
+      keepUnusedDataFor: 0,
       providesTags: ['TestSections'],
     }),
     createTestSection: builder.mutation<TestSectionItem, Partial<TestSectionItem>>({
