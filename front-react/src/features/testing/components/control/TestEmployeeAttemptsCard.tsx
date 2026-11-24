@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
+  useDeleteTestAttemptMutation,
   useGetEmployeeProtocolsQuery,
   useGrantExtraAttemptMutation,
   type AttemptProtocol,
@@ -43,10 +44,25 @@ export const TestEmployeeAttemptsCard: React.FC<TestEmployeeAttemptsCardProps> =
 
   const [selectedAttemptId, setSelectedAttemptId] = useState<number | null>(null);
 
+  const [deleteAttempt, { isLoading: isDeleting }] = useDeleteTestAttemptMutation();
+
   useEffect(() => {
     const lastProtocol = protocols?.at(-1);
     setSelectedAttemptId(lastProtocol ? lastProtocol.attemptId : null);
   }, [protocols]);
+
+  const handleDeleteAttempt = async (attemptId: number, attemptNumber: number) => {
+    if (
+      !window.confirm(`Удалить попытку №${attemptNumber} и все её ответы из журнала?`)
+    ) {
+      return;
+    }
+    try {
+      await deleteAttempt(attemptId).unwrap();
+    } catch {
+      alert('Не удалось удалить попытку тестирования.');
+    }
+  };
 
   const handleGrantAttempt = async () => {
     try {
@@ -93,6 +109,20 @@ export const TestEmployeeAttemptsCard: React.FC<TestEmployeeAttemptsCardProps> =
                 onClick={() => exportAttemptCertificateToPdf(selectedProtocol)}
               >
                 📄 Сформировать справку (PDF)
+              </button>
+              <button
+                type="button"
+                className="erp-cmd-btn erp-cmd-btn--danger"
+                disabled={isDeleting}
+                onClick={() =>
+                  handleDeleteAttempt(
+                    selectedProtocol.attemptId,
+                    selectedProtocol.attemptNumber,
+                  )
+                }
+                title="Удалить попытку из журнала и статистики"
+              >
+                🗑️ Удалить
               </button>
             </>
           )}

@@ -43,6 +43,9 @@ public interface TestingService {
     @Transactional
     TestingDtos.TestAttemptSessionDto finishAttempt(Long attemptId, boolean expiredByTimer);
 
+    @Transactional
+    void deleteAttempt(Long attemptId);
+
     // =========================================================================
 // 4. КОНТРОЛЬ ТЕСТИРОВАНИЯ И СТАТИСТИКА
 // =========================================================================

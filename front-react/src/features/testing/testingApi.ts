@@ -291,6 +291,13 @@ export const testingApi = createApi({
         'SectionTests',
       ],
     }),
+    deleteTestAttempt: builder.mutation<boolean, number>({
+      query: (attemptId) => ({
+        url: `/testing/attempts/${attemptId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['TestControl', 'SectionTests'],
+    }),
   }),
 });
 
@@ -311,4 +318,5 @@ export const {
   useGetTestControlOverviewQuery,
   useGetEmployeeProtocolsQuery,
   useGrantExtraAttemptMutation,
+  useDeleteTestAttemptMutation,
 } = testingApi;

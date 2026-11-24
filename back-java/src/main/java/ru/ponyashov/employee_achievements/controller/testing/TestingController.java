@@ -133,4 +133,11 @@ public class TestingController {
     ) {
         return ResponseEntity.ok(testingService.grantExtraAttempt(testId, profileId));
     }
+
+    @DeleteMapping("/attempts/{attemptId}")
+    @PreAuthorize("hasAnyRole('TEST_CONTROL', 'TEST_ADMIN', 'ADMIN')")
+    public ResponseEntity<Boolean> deleteAttempt(@PathVariable Long attemptId) {
+        testingService.deleteAttempt(attemptId);
+        return ResponseEntity.ok(true);
+    }
 }

@@ -48,6 +48,44 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
     setError(null);
   }, [sectionId]);
 
+  const handleCopyTest = async (testId?: number) => {
+    const targetId = testId ?? selectedTestId;
+    if (!targetId) return;
+
+    try {
+      setError(null);
+      const detail = await fetchTestDetail(targetId).unwrap();
+      // Сбрасываем selectedTestId и id вопросов/вариантов, чтобы создать новый тест
+      setSelectedTestId(null);
+      setSettings({
+        title: `${detail.title} (копия)`,
+        description: detail.description || '',
+        questionsLimit: detail.questionsLimit,
+        hasTimeLimit: detail.hasTimeLimit,
+        timeLimitMinutes: detail.timeLimitMinutes ?? 15,
+        isHidden: false,
+        allowTraining: Boolean(detail.allowTraining),
+        passScorePercent: detail.passScorePercent ?? 80,
+      });
+      setQuestions(
+        detail.questions.length > 0
+          ? detail.questions.map((q, idx) => ({
+              questionText: q.questionText,
+              sortOrder: idx + 1,
+              options: q.options.map((o) => ({
+                code: o.code,
+                optionText: o.optionText,
+                isCorrect: o.isCorrect,
+              })),
+            }))
+          : [createEmptyQuestion(1)],
+      );
+      setMode('create');
+    } catch (err) {
+      setError(err);
+    }
+  };
+
   const handleSettingChange = <K extends keyof TestFormSettings>(
     field: K,
     value: TestFormSettings[K],
@@ -298,6 +336,16 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
         onDelete={handleDeleteSelected}
         onRefresh={refetch}
       />
+      <div className="bookings-toolbar-right" style={{ marginBottom: 8 }}>
+        <button
+          type="button"
+          className="erp-cmd-btn"
+          disabled={selectedTestId === null || isDetailLoading}
+          onClick={() => handleCopyTest()}
+        >
+          📋 Копировать выбранный тест
+        </button>
+      </div>
 
       {isLoading ? (
         <div>Загрузка списка тестов...</div>

@@ -507,6 +507,20 @@ public class TestingServiceImpl implements TestingService {
 
         return buildSessionDto(attempt);
     }
+
+    @Transactional
+    @Override
+    public void deleteAttempt(Long attemptId) {
+        TestAttemptEntity attempt = attemptRepository.findById(attemptId)
+                .orElseThrow(() -> new RuntimeException("Попытка тестирования не найдена"));
+
+        // Сначала удаляем ответы попытки, затем саму попытку
+        List<TestAttemptAnswerEntity> answers = attemptAnswerRepository
+                .findAllByAttemptIdOrderByQuestionOrderAscIdAsc(attemptId);
+        attemptAnswerRepository.deleteAll(answers);
+        attemptRepository.delete(attempt);
+    }
+
     private void checkAndExpireIfNeeded(TestAttemptEntity attempt) {
         if (!"IN_PROGRESS".equals(attempt.getStatus())) return;
         TestEntity test = attempt.getTest();
@@ -548,7 +562,8 @@ public class TestingServiceImpl implements TestingService {
             remainingSeconds = Math.max(0L, diff);
         }
 
-        List<AttemptQuestionViewDto> questionDtos = attemptAnswerRepository.findAllByAttemptIdOrderByQuestionOrderAscIdAsc(attempt.getId()).stream().map(ans -> {
+        List<AttemptQuestionViewDto> questionDtos = attemptAnswerRepository.findAllByAttemptIdOrderByQuestionOrderAscIdAsc(
+                attempt.getId()).stream().map(ans -> {
             TestQuestionEntity q = ans.getQuestion();
             long correctCount = q.getOptions().stream()
                     .filter(o -> Boolean.TRUE.equals(o.getIsCorrect()))
@@ -611,6 +626,7 @@ public class TestingServiceImpl implements TestingService {
                 .scorePercent(attempt.getScorePercent())
                 .questions(questionDtos)
                 .passScorePercent(passScore)
+                .isTraining(Boolean.TRUE.equals(attempt.getIsTraining()))
                 .isPassed(isPassed)
                 .build();
     }
@@ -624,7 +640,11 @@ public class TestingServiceImpl implements TestingService {
         TestEntity test = testRepository.findById(testId)
                 .orElseThrow(() -> new RuntimeException("Тест не найден"));
 
-        List<TestAttemptEntity> allAttempts = attemptRepository.findAllByTestIdOrderByStartedAtDesc(testId);
+        List<TestAttemptEntity> allAttempts = attemptRepository.findAllByTestIdOrderByStartedAtDesc(testId)
+                .stream()
+                .filter(a -> !Boolean.TRUE.equals(a.getIsTraining()))
+                .toList();
+
         for (TestAttemptEntity a : allAttempts) {
             if ("IN_PROGRESS".equals(a.getStatus())) {
                 checkAndExpireIfNeeded(a);
@@ -726,7 +746,10 @@ public class TestingServiceImpl implements TestingService {
     @Override
     public List<AttemptProtocolDto> getEmployeeAttemptsProtocols(Long testId, Long profileId) {
         List<TestAttemptEntity> attempts = attemptRepository
-                .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(testId, profileId);
+                .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(testId, profileId)
+                .stream()
+                .filter(a -> !Boolean.TRUE.equals(a.getIsTraining()))
+                .toList();
 
         for (TestAttemptEntity a : attempts) {
             if ("IN_PROGRESS".equals(a.getStatus())) {
@@ -746,8 +769,10 @@ public class TestingServiceImpl implements TestingService {
         ProfileEntity curator = getCurrentProfile();
 
         boolean hasActive = attemptRepository
-                .findFirstByTestIdAndProfileIdAndStatusOrderByIdDesc(testId, profileId, "IN_PROGRESS")
-                .isPresent();
+                .findAllByTestIdAndProfileIdOrderByAttemptNumberAsc(testId, profileId)
+                .stream()
+                .anyMatch(a -> !Boolean.TRUE.equals(a.getIsTraining()) && "IN_PROGRESS".equals(a.getStatus()));
+
         if (hasActive) {
             throw new RuntimeException("У сотрудника уже есть активная незавершённая попытка");
         }
