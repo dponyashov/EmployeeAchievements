@@ -80,7 +80,7 @@ export const TestEmployeeAttemptsCard: React.FC<TestEmployeeAttemptsCardProps> =
     null;
 
   return (
-    <div className="sub-view">
+    <div className="sub-view testing-attempts-card-root">
       <div className="dir-section-header">
         <strong>Попытки сотрудника: {employeeName}</strong>
 
@@ -173,11 +173,11 @@ export const TestEmployeeAttemptsCard: React.FC<TestEmployeeAttemptsCardProps> =
       )}
 
       {selectedProtocol && (
-        <div className="dir-embedded-table-wrap">
+        <div className="dir-embedded-table-wrap testing-protocol-details-section">
           <div className="dir-item-form-label">
             Детализация ответов (Попытка №{selectedProtocol.attemptNumber}):
           </div>
-          <div className="testing-attempts-scroll-wrap erp-v8-scrollbar">
+          <div className="testing-protocol-answers-scroll erp-v8-scrollbar">
             <table className="erp-v8-table">
               <thead>
                 <tr>

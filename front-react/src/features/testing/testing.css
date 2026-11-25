@@ -486,3 +486,30 @@
   font-weight: bold;
   white-space: nowrap;
 }
+
+/* Карточка попыток сотрудника занимает всю высоту правой панели */
+.testing-attempts-card-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Блок детализации ответов растягивается на всё оставшееся место снизу */
+.testing-protocol-details-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  margin-top: 10px;
+}
+
+/* Прокручиваемый контейнер таблицы ответов без жёсткого max-height */
+.testing-protocol-answers-scroll {
+  flex: 1;
+  min-height: 180px;
+  max-height: none;
+  overflow-y: auto;
+  border: 1px solid var(--1c-border);
+  background: var(--1c-white);
+}

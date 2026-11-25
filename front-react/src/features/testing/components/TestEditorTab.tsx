@@ -336,6 +336,7 @@ export const TestEditorTab: React.FC<TestEditorTabProps> = ({ sectionId }) => {
         onDelete={handleDeleteSelected}
         onRefresh={refetch}
       />
+      <br />
       <div className="bookings-toolbar-right" style={{ marginBottom: 8 }}>
         <button
           type="button"
