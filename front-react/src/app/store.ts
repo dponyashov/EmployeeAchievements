@@ -9,6 +9,7 @@ import { reportsApi } from '../features/reports/reportsApi';
 import { bookingsApi } from '../features/bookings/bookingsApi';
 import { testingApi } from '../features/testing/testingApi';
 import { injectStoreToAxios } from '../api/axios';
+import { dashboardApi } from '../features/dashboard/dashboardApi';
 
 const authResetListener = createListenerMiddleware();
 
@@ -21,6 +22,7 @@ authResetListener.startListening({
     listenerApi.dispatch(reportsApi.util.resetApiState());
     listenerApi.dispatch(bookingsApi.util.resetApiState());
     listenerApi.dispatch(testingApi.util.resetApiState());
+    listenerApi.dispatch(dashboardApi.util.resetApiState());
   },
 });
 
@@ -34,6 +36,7 @@ export const store = configureStore({
     [reportsApi.reducerPath]: reportsApi.reducer,
     [bookingsApi.reducerPath]: bookingsApi.reducer,
     [testingApi.reducerPath]: testingApi.reducer,
+    [dashboardApi.reducerPath]: dashboardApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -46,6 +49,7 @@ export const store = configureStore({
         reportsApi.middleware,
         bookingsApi.middleware,
         testingApi.middleware,
+        dashboardApi.middleware,
       ),
 });
 

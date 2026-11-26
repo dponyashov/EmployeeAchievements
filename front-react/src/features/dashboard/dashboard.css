@@ -1,5 +1,5 @@
 /* =========================================================
-   ПОДСИСТЕМА "РАБОЧИЙ СТОЛ" (1С:Такси)
+   ПОДСИСТЕМА "РАБОЧИЙ СТОЛ"
    ========================================================= */
 
 .erp-dashboard-container {
@@ -77,4 +77,167 @@
   padding: 1px 5px;
   font-size: 11px;
   border: 1px solid var(--1c-border-medium);
+}
+
+.erp-tiles-grid {
+  display: grid;
+  gap: 16px;
+  grid-auto-rows: 180px;
+  width: 100%;
+}
+
+.erp-tiles-grid--cols-1 {
+  grid-template-columns: repeat(1, minmax(220px, 1fr));
+}
+.erp-tiles-grid--cols-2 {
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+}
+.erp-tiles-grid--cols-3 {
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+}
+.erp-tiles-grid--cols-4 {
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+}
+.erp-tiles-grid--cols-5 {
+  grid-template-columns: repeat(5, minmax(200px, 1fr));
+}
+.erp-tiles-grid--cols-6 {
+  grid-template-columns: repeat(6, minmax(180px, 1fr));
+}
+
+/* Ячейка матрицы рабочего стола (занятая или пустая) */
+.erp-grid-cell {
+  position: relative;
+  height: 180px;
+  border-radius: 6px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.erp-grid-cell--empty {
+  border: 1px dashed var(--1c-border-medium);
+  background: var(--1c-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.erp-grid-cell--drag-over {
+  border: 2px dashed var(--1c-active-blue);
+  background: var(--1c-yellow-soft);
+}
+
+.erp-grid-cell .erp-tile {
+  height: 100%;
+  margin: 0;
+}
+
+.erp-grid-cell-empty-hint {
+  color: var(--1c-text-muted);
+  font-size: 12px;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.erp-grid-cell--empty:hover {
+  border-color: var(--1c-yellow-border);
+  background: var(--1c-yellow-tint);
+}
+
+.erp-grid-cell--empty:hover .erp-grid-cell-empty-hint {
+  opacity: 1;
+}
+
+/* Кнопка «три точки» (⋮) в углу каждой ячейки */
+.erp-cell-kebab-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 10;
+  width: 26px;
+  height: 26px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--1c-text-secondary);
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.45;
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.erp-grid-cell:hover .erp-cell-kebab-btn,
+.erp-cell-kebab-btn--open {
+  opacity: 1;
+  background: var(--1c-white);
+  border-color: var(--1c-border-medium);
+  color: var(--1c-text-dark);
+}
+
+/* Выпадающее меню ячейки */
+.erp-cell-menu {
+  position: fixed;
+  top: var(--menu-top, 100px);
+  left: var(--menu-left, 100px);
+  z-index: 1200;
+  min-width: 230px;
+  background: var(--1c-white);
+  border: 1px solid var(--1c-border-dark);
+  border-radius: 4px;
+  box-shadow: var(--1c-shadow-dropdown);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.erp-cell-menu-item {
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--1c-text-dark);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.erp-cell-menu-item:hover {
+  background: var(--1c-yellow-soft);
+}
+
+.erp-cell-menu-item--danger {
+  color: var(--1c-error-text);
+}
+
+.erp-cell-menu-divider {
+  height: 1px;
+  background: var(--1c-border-light);
+  margin: 4px 0;
+}
+
+.erp-cell-menu-section-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--1c-text-muted);
+  padding: 2px 8px;
+}
+
+.erp-cell-menu-grid-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
 }

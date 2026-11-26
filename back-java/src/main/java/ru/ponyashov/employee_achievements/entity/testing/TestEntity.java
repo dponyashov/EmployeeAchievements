@@ -41,9 +41,11 @@ public class TestEntity {
     @Column(name = "is_hidden", nullable = false)
     private Boolean isHidden;
 
+    @Builder.Default
     @Column(name = "allow_training", nullable = false)
     private Boolean allowTraining = false;
 
+    @Builder.Default
     @Column(name = "pass_score_percent", nullable = false)
     private Integer passScorePercent = 80;
 
