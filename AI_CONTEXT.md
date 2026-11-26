@@ -4,7 +4,7 @@
 
 - **Frontend Core:** Vite + React + TypeScript
 - **State & Data Fetching:** Redux Toolkit + RTK Query + Axios (кастомный `axiosBaseQuery`, префикс `/api`)
-- **Backend & DB:** Java 21 + Spring Boot (`back-java`) + PostgreSQL 17 + Flyway (`V01`..`V07`)
+- **Backend & DB:** Java 21 + Spring Boot (`back-java`) + PostgreSQL 17 + Flyway (`V01`..`V08`)
 - **Routing:** React Router v6 (`createBrowserRouter` в `src/routes/router.tsx`). Состояние активных вкладок и выбранных разделов в подсистемах сохраняется в URL query-параметрах (`?tab=...`, `?sectionId=...`) через `useSearchParams` (устойчиво к обновлению страницы `F5`).
 - **Импорт и экспорт документов:** `xlsx` (SheetJS) для выгрузки отчетов/протоколов в Excel (`.xlsx`) и парсинга вопросов тестов из `.xlsx`/`.xls`/`.csv` (с автоопределением кодировок `UTF-8` и `Windows-1251`); `jspdf` + `jspdf-autotable` (с локальным шрифтом `public/fonts/DejaVuSans.ttf`) для генерации PDF-отчетов и справок.
 - **Сборка и деплой (Docker & Nginx):**
@@ -29,7 +29,7 @@
   - `src/App.tsx`: инициализация сессии при загрузке/F5 (`isInitializing`) и проактивное фоновое обновление токена за 60 секунд до истечения `exp` из JWT и при возврате на вкладку (`visibilitychange`).
 - **Инициализация Axios и очистка кэша RTK Query при смене пользователя (`src/app/store.ts`):**
   - Привязка Redux Store к перехватчику запросов выполняется непосредственно при создании стора через `injectStoreToAxios(store)` в `src/app/store.ts`.
-  - Для очистки данных предыдущей сессии без сброса самого стора и без перезагрузки страницы (`F5`) используется `authResetListener` (`createListenerMiddleware`), который по событиям `logOut` и `authApi.endpoints.login.matchFulfilled` сбрасывает кэши всех прикладных API-слайсов (`adminAuthApi`, `directoriesApi`, `tasksApi`, `reportsApi`, `bookingsApi`, `testingApi`) через `util.resetApiState()`.
+  - Для очистки данных предыдущей сессии без сброса самого стора и без перезагрузки страницы (`F5`) используется `authResetListener` (`createListenerMiddleware`), который по событиям `logOut` и `authApi.endpoints.login.matchFulfilled` сбрасывает кэши всех прикладных API-слайсов (`adminAuthApi`, `directoriesApi`, `tasksApi`, `reportsApi`, `bookingsApi`, `testingApi`, `dashboardApi`) через `util.resetApiState()`.
   - Для `getTestSections` в `testingApi.ts` дополнительно задано `keepUnusedDataFor: 0`, чтобы скрытые администратором разделы тестирования не задерживались в памяти при переключении учётных записей.
 - **Шифрование персональных данных в БД (`back-java`):**
   - `EncryptedStringConverter` (`ru.ponyashov.employee_achievements.security.crypto`): JPA `AttributeConverter` с алгоритмом **AES-256-GCM** (случайный 12-байтовый IV на каждое сохранение, префикс `ENC:v1:` + Base64, ключ из `PROFILE_ENCRYPTION_KEY` с фолбэком на `JWT_ACCESS_SECRET`). Поддерживает обратную совместимость при чтении старых открытых строк.
@@ -59,11 +59,20 @@
 
 ## 4. Реализованные подсистемы
 
-### 4.1. Рабочий стол (`src/features/dashboard/` + `dashboard.css`)
+### 4.1. Настраиваемый рабочий стол (`src/features/dashboard/` + `dashboard.css`)
 
-- `ErpDashboard.tsx` и плитки: `AdminTile`, `EmployeesTile`, `AchievementsTile` (плитка **«✅ Задачи сотрудников»**, объединившая задачи и отчетность), `NewsTile`, `BookingsTile`, `TestingTile`.
-- Сетка плиток 4x3 высотой `180px` (`grid-auto-rows: 180px`, `display: contents` на обертках, синхронизация с `menuConfig.ts`).
-- `AchievementsTile.tsx` учитывает три уровня ролей при подсчете задач: `ROLE_DEPARTMENT_ALL` / `ROLE_ADMIN` (все сотрудники через `useLazyGetAllEmployeesQuery` из `tasksApi`), `ROLE_SUPERVISOR` (сотрудники отдела) и обычный пользователь (личные задачи).
+- **Хранение настроек в БД (`back-java`):**
+  - Миграция Flyway `V08__create_user_dashboard_settings.sql`: таблица `t_user_dashboard_settings` (`user_id` PK/FK на `t_users`, `columns_count`, `rows_count`, `tiles_json` — JSON-массив фиксированной длины `columnsCount * rowsCount` с идентификаторами плиток или пустыми строками `""` для пустых ячеек).
+  - Сущность `UserDashboardSettingsEntity`, репозиторий `UserDashboardSettingsRepository` и контроллер `DashboardSettingsController` (`/api/dashboard/settings`: `GET` возвращает индивидуальные настройки пользователя или дефолтную сетку `4 × 3`, `PUT` сохраняет размер сетки и позиции всех ячеек; `ObjectMapper` инициализируется локально в поле контроллера для совместимости со Spring Boot 4 / Jackson 3).
+- **Единый реестр меню и плиток (`src/routes/menuConfig.ts` -> `src/features/dashboard/dashboardRegistry.ts`):**
+  - `ErpMenuItem` в `menuConfig.ts` является единым источником правды для бокового меню и рабочего стола (`path`, `title`, `icon`, `allowedRoles`, опциональные `hideFromDashboard`, `tileId`, `tileDescription`, `tileRoute`, `tileComponent`).
+  - `dashboardRegistry.ts` автоматически генерирует `DASHBOARD_TILE_REGISTRY` из `erpMenuItems` (используя `React.createElement(DefaultModuleTile, ...)` как универсальную плитку по умолчанию, если у новой подсистемы не задан кастомный `tileComponent`).
+- **Интерактивная матрица рабочего стола (`ErpDashboard.tsx` + `components/DashboardTileSlot.tsx` + `components/DashboardCellMenu.tsx`):**
+  - Отображает матрицу ячеек `columnsCount × rowsCount` (по умолчанию `4 × 3` = 12 ячеек высотой `180px`, сетки `.erp-tiles-grid--cols-1`..`6`).
+  - Каждая ячейка (как занятая плиткой, так и пустая с проявляющейся при наведении подсказкой `.erp-grid-cell-empty-hint`) оснащена кнопкой меню **«⋮»** (`.erp-cell-kebab-btn`).
+  - `DashboardCellMenu.tsx` рендерится через `createPortal(..., document.body)` в фиксированных экранных координатах (`position: fixed`, `--menu-top`/`--menu-left`), поэтому меню не смещается при перестроении сетки; позволяет добавить/заменить плитку из доступных пользователю по ролям, очистить ячейку и изменить количество столбцов (`1..6`) и строк (`1..6`) с автосохранением в БД через `dashboardApi.ts`.
+  - Поддерживает перетаскивание плиток мышью (`HTML5 Drag-and-Drop`) между любыми занятыми и пустыми ячейками сетки.
+  - Виджеты-плитки: `AchievementsTile` (подсчёт задач по уровням ролей `ROLE_DEPARTMENT_ALL`/`ROLE_ADMIN`, `ROLE_SUPERVISOR`, личные задачи), `EmployeesTile`, `BookingsTile`, `TestingTile`, `NewsTile`, `AdminTile`, `DefaultModuleTile`.
 
 ### 4.2. Сотрудники, кадры и встроенные справочники (`src/features/directories/` + `directories.css`)
 
@@ -121,14 +130,15 @@
 ## 5. Структура файлов проекта (`src/`)
 
 - `api/`: `axios.ts`, `baseQuery.ts`
-- `app/`: `store.ts` (подключены `testingApi`, `authResetListener` и `injectStoreToAxios`)
+- `app/`: `store.ts` (подключены `testingApi`, `dashboardApi`, `authResetListener` и `injectStoreToAxios`)
+
 - `components/layout/`: `ErpHeader.tsx`, `ErpFooter.tsx`, `MyProfileEditModal.tsx`, `layout.css`
 - `components/ui/`: `ErpCommandBar.tsx`, `ErpFormButtons.tsx`, `ErpCombobox.tsx`, `ErpErrorBanner.tsx`, `ErpPagination.tsx`, `ErpColumnSelector.tsx`, `ui.css`
 - `features/achievements/`: `AchievementsPage.tsx` (объединённый раздел «✅ Задачи сотрудников» с вкладками Задачи, Отчетность, Услуги, Компоненты)
 - `features/admin/`: `adminAuthApi.ts`, `admin.css`, `components/` (`AdminUserManagement.tsx`, `AdminUserList.tsx`, `AdminPasswordReset.tsx`, `AdminRoleMatrix.tsx`)
 - `features/auth/`: `authSlice.ts`, `authApi.ts`
 - `features/bookings/`: `bookingsApi.ts`, `bookings.css`, `components/` (`BookingsPage.tsx`, `BookingsTimelineView.tsx`, `BookingsJournalTable.tsx`, `BookingFormModal.tsx`, `RoomsDirectoryTab.tsx`)
-- `features/dashboard/`: `ErpDashboard.tsx`, `dashboard.css`, `tiles/` (`AchievementsTile.tsx`, `AdminTile.tsx`, `BookingsTile.tsx`, `EmployeesTile.tsx`, `NewsTile.tsx`, `TestingTile.tsx`)
+- `features/dashboard/`: `ErpDashboard.tsx`, `dashboardApi.ts`, `dashboardRegistry.ts`, `dashboard.css`, `components/` (`DashboardTileSlot.tsx`, `DashboardCellMenu.tsx`), `tiles/` (`AchievementsTile.tsx`, `AdminTile.tsx`, `BookingsTile.tsx`, `DefaultModuleTile.tsx`, `EmployeesTile.tsx`, `NewsTile.tsx`, `TestingTile.tsx`)
 - `features/directories/`: `directoriesApi.ts`, `directories.css`, `components/` (`SimpleDirectoryTab.tsx`, `profile/EmployeesPage.tsx`, `profile/ProfileComponents.tsx`, `profile/ProfileListPane.tsx`, `profile/ProfileCardPane.tsx`)
 - `features/news/`: `NewsHostPage.tsx`, `news.css`
 - `features/reports/`: `reportsApi.ts`, `reports.css`, `components/` (`ReportViewer.tsx`, `ReportFilters.tsx`, `ReportTable.tsx`, `ReportExportModal.tsx`), `utils/` (`exportReportToExcel.ts`, `exportReportToPdf.ts`)
